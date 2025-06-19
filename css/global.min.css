@@ -1,0 +1,527 @@
+/* Global */
+@import"https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css";@import"https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,400italic,500italic";span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark,video {
+    margin: 0;
+    padding: 3px;
+    border: 0;
+    outline: 0;
+    font-size: 110%;
+    vertical-align: baseline;
+    background: rgba(0,0,0,0)
+}
+/*body*/
+body::-webkit-scrollbar {
+    display: none;
+}
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url('https://codehs.com/uploads/a90053d331bc9de909d3eeec0c367692');
+}
+header {
+    background-color: rgb(140,190,55);
+    padding:3px;
+    color: rgb(299,299,299);
+    display: block;
+    width: 100%;
+    height: 60px;
+    background: #92c83e;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 8000;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none
+    vertical-align:bottom;
+    text-align:top;
+}
+footer {
+    padding: 2px;
+    background-color: rgb(140,190,55);
+    color: #000;
+    height:30;
+    position: fixed;
+    bottom:0;
+    width:100vw;
+    font-size:60%;
+    background: #92c83e;
+}
+a {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: rgba(0,0,0,0)
+}
+html {
+    height: 100%;
+    font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
+}
+/* end body */
+/* buttons */
+.button{
+    background-color:black;
+    color:lightgrey;
+    font-size: 70%;
+    padding:9px;
+    border-radius:8px;
+    border:1px solid lightgrey;
+    text-decoration:none;
+    transition: all 0.3s ease;
+}
+.button:hover {
+    color:black;
+    background-color:lightgrey;
+    border:1px solid black;
+}
+.cfbtn {
+    border-radius:10px;
+    border:1px solid black;
+    color:black;
+    
+}
+.poll {
+    text-decoration:none; 
+    font-weight:bold; 
+    position:fixed;
+    color:yellow; 
+    background-color:red; 
+    border-radius:15px; 
+    padding:20px; 
+    transition: all 0.3s ease;
+    opacity: 0.5;
+    border:2px solid yellow;
+}
+.poll:hover {
+    color:red;
+    background-color:yellow;
+    border:2px solid red;
+    opacity:0.5;
+}
+.gamesbutton {
+    margin-top: 25px;
+    margin-bottom:10px;
+    padding: 10px 20px;
+    background-color: #000;
+    color: #fff;
+    border: 2px solid #fff;
+    margin-right:5px;
+    margin-left 5px;
+    border-radius: 25px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    text-align:center;
+}
+.gamesbutton:hover {
+    background-color: #fff;
+    color: #000;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 1),
+                0 0 30px rgba(255, 255, 255, 0.8); 
+}
+/*end buttons*/
+/* other buttons */
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    padding: 3px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border:1px solid;
+    z-index: 1000;
+    text-align: center;
+    color:white;
+}
+.popup button {
+    margin: 10px;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    color:white;
+}
+.close-btn {
+    background-color: red;
+    color: white;
+}
+.close-btn:hover {
+    background-color: white;
+    color: red;
+}
+.buttonx {
+    background-color: transparent;
+    color: white;
+}
+.buttonx:hover {
+    background-color: white;
+    color: black;
+}
+.keep-open-btn {
+    background-color: green;
+    color: white;
+}
+.keep-open-btn:hover {
+    background-color: white;
+    color: green;
+}
+input, button { 
+    padding: 10px; 
+    font-size: 16px; 
+}
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.controls button {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.controls button:hover {
+    background: #333;
+}
+.progress {
+    flex-grow: 1;
+    height: 5px;
+    background: darkgrey;
+    border-radius: 3px;
+    margin: 0 10px;
+    position: relative;
+    cursor: pointer;
+}
+.progress-bar {
+    background: lime;
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+}
+.time {
+    font-size: 12px;
+    white-space: nowrap;
+    color:lime;
+}
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: black;
+    color: lightgrey;
+    border: 2px solid lightgrey;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+.custom-file-upload:hover {
+    background-color: lightgrey;
+    color: black;
+    border-color: black;
+}
+.media-container {
+    max-width: 600px;
+    margin: auto;
+}
+.player {
+    background: transparent;
+    border-radius: 20px;
+    padding: 15px;
+    display: none;
+    overflow: hidden;
+}
+/*end other buttons*/
+/* header stuff */
+.headerbtn{
+    color:black;
+    border:0px; 
+    background-color:transparent;
+    text-decoration:none; 
+    font-size:70%; 
+    position:fixed; 
+    display: inline-block;
+    padding: 12px 15px 13px;
+    transition: all 0.3s ease;
+    font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif
+}
+.headerbtn:hover {
+    color:lightgrey;
+}
+.contactme {
+    color:black;
+    border:1px solid black; 
+    border-radius:6px;
+    background-color:transparent;
+    text-decoration:none; 
+    font-size:70%; 
+    position:fixed; 
+    display: inline-block;
+    padding: 12px 15px 13px;
+    transition: all 0.3s ease;
+    font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif
+}
+.contactme:hover {
+    color:lightgrey;
+    border:1px solid lightgrey;
+}
+.logo {
+    height:55px; 
+    vertical-align:bottom; 
+    position:fixed; 
+}
+/*end header stuff*/
+/* text stuff */
+.btntxt {
+    color:yellow;
+    font-size:150%;
+}
+.dscrbtxt {
+    color:lime;
+}
+.r {
+    color:red;
+}
+.y {
+    color:yellow;
+}
+.discord {
+    text-decoration:none; 
+    color:cyan
+}
+.txt {
+    font-weight:bold;
+    color: black;
+    text-shadow:
+    -1px -1px 0 #fff,
+    -1px 2px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff;
+    text-align:center;
+    text-shadow:
+    -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff;
+}
+#fileInput {
+    display: none;
+}
+#filenameDisplay {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: none;
+}
+#playlist {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    text-align: left;
+}
+#playlist li {
+    padding: 5px 10px;
+    border-bottom: 1px solid #444;
+    cursor: pointer;
+}
+#playlist li.active {
+    background-color: transparent;
+    font-weight: bold;
+}
+#playlist li.playlist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#playlist li .duration {
+    margin-left: auto;
+    color: lime;
+    font-size: 0.9em;
+}
+.playlist-item.drag-over {
+    background-color: #cccccc88;
+}
+.playlist-item.dragging {
+    opacity: 0.5;
+}
+.200 {
+    font-size:200%;
+}
+/* end text stuff */
+/*other*/
+audio {
+    width: 100%;
+    display: block;
+    border-radius: 10px;
+}
+/* weather shit */
+.weather {
+    height:10vh;
+    width:30vw;
+}
+#weather {
+    font-size:110%;
+    font-weight:bold
+    font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
+}
+location {
+    margin-bottom: 1rem;
+}
+#weather-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+#toggle {
+    color:black;
+    background-color:transparent;
+    border:1px solid black;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+#toggle:hover {
+    color:lightgrey;
+    border:1px solid lightgrey;
+}
+#weather, #toggle {
+    opacity: 0;
+    pointer-events: none;
+}
+#weather.show, #toggle.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+/*end weather shit*/
+.time-section {
+    margin-top: 1em;
+    font-size: 2em;
+    color:white;
+}
+.pollresults {
+    border: 5px solid black;
+    border-radius: 20px;
+    padding: 0px;
+}
+.pair {
+    margin-bottom: 10px;
+}
+@keyframes rgbShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.w { 
+    color: lightgrey !important; 
+}
+.w button { 
+    color: lightgrey !important; 
+    border-color: lightgrey !important; 
+}
+.dropdown {
+    background-color:black;
+    color:white;
+    font-size: 70%;
+    padding:9px;
+    border-radius:5px;
+    border:1px solid white;
+    text-decoration:none;
+}
+.#coverBackground {
+    width: 250px;
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    margin: 20px auto;
+}
+#clock {
+    font-size: 30px;
+    color: lightgrey;
+    transition: all 0.4s ease;
+    font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
+
+    }
+    .settings-button {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 70px;
+      height: 70px;
+      border:1px solid white;
+      border-radius: 50%;
+      background-color: #8cbe37;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    /* Image inside button */
+    .settings-button img {
+      width: 40px;
+      height: 40px;
+      transition: transform 0.4s ease;
+    }
+.settings-button:hover img {
+      transform: rotate(180deg);
+    }
+    .settings-button.actives {
+        display:none;
+    }
+
+    /* Popup Panel */
+    .popup2 {
+      position: fixed;
+      top: 10%;
+      bottom: 5%;
+      right: -550px;
+      width: 500px;
+      background: black;
+      border-radius: 10px 0 0 10px;
+      box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding:10px;
+      border:1px solid white;
+    }
+
+    .popup2.shows {
+      right: -5px;
+    }
+
+    .popup2 .bar {
+      width: 100%;
+      height: 10px;
+      background: #8cbe37;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      padding:10px;
+    }
+
+    .popup2 .text {
+      text-align: center;
+      font-size: 16px;
+      color: white;
+      flex-grow: 1;
+    }
+/*end other*/
+/* end Global */
+/*# sourceMappingURL=global.min.css.map */
