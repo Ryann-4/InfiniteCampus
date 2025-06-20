@@ -32,8 +32,7 @@ header {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none
-    vertical-align:bottom;
+    user-select: none;
     text-align:top;
 }
 footer {
@@ -107,7 +106,7 @@ html {
     color: #fff;
     border: 2px solid #fff;
     margin-right:5px;
-    margin-left 5px;
+    margin-left: 5px;
     border-radius: 25px;
     font-weight: 700;
     cursor: pointer;
@@ -372,7 +371,7 @@ audio {
 }
 #weather {
     font-size:110%;
-    font-weight:bold
+    font-weight:bold;
     font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
 }
 location {
@@ -439,7 +438,7 @@ location {
     border:1px solid white;
     text-decoration:none;
 }
-.#coverBackground {
+#coverBackground {
     width: 250px;
     height: 250px;
     background-size: cover;
