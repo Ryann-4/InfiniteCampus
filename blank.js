@@ -6,7 +6,7 @@ function closePopup() {
 }
 function openGame() {
     var win = window.open();
-    var url = "https://bbc-13099620.codehs.me";
+    var url = "https://ryann-4.github.io/InfiniteCampus";
     if (win) {
         var iframe = win.document.createElement('iframe');
         iframe.style.width = "100vw";
