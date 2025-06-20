@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
             { name: "Voxiom.io", url: "https://voxiom.io/?nolinks=1&authTest=1" },
             { name: "Brutal.io", url: "https://brutal.io/" },
             { name: "Bonk.io", url: "https://bonk.io/" },
-            { name: "Slither.io", url: "http://slither.com/io" },
+            { name: "Slither.io", url: "https://slithergame.io/slither-io.embed" },
             { name: "Ninja.io", url: "https://ninja.io/" },
             { name: "Wings.io", url: "https://wings.io/" },
             { name: "Mope.io", url: "https://mope.io/" },
