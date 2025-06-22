@@ -438,6 +438,15 @@ location {
     border:1px solid white;
     text-decoration:none;
 }
+#coverBackground {
+    width: 250px;
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    margin: 20px auto;
+}
 #clock {
     font-size: 30px;
     color: lightgrey;
