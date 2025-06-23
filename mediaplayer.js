@@ -134,10 +134,22 @@ function updateMediaSession(title, artworkURL) {
         });
     }
 }
-playPauseBtn.addEventListener('click', () =>
-    audio.paused ? (audio.play(),  playPauseBtn.textContent = '||')
-                 : (audio.pause(), playPauseBtn.textContent = '▶')
-);
+playPauseBtn.addEventListener('click', async () => {
+    if (audio.paused) {
+        await audio.play();
+        playPauseBtn.textContent = '||';
+        
+        const file = playlist[currentTrack];
+        const cleanName = file.name.replace(/\.mp3$/i, '');
+        const artworkURL = document.getElementById('albumArt').src;
+
+        updateMediaSession(cleanName, artworkURL);
+    } else {
+        audio.pause();
+        playPauseBtn.textContent = '▶';
+    }
+});
+
 forwardBtn.addEventListener('click', nextTrack);
 backBtn.addEventListener('click', () => {
     if (audio.currentTime < 10 && currentTrack > 0) currentTrack--;
