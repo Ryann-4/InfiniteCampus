@@ -10,12 +10,10 @@ console.log('%cWelcome To The Console If You Do Not Know What You Are Doing, Clo
                 background-color: #121212;
             `);
  document.addEventListener('DOMContentLoaded', function () {
-    // Load and apply saved title
     const savedTitle = localStorage.getItem('pageTitle');
     if (savedTitle) {
       document.title = savedTitle;
     }
-    // Load and apply saved favicon
     const savedFavicon = localStorage.getItem('customFavicon');
     if (savedFavicon) {
       const favicon = document.getElementById('dynamic-favicon');
