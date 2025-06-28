@@ -452,7 +452,6 @@ location {
     color: lightgrey;
     transition: all 0.4s ease;
     font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
-
     }
     .settings-button {
       position: fixed;
@@ -470,8 +469,6 @@ location {
       transition: transform 0.3s ease;
       z-index: 1000;
     }
-
-    /* Image inside button */
     .settings-button img {
       width: 40px;
       height: 40px;
@@ -483,15 +480,13 @@ location {
     .settings-button.actives {
         display:none;
     }
-
-    /* Popup Panel */
     .popup2 {
       position: fixed;
       top: 10%;
       bottom: 5%;
       right: -550px;
       width: 500px;
-      background: black;
+      background-image: url('https://codehs.com/uploads/49f2a1d22b632c160df34b873a594071');
       border-radius: 10px 0 0 10px;
       box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
       transition: right 0.3s ease;
@@ -501,11 +496,9 @@ location {
       padding:10px;
       border:1px solid white;
     }
-
     .popup2.shows {
       right: -5px;
     }
-
     .popup2 .bar {
       width: 100%;
       height: 10px;
