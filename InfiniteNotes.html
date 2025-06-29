@@ -1,23 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Persistent Notes App</title>
+  <title>Infinite Campus</title>
+  <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+  <link rel="stylesheet" href="global.min.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-7SV03ZXJ9R');
+  </script>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
-    textarea { width: 100%; height: 100px; padding: 10px; }
-    button { padding: 10px 20px; margin-top: 10px; }
-    .note { background: #f0f0f0; margin: 10px 0; padding: 10px; border-radius: 5px; position: relative; }
-    .delete-btn { position: absolute; top: 10px; right: 10px; background: crimson; color: white; border: none; padding: 5px; cursor: pointer; }
+    input[type="text"].button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    .notes {
+      background-color: black;
+      color: white;
+      font-size: 70%;
+      border: 1px solid white;
+      border-radius: 5px;
+      padding: 10px;
+    }
+
+    .note {
+      background-color: black;
+      color: white;
+      font-size: 70%;
+      border: 1px solid white;
+      border-radius: 5px;
+      margin: 10px 0;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      position: relative;
+    }
+
+    .note .txt {
+      flex: 1;
+      font-size: large;
+      margin-right: 10px;
+    }
+
+    .delete-btn {
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 3px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: white;
+      color: red;
+      border: 1px solid red;
+    }
   </style>
 </head>
 <body>
+  <center>
+    <h2 class="txt">Soon To Be Added Stuff</h2>
+    <input id="noteInput" type="text" placeholder="Type a note and press Enter" class="button">
+    <button class="button" id="saveBtn">Save Note</button>
 
-  <h2>My Persistent Notes</h2>
-  <textarea id="noteInput" placeholder="Write your note here..."></textarea><br>
-  <button id="saveBtn">Save Note</button>
-
-  <div id="notesContainer"></div>
+    <div class="notes" id="notesContainer"></div>
+  </center>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
@@ -29,13 +84,12 @@
       authDomain: "notes-27f22.firebaseapp.com",
       databaseURL: "https://notes-27f22-default-rtdb.firebaseio.com",
       projectId: "notes-27f22",
-      storageBucket: "notes-27f22.firebasestorage.app",
+      storageBucket: "notes-27f22.appspot.com",
       messagingSenderId: "424229778181",
       appId: "1:424229778181:web:fa531219ed165346fa7d6c",
       measurementId: "G-834FYV6VTR"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const db = getDatabase(app);
@@ -44,11 +98,20 @@
     const saveBtn = document.getElementById('saveBtn');
     const notesContainer = document.getElementById('notesContainer');
 
-    saveBtn.addEventListener('click', async () => {
+    function saveNote() {
       const text = noteInput.value.trim();
       if (text) {
-        await push(ref(db, 'notes'), { text });
+        push(ref(db, 'notes'), { text });
         noteInput.value = '';
+      }
+    }
+
+    saveBtn.addEventListener('click', saveNote);
+
+    noteInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        saveNote();
       }
     });
 
@@ -57,16 +120,16 @@
       snapshot.forEach((child) => {
         const note = child.val();
         const key = child.key;
+
         const div = document.createElement('div');
         div.className = 'note';
         div.innerHTML = `
-          ${note.text}
+          <div class="txt">${note.text}</div>
           <button class="delete-btn" data-key="${key}">Delete</button>
         `;
         notesContainer.appendChild(div);
       });
 
-      // Attach delete event handlers
       document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', () => {
           const key = button.getAttribute('data-key');
@@ -75,6 +138,5 @@
       });
     });
   </script>
-
 </body>
 </html>

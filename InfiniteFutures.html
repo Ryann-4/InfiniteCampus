@@ -215,7 +215,7 @@
         const div = document.createElement('div');
         div.className = 'note';
         div.innerHTML = `
-          <div class="txt" style="font-size:large">${note.text}</div>
+          <div class="txt" style="font-size:large; margin:10px">${note.text}</div>
           <button class="delete-btn" data-key="${key}">Delete</button>
         `;
         notesContainer.appendChild(div);
