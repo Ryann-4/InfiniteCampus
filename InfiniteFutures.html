@@ -27,7 +27,13 @@
       margin-bottom: 10px;
       box-sizing: border-box;
     }
-
+.notes {
+    background-color:black;
+    color:white;
+    font-size:70%;
+    border: 1px solid white;
+    border-radius:5px;
+}
     .note.button {
       background: #f0f0f0;
       margin: 10px 0;
@@ -149,12 +155,16 @@
                 </a>
             </strong>
         </header>
+        <br>
+        <br>
+        <br>
+        <br>
 <center>
-  <h2>My Persistent Notes</h2>
+  <h2 class="txt">Soon To Be Added Stuff</h2>
   <input id="noteInput" type="text" placeholder="Type a note and press Enter" class="button">
-  <button id="saveBtn">Save Note</button>
+  <button class="button" id="saveBtn">Save Note</button>
 
-  <div id="notesContainer"></div>
+  <div class="notes" id="notesContainer"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
