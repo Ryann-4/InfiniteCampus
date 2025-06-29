@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Persistent Notes App</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
+    textarea { width: 100%; height: 100px; padding: 10px; }
+    button { padding: 10px 20px; margin-top: 10px; }
+    .note { background: #f0f0f0; margin: 10px 0; padding: 10px; border-radius: 5px; position: relative; }
+    .delete-btn { position: absolute; top: 10px; right: 10px; background: crimson; color: white; border: none; padding: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <h2>My Persistent Notes</h2>
+  <textarea id="noteInput" placeholder="Write your note here..."></textarea><br>
+  <button id="saveBtn">Save Note</button>
+
+  <div id="notesContainer"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvbTQcsL1DoipWlO0ckApzkwCZgxBYbzY",
+      authDomain: "notes-27f22.firebaseapp.com",
+      databaseURL: "https://notes-27f22-default-rtdb.firebaseio.com",
+      projectId: "notes-27f22",
+      storageBucket: "notes-27f22.firebasestorage.app",
+      messagingSenderId: "424229778181",
+      appId: "1:424229778181:web:fa531219ed165346fa7d6c",
+      measurementId: "G-834FYV6VTR"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
+    const noteInput = document.getElementById('noteInput');
+    const saveBtn = document.getElementById('saveBtn');
+    const notesContainer = document.getElementById('notesContainer');
+
+    saveBtn.addEventListener('click', async () => {
+      const text = noteInput.value.trim();
+      if (text) {
+        await push(ref(db, 'notes'), { text });
+        noteInput.value = '';
+      }
+    });
+
+    onValue(ref(db, 'notes'), (snapshot) => {
+      notesContainer.innerHTML = '';
+      snapshot.forEach((child) => {
+        const note = child.val();
+        const key = child.key;
+        const div = document.createElement('div');
+        div.className = 'note';
+        div.innerHTML = `
+          ${note.text}
+          <button class="delete-btn" data-key="${key}">Delete</button>
+        `;
+        notesContainer.appendChild(div);
+      });
+
+      // Attach delete event handlers
+      document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const key = button.getAttribute('data-key');
+          remove(ref(db, 'notes/' + key));
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
