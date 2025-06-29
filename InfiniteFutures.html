@@ -1,47 +1,157 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Persistent Notes App</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      max-width: 600px;
-      margin: 40px auto;
-    }
-    input[type="text"] {
+<html>
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.min.css">
+        <script src="main.js">
+        </script>
+        <script src="title.js">
+        </script>
+        <script src="global.js">
+        </script>
+        <style>
+    input[type="text"].button {
       width: 100%;
       padding: 10px;
-      font-size: 16px;
       margin-bottom: 10px;
+      box-sizing: border-box;
     }
-    button {
-      padding: 10px 20px;
-      margin-top: 5px;
-    }
-    .note {
+
+    .note.button {
       background: #f0f0f0;
       margin: 10px 0;
-      padding: 10px;
+      padding: 10px 50px 10px 10px; /* space for delete button */
       border-radius: 5px;
+      display: flex;
+      align-items: center;
       position: relative;
+      word-wrap: break-word;
+      white-space: pre-wrap;
     }
+
+    .note-text {
+      flex: 1;
+    }
+
     .delete-btn {
       position: absolute;
-      top: 10px;
       right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
       background: crimson;
       color: white;
       border: none;
-      padding: 5px;
-      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 3px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: white;
+      color: red;
+      border: 1px solid red;
     }
   </style>
-</head>
-<body>
+    </head>
+    <body>
+        <div class="popup2" id="popup">
+            <div class="bar">
+                <div style="text-align:center; font-size:25px; margin-top:-10px;"id="clocks">
+                    --:--:-- --
+                </div>
+            </div>
+            <div class="text">
+                <p class="txt">
+                    Settings        
+                </p>
+                <br>
+                <a class="button" href="InfiniteTitles">
+                    Tab Cloaking
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button" href="InfiniteColors">
+                    Change Header/Footer Color
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button" href="InfinitePolls">
+                    Take A Quick Survey
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button" href="InfiniteBypassers">
+                    Open In About:Blank
+                </a>
+            </div>
+            <div class="bar">
+                <center>
+                    <a class="headerbtn" href="https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&su=Infinite%20Campus%20Notification&to=infinitecodehs@gmail.com" style="margin-top:-15px; margin-left:-50px;font-size:15px">
+                        Contact Me
+                    </a>
+                </center>
+            </div>
+        </div>
+        <div class="settings-button" id="trigger">
+            <img src="https://codehs.com/uploads/fdacfa996601fc09d8da4d63fd2ca986" alt="Icon">
+        </div>
+        <script src="popup.js">
+        </script>
+        <script src="clock.js">
+        </script>      <!-- Header -->
+        <header id="site-header">
+            <strong>
+                <iframe class="weather"src="InfiniteForecasts">
+                </iframe>
+                <a href="InfiniteCampers">
+                    <img class="logo" src="https://codehs.com/uploads/d3ca105004013f2dc047f4bc0f669f6a" alt="Campus" style="left:335" >
+                </a>
+                <a class="headerbtn" style="right:710; top:14" href="InfiniteAbouts">
+                    About
+                </a>
+                <a class="headerbtn" style="right:650; top:14" href="InfiniteApps">
+                    Apps
+                </a>
+                <a class="headerbtn" style="right:590; top:14" href="InfiniteTalkers" >
+                    Chat
+                </a>
+                <a class="headerbtn" style="right:470; top:14" href="InfiniteSupport" >
+                    Help/Support
+                </a>
+                <a class="headerbtn" style="right:400; top:14" href="InfiniteGamers" >
+                    Games
+                </a>
+                <a class="headerbtn" style="right:330; top:14" href="InfiniteCheaters" >
+                    Cheats
+                </a>
+                <a class="headerbtn" style="right:250; top:14" href="InfiniteUpdaters" >
+                    Updates
+                </a>
+                <a class="headerbtn" style="right:120; top:14" href="InfiniteFiles" >
+                    Download Games
+                </a>
+                <a class="contactme" style="right:0; top:10; margin-right:10px" href="https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&su=Infinite%20Campus%20Notification&to=infinitecodehs@gmail.com" >
+                    Contact Me
+                </a>
+            </strong>
+        </header>
 
   <h2>My Persistent Notes</h2>
-  <input id="noteInput" type="text" placeholder="Type a note and press Enter">
+  <input id="noteInput" type="text" placeholder="Type a note and press Enter" class="button">
   <button id="saveBtn">Save Note</button>
 
   <div id="notesContainer"></div>
@@ -80,7 +190,6 @@
 
     saveBtn.addEventListener('click', saveNote);
 
-    // Pressing Enter in the input field saves the note
     noteInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -93,16 +202,16 @@
       snapshot.forEach((child) => {
         const note = child.val();
         const key = child.key;
+
         const div = document.createElement('div');
-        div.className = 'note';
+        div.className = 'note button';
         div.innerHTML = `
-          ${note.text}
+          <div class="note-text">${note.text}</div>
           <button class="delete-btn" data-key="${key}">Delete</button>
         `;
         notesContainer.appendChild(div);
       });
 
-      // Handle delete buttons
       document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', () => {
           const key = button.getAttribute('data-key');
