@@ -514,6 +514,45 @@ location {
       color: white;
       flex-grow: 1;
     }
+    .notes {
+      background-color: black;
+      color: white;
+      font-size: 70%;
+      border: 1px solid white;
+      border-radius: 5px;
+      padding: 10px;
+    }
+    .note {
+      background-color: black;
+      color: white;
+      font-size: 70%;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      position: relative;
+    }
+    .note .txt {
+      flex: 1;
+      font-size: large;
+      margin-right: 10px;
+    }
+    .delete-btn {
+        display:none;
+      background: crimson;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 3px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .delete-btn:hover {
+      background: white;
+      color: red;
+      border: 1px solid red;
+    }
 /*end other*/
 /* end Global */
 /*# sourceMappingURL=global.min.css.map */
