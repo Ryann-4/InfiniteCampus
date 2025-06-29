@@ -20,54 +20,6 @@
         </script>
         <script src="global.js">
         </script>
-        <style>
-    input[type="text"].button {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      box-sizing: border-box;
-    }
-.notes {
-    background-color:black;
-    color:white;
-    font-size:70%;
-    border: 1px solid white;
-    border-radius:5px;
-}
-    .note.button {
-      margin: 10px 0;
-      padding: 10px 50px 10px 10px; /* space for delete button */
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-      position: relative;
-      word-wrap: break-word;
-      white-space: pre-wrap;
-    }
-
-    .note-text {
-      flex: 1;
-    }
-
-    .delete-btn {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: crimson;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 3px;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .delete-btn:hover {
-      background: white;
-      color: red;
-      border: 1px solid red;
-    }
-  </style>
     </head>
     <body>
         <div class="popup2" id="popup">
@@ -158,77 +110,25 @@
         <br>
         <br>
         <br>
-<center>
-  <h2 class="txt">Soon To Be Added Stuff</h2>
-  <input id="noteInput" type="text" placeholder="Type a note and press Enter" class="button">
-  <button class="button" id="saveBtn">Save Note</button>
-
-  <div class="notes" id="notesContainer"></div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBvbTQcsL1DoipWlO0ckApzkwCZgxBYbzY",
-      authDomain: "notes-27f22.firebaseapp.com",
-      databaseURL: "https://notes-27f22-default-rtdb.firebaseio.com",
-      projectId: "notes-27f22",
-      storageBucket: "notes-27f22.firebasestorage.app",
-      messagingSenderId: "424229778181",
-      appId: "1:424229778181:web:fa531219ed165346fa7d6c",
-      measurementId: "G-834FYV6VTR"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const db = getDatabase(app);
-
-    const noteInput = document.getElementById('noteInput');
-    const saveBtn = document.getElementById('saveBtn');
-    const notesContainer = document.getElementById('notesContainer');
-
-    function saveNote() {
-      const text = noteInput.value.trim();
-      if (text) {
-        push(ref(db, 'notes'), { text });
-        noteInput.value = '';
-      }
-    }
-
-    saveBtn.addEventListener('click', saveNote);
-
-    noteInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        saveNote();
-      }
-    });
-
-    onValue(ref(db, 'notes'), (snapshot) => {
-      notesContainer.innerHTML = '';
-      snapshot.forEach((child) => {
-        const note = child.val();
-        const key = child.key;
-
-        const div = document.createElement('div');
-        div.className = 'note';
-        div.innerHTML = `
-          <div class="txt" style="font-size:large; margin:10px">${note.text}</div>
-          <button class="delete-btn" data-key="${key}">Delete</button>
-        `;
-        notesContainer.appendChild(div);
-      });
-
-      document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', () => {
-          const key = button.getAttribute('data-key');
-          remove(ref(db, 'notes/' + key));
-        });
-      });
-    });
-  </script>
-</center>
-</body>
+        <center>
+            <h2 class="txt">
+                Soon To Be Added Stuff
+            </h2>
+            <br>
+            <div style="width:50vw;" class="notes" id="notesContainer">
+            </div>
+        </center>
+        <footer id="site-footer" style="bottom:-4; text-align:left">
+            <p>
+                Totally Made By Noah White And Not A Different Person.
+            </p>
+        </footer>
+        <footer id="text-only-footer" style="background-color:transparent; text-align:right; bottom:-4">
+            <p>
+                Pissing off your teachers since 2024
+            </p>
+        </footer>
+        <script type="module" src="notes.js">
+        </script>
+    </body>
 </html>
