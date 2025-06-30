@@ -531,7 +531,6 @@ location {
     justify-content: space-between;
     word-wrap: break-word;
     white-space: pre-wrap;
-    position: relative;
 }
 .note .txt {
     flex: 1;
