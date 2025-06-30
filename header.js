@@ -31,7 +31,7 @@ const headerHTML = `
                 <a class="headerbtn" style="right:120; top:14" href="InfiniteFiles" >
                     Download Games
                 </a>
-                <a class="contactme" style="right:0; top:10; margin-right:10px" href="https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&su=Infinite%20Campus%20Notification&to=infinitecodehs@gmail.com" >
+                <a class="contactme" style="right:0; top:10; margin-right:10px" href="InfiniteContacts" >
                     Contact Me
                 </a>
             </strong>
