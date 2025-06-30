@@ -1,7 +1,7 @@
 const button = document.getElementById('trigger');
     const popup = document.getElementById('popup');
     button.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent triggering outside click
+      e.stopPropagation();
       const isOpen = popup.classList.contains('shows');
       popup.classList.toggle('shows');
       button.classList.toggle('actives', !isOpen);

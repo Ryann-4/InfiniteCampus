@@ -149,7 +149,6 @@ playPauseBtn.addEventListener('click', async () => {
         playPauseBtn.textContent = '▶';
     }
 });
-
 forwardBtn.addEventListener('click', nextTrack);
 backBtn.addEventListener('click', () => {
     if (audio.currentTime < 10 && currentTrack > 0) currentTrack--;

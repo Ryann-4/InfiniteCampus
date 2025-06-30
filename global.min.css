@@ -556,6 +556,17 @@ location {
       color: red;
       border: 1px solid red;
     }
+    .ajt {
+      color: rgb(144, 144, 144)
+    }
+    .tptxt {
+      color:rgb(0, 224, 14);
+      font-size:200%;
+    }
+    .mtxt {
+      color:rgb(0, 160, 160);
+      font-style: italic;
+    }
 /*end other*/
 /* end Global */
 /*# sourceMappingURL=global.min.css.map */
