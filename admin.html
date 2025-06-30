@@ -3,13 +3,36 @@
 <head>
   <title>Admin Updates</title>
   <style>
-    body { font-family: Arial; background: #121212; color: white; }
-    .update-container { background: transparent; padding: 20px; max-width: 600px; margin: auto; }
-    .update-box { margin-bottom: 10px; padding: 15px; border-radius: 8px; color: black; }
-    .red { background-color: #ff9999; }
-    .yellow { background-color: #ffff99; }
-    input, button, textarea { margin: 5px 0; padding: 8px; border-radius: 4px; border: none; }
-    button { cursor: pointer; }
+    body {
+      font-family: Arial;
+      background: #121212;
+      color: white;
+    }
+    .update-container {
+      background: transparent;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    .update-box {
+      margin-bottom: 10px;
+      padding: 8px 0;
+    }
+    .red {
+      color: red;
+    }
+    .yellow {
+      color: yellow;
+    }
+    input, button, textarea {
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+    }
+    button {
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -45,16 +68,13 @@
         push(updatesRef, {
           content,
           timestamp: Date.now()
-        }).then(() => console.log("Update added."))
-          .catch(err => console.error("Error adding:", err));
+        }).then(() => console.log("Update added."));
         document.getElementById('newUpdate').value = '';
       }
     }
 
     function deleteUpdate(key) {
-      remove(ref(db, 'updates/' + key)).then(() =>
-        console.log("Deleted update:", key)
-      );
+      remove(ref(db, 'updates/' + key));
     }
 
     function editUpdate(key, currentText) {
@@ -63,16 +83,14 @@
         update(ref(db, 'updates/' + key), {
           content: newText.trim(),
           timestamp: Date.now()
-        }).then(() => console.log("Updated:", key));
+        });
       }
     }
 
-    // Make functions globally accessible
     window.addUpdate = addUpdate;
     window.deleteUpdate = deleteUpdate;
     window.editUpdate = editUpdate;
 
-    // Load updates
     onValue(updatesRef, (snapshot) => {
       const updates = [];
       snapshot.forEach(child => {
@@ -81,7 +99,6 @@
 
       updates.sort((a, b) => b.timestamp - a.timestamp);
 
-      // Keep only 10 most recent
       if (updates.length > 10) {
         updates.slice(10).forEach(u => deleteUpdate(u.key));
       }
@@ -91,16 +108,11 @@
       updates.slice(0, 10).forEach((update, index) => {
         const div = document.createElement('div');
         div.className = `update-box ${index % 2 === 0 ? 'red' : 'yellow'}`;
-        div.innerHTML = `
-          <strong>Update #${index + 1}</strong><br>
-          ${update.content}<br>
+        div.innerHTML = `${index + 1}. ${update.content}<br>
           <button onclick="editUpdate('${update.key}', \`${update.content.replace(/`/g, '\\`')}\`)">Edit</button>
-          <button onclick="deleteUpdate('${update.key}')">Delete</button>
-        `;
+          <button onclick="deleteUpdate('${update.key}')">Delete</button>`;
         container.appendChild(div);
       });
-    }, error => {
-      console.error("onValue error:", error);
     });
   </script>
 </body>

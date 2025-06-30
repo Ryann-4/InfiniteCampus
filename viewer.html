@@ -3,11 +3,27 @@
 <head>
   <title>View Updates</title>
   <style>
-    body { font-family: Arial; background: #121212; color: white; }
-    .update-container { background: transparent; padding: 20px; max-width: 600px; margin: auto; }
-    .update-box { margin-bottom: 10px; padding: 15px; border-radius: 8px; color: black; }
-    .red { background-color: #ff9999; }
-    .yellow { background-color: #ffff99; }
+    body {
+      font-family: Arial;
+      background: #121212;
+      color: white;
+    }
+    .update-container {
+      background: transparent;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    .update-box {
+      margin-bottom: 10px;
+      padding: 8px 0;
+    }
+    .red {
+      color: red;
+    }
+    .yellow {
+      color: yellow;
+    }
   </style>
 </head>
 <body>
@@ -40,12 +56,13 @@
       });
 
       updates.sort((a, b) => b.timestamp - a.timestamp);
+
       const container = document.getElementById('updates');
       container.innerHTML = '';
       updates.slice(0, 10).forEach((update, index) => {
         const div = document.createElement('div');
         div.className = `update-box ${index % 2 === 0 ? 'red' : 'yellow'}`;
-        div.innerHTML = `<strong>Update #${index + 1}</strong><br>${update.content}`;
+        div.innerHTML = `${index + 1}. ${update.content}`;
         container.appendChild(div);
       });
     });
