@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin - Updates</title>
+  <title>Admin Updates</title>
   <style>
     body { font-family: Arial; background: #121212; color: white; }
     .update-container { background: transparent; padding: 20px; max-width: 600px; margin: auto; }
@@ -20,10 +20,9 @@
     <div id="updates"></div>
   </div>
 
-  <!-- Firebase Setup & Functionality -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getDatabase, ref, onValue, push, set, remove, update } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+    import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCQ492BiasyGJyXPQcm-2TFAeWdZybScz0",
@@ -46,13 +45,16 @@
         push(updatesRef, {
           content,
           timestamp: Date.now()
-        });
+        }).then(() => console.log("Update added."))
+          .catch(err => console.error("Error adding:", err));
         document.getElementById('newUpdate').value = '';
       }
     }
 
     function deleteUpdate(key) {
-      remove(ref(db, 'updates/' + key));
+      remove(ref(db, 'updates/' + key)).then(() =>
+        console.log("Deleted update:", key)
+      );
     }
 
     function editUpdate(key, currentText) {
@@ -61,10 +63,16 @@
         update(ref(db, 'updates/' + key), {
           content: newText.trim(),
           timestamp: Date.now()
-        });
+        }).then(() => console.log("Updated:", key));
       }
     }
 
+    // Make functions globally accessible
+    window.addUpdate = addUpdate;
+    window.deleteUpdate = deleteUpdate;
+    window.editUpdate = editUpdate;
+
+    // Load updates
     onValue(updatesRef, (snapshot) => {
       const updates = [];
       snapshot.forEach(child => {
@@ -91,6 +99,8 @@
         `;
         container.appendChild(div);
       });
+    }, error => {
+      console.error("onValue error:", error);
     });
   </script>
 </body>
