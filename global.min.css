@@ -357,9 +357,6 @@ input, button {
 .playlist-item.dragging {
     opacity: 0.5;
 }
-.200 {
-    font-size:200%;
-}
 /* end text stuff */
 /*other*/
 audio {
@@ -565,6 +562,17 @@ location {
 .mtxt {
     color:rgb(0, 160, 160);
     font-style: italic;
+}
+.update-container {
+    background: transparent;
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+}
+.update-box {
+    padding: 8px 0;
+    font-weight:bold;
+    font-size:130%
 }
 /*end other*/
 /* end Global */
