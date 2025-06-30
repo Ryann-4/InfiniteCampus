@@ -32,7 +32,6 @@ window.addEventListener('DOMContentLoaded', () => {
     <script src="clock.js"></script>
     <center>
   `;
-
   const wrapper = document.createElement('div');
   wrapper.innerHTML = popupHTML;
   document.body.appendChild(wrapper);
