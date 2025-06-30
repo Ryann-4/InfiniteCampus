@@ -1,5 +1,5 @@
 window.addEventListener('DOMContentLoaded', () => {
-  // Inject the HTML
+  // Inject HTML
   const popupHTML = `
     <div class="popup2" id="popup">
       <div class="bar">
@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', () => {
   wrapper.innerHTML = popupHTML;
   document.body.appendChild(wrapper);
 
-  // Attach popup.js behavior
+  // Popup behavior
   const button = document.getElementById('trigger');
   const popup = document.getElementById('popup');
 
@@ -62,4 +62,25 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Clock behavior
+  function updateTime() {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+    const clock = document.getElementById('clock');
+    const clocks = document.getElementById('clocks');
+    if (clock) {
+      clock.textContent = `${displayHours}:${minutes}:${seconds} ${ampm}`;
+    }
+    if (clocks) {
+      clocks.textContent = `${displayHours}:${minutes} ${ampm}`;
+    }
+  }
+
+  updateTime(); // Initialize immediately
+  setInterval(updateTime, 1000);
 });
