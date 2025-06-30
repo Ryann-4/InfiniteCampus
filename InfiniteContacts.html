@@ -58,11 +58,21 @@
   
 </head>
 <body>
-  <h1>Send A Message To The Discord Server</h1>
-  <input type="text" id="name" placeholder="Name" />
-  <textarea id="message" placeholder="Message"></textarea>
+  <center>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h1 class="tptxt">
+      Contact Me
+    </h1>
+  </center>
+  <h1 style="margin-left:20px;" class="txt">Send A Message To The Discord Server</h1>
+  <input style="margin-left:20px;" type="text" id="name" placeholder="Name" />
   <br>
-  <button onclick="sendMessage()">Send</button>
+  <textarea style="margin-left:20px;" id="message" placeholder="Message"></textarea>
+  <br>
+  <button style="margin-left:40px;" onclick="sendMessage()">Send</button>
   <div class="status" id="status"></div>
 
   <script>
@@ -104,6 +114,10 @@
         console.error(error);
       }
     }
+  </script>
+  <script src="footer.js">
+  </script>
+  <script src="header.js">
   </script>
 </body>
 </html>
