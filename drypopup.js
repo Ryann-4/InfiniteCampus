@@ -1,4 +1,5 @@
 window.addEventListener('DOMContentLoaded', () => {
+  // Inject the HTML
   const popupHTML = `
     <div class="popup2" id="popup">
       <div class="bar">
@@ -28,11 +29,37 @@ window.addEventListener('DOMContentLoaded', () => {
     <div class="settings-button" id="trigger">
       <img src="https://codehs.com/uploads/fdacfa996601fc09d8da4d63fd2ca986" alt="Icon">
     </div>
-    <script src="popup.js"></script>
-    <script src="clock.js"></script>
     <center>
   `;
+
   const wrapper = document.createElement('div');
   wrapper.innerHTML = popupHTML;
   document.body.appendChild(wrapper);
+
+  // Attach popup.js behavior
+  const button = document.getElementById('trigger');
+  const popup = document.getElementById('popup');
+
+  if (button && popup) {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = popup.classList.contains('shows');
+      popup.classList.toggle('shows');
+      button.classList.toggle('actives', !isOpen);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!popup.contains(e.target) && !button.contains(e.target)) {
+        popup.classList.remove('shows');
+        button.classList.remove('actives');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        popup.classList.remove('shows');
+        button.classList.remove('actives');
+      }
+    });
+  }
 });
