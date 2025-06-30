@@ -3,11 +3,6 @@
 <head>
   <title>View Updates</title>
   <style>
-    body {
-      font-family: Arial;
-      background: #121212;
-      color: white;
-    }
     .update-container {
       background: transparent;
       padding: 20px;
@@ -15,7 +10,6 @@
       margin: auto;
     }
     .update-box {
-      margin-bottom: 10px;
       padding: 8px 0;
     }
     .red {
@@ -29,11 +23,9 @@
 <body>
   <h2 style="text-align:center;">Latest Updates</h2>
   <div class="update-container" id="updates"></div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
-
     const firebaseConfig = {
       apiKey: "AIzaSyCQ492BiasyGJyXPQcm-2TFAeWdZybScz0",
       authDomain: "website-updates-485ea.firebaseapp.com",
@@ -44,19 +36,15 @@
       appId: "1:184900273791:web:5a28c7ac05587b2f79a14a",
       measurementId: "G-VXNTBEKM3W"
     };
-
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const updatesRef = ref(db, 'updates');
-
     onValue(updatesRef, (snapshot) => {
       const updates = [];
       snapshot.forEach(child => {
         updates.push(child.val());
       });
-
       updates.sort((a, b) => b.timestamp - a.timestamp);
-
       const container = document.getElementById('updates');
       container.innerHTML = '';
       updates.slice(0, 10).forEach((update, index) => {
