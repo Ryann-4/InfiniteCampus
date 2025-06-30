@@ -21,43 +21,72 @@
         <script src="global.js">
         </script>
         <style>
-
-    textarea, input[type="text"] {
-      width: 300px;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: none;
-      border-radius: 5px;
-    }
-
-    textarea {
-      height: 100px;
-      resize: none;
-    }
-
-    button {
-      padding: 10px 20px;
-      border: none;
-      background-color: #7289da;
-      color: white;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #5b6eae;
-    }
-
-    .status {
-      margin-top: 15px;
-      font-size: 14px;
-    }
-  </style>
+          textarea, input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        textarea {
+          height: 100px;
+          resize: none;
+        }
+        .status {
+          margin-top: 15px;
+          font-size: 14px;
+        }
+        </style>
     </head>
-  
-</head>
-<body>
+  <body>
+    <div class="popup2" id="popup">
+      <div class="bar">
+        <div style="text-align:center; font-size:25px; margin-top:-10px;"id="clocks">
+          --:--:-- --
+        </div>
+      </div>
+      <div class="text">
+                <p class="txt">
+                    Settings        
+                </p>
+                <br>
+                <a class="button" href="InfiniteTitles">
+                    Tab Cloaking
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button" href="InfiniteColors">
+                    Change Header/Footer Color
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button" href="InfinitePolls">
+                    Take A Quick Survey
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button" href="InfiniteBypassers">
+                    Open In About:Blank
+                </a>
+            </div>
+            <div class="bar">
+                <center>
+                    <a class="headerbtn" href="InfiniteContacts" style="margin-top:-15px; margin-left:-50px;font-size:15px">
+                        Contact Me
+                    </a>
+                </center>
+            </div>
+        </div>
+        <div class="settings-button" id="trigger">
+            <img src="https://codehs.com/uploads/fdacfa996601fc09d8da4d63fd2ca986" alt="Icon">
+        </div>
+        <script src="popup.js">
+        </script>
+        <script src="clock.js">
+        </script>
   <center>
     <br>
     <br>
@@ -66,12 +95,12 @@
     <h1 class="tptxt">
       Contact Me
     </h1>
-  <h1 style="margin-left:20px;" class="txt">Send A Message To The Discord Server</h1>
-  <input style="margin-left:20px;" type="text" id="name" placeholder="Name" />
+  <h1 class="txt">Send A Message To The Discord Server</h1>
+  <input class="button" type="text" id="name" placeholder="Name" />
   <br>
-  <textarea style="margin-left:20px;" id="message" placeholder="Message"></textarea>
+  <textarea class="button" id="message" placeholder="Message"></textarea>
   <br>
-  <button style="margin-left:40px;" onclick="sendMessage()">Send</button>
+  <button class="button" onclick="sendMessage()">Send</button>
   <div class="status" id="status"></div>
   <a class="button" href="mailto:infinitecodehs@gmail.com?subject=Infinite%20Campus%Github%Site">
     Email Me
