@@ -47,14 +47,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebas
       if (updates.length > 10) {
         updates.slice(10).forEach(u => deleteUpdate(u.key));
       }
-      const container = document.getElementById('updates');
-      container.innerHTML = '';
       updates.slice(0, 10).forEach((update, index) => {
-        const div = document.createElement('div');
-        div.className = `update-box ${index % 2 === 0 ? 'r' : 'y'}`;
-        div.innerHTML = `${index + 1}. ${update.content}<br>
-          <button class="button" onclick="editUpdate('${update.key}', \`${update.content.replace(/`/g, '\\`')}\`)">Edit</button>
-          <button class="button" onclick="deleteUpdate('${update.key}')">Delete</button>`;
-        container.appendChild(div);
-      });
+  const div = document.createElement('div');
+  div.className = `update-box ${index % 2 === 0 ? 'r' : 'y'}`;
+  div.innerHTML = `
+    <button class="button" onclick="editUpdate('${update.key}', \`${update.content.replace(/`/g, '\\`')}\`)">Edit</button>
+    ${index + 1}. ${update.content}
+    <button class="button" onclick="deleteUpdate('${update.key}')">Delete</button>
+  `;
+  container.appendChild(div);
+});
     });
