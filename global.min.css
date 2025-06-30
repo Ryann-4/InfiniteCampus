@@ -572,7 +572,8 @@ location {
 .update-box {
     padding: 8px 0;
     font-weight:bold;
-    font-size:130%
+    font-size:130%;
+    margin-bottom:-13px;
 }
 /*end other*/
 /* end Global */

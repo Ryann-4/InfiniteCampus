@@ -1,40 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Admin Updates</title>
-  <style>
-    .update-container {
-      background: transparent;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-    .update-box {
-      margin-bottom: 10px;
-      padding: 8px 0;
-    }
-    .red {
-      color: red;
-    }
-    .yellow {
-      color: yellow;
-    }
-    
-    button {
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <h2 style="text-align:center;">Admin Panel</h2>
-  <div class="update-container">
-    <textarea id="newUpdate" rows="3" placeholder="Write your update here..."></textarea><br>
-    <button onclick="addUpdate()">Add Update</button>
-    <div id="updates"></div>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
     const firebaseConfig = {
@@ -68,7 +32,7 @@
     }
 
     function editUpdate(key, currentText) {
-      const newText = prompt("Edit your update:", currentText);
+      const newText = prompt("Edit update:", currentText);
       if (newText !== null && newText.trim() !== "") {
         update(ref(db, 'updates/' + key), {
           content: newText.trim(),
@@ -97,13 +61,10 @@
       container.innerHTML = '';
       updates.slice(0, 10).forEach((update, index) => {
         const div = document.createElement('div');
-        div.className = `update-box ${index % 2 === 0 ? 'red' : 'yellow'}`;
+        div.className = `update-box ${index % 2 === 0 ? 'r' : 'y'}`;
         div.innerHTML = `${index + 1}. ${update.content}<br>
-          <button onclick="editUpdate('${update.key}', \`${update.content.replace(/`/g, '\\`')}\`)">Edit</button>
-          <button onclick="deleteUpdate('${update.key}')">Delete</button>`;
+          <button class="button" onclick="editUpdate('${update.key}', \`${update.content.replace(/`/g, '\\`')}\`)">Edit</button>
+          <button class="button" onclick="deleteUpdate('${update.key}')">Delete</button>`;
         container.appendChild(div);
       });
     });
-  </script>
-</body>
-</html>

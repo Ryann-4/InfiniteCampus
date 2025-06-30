@@ -20,6 +20,20 @@
         </script>
         <script src="global.js">
         </script>
+        <style>
+            input, button, textarea {
+                margin: 5px 0;
+                padding: 8px;
+                border-radius: 4px;
+                border: none;
+    }
+    .update-box {
+    padding: 0px;
+    font-weight:bold;
+    font-size:130%;
+    margin-bottom:-13px;
+}
+        </style>
     </head>
     <body>
         <div class="popup2" id="popup">
@@ -76,13 +90,20 @@
             <br>
             <br>
             <h1 class="tptxt"> 
-                Infinite (Secret) Campus Updates 
+                Change Infinite Campus Updates 
             </h1>
-            <h1>
-                <p class="r">
-                    Fuck It Just Check Regular Updates
-                </p>
-            </h1>
+            <div class="update-container">
+                <textarea style="width:50vw;" id="newUpdate" rows="3" placeholder="Write your update here...">
+                </textarea>
+                <br>
+                <button class="button" onclick="addUpdate()">
+                    Add Update
+                </button>
+                <div id="updates">
+                </div>
+            </div>
+            <script type="module" src="adminupdates.js">
+            </script>
             <p class="ajt">
                 If you would like any other features on this website, do not hesitate to let me know
                 <br>
