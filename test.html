@@ -11,25 +11,37 @@
     .controls { margin-top: 5px; }
     input, textarea { width: 100%; padding: 8px; margin-top: 10px; }
     button { padding: 8px 12px; margin-top: 10px; }
+    .admin { color: goldenrod; font-weight: bold; }
+    #loginArea { margin-bottom: 20px; }
   </style>
 </head>
 <body>
   <div id="chat">
     <h2>Live Chat</h2>
+
+    <!-- Login Area -->
+    <div id="loginArea">
+      <input type="text" id="loginUser" placeholder="Admin Username">
+      <input type="password" id="loginPass" placeholder="Admin Password">
+      <button onclick="login()">Login</button>
+      <p id="loginStatus"></p>
+    </div>
+
+    <!-- Chat Input -->
     <input type="text" id="nameInput" placeholder="Your name (optional)">
     <textarea id="messageInput" placeholder="Your message"></textarea>
     <button onclick="sendMessage()">Send</button>
+
+    <!-- Messages -->
     <div id="messages"></div>
   </div>
 
   <!-- Firebase SDKs and App Logic -->
   <script type="module">
-    // Firebase imports from CDN
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
     import { getDatabase, ref, push, onChildAdded, onChildChanged, onChildRemoved, update, remove } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-    // ✅ Your Firebase config
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCW40bRS58QSP6A---j6wCFtd-g8Ta9luA",
       authDomain: "website-chat-617b3.firebaseapp.com",
@@ -37,22 +49,50 @@
       projectId: "website-chat-617b3",
       storageBucket: "website-chat-617b3.firebasestorage.app",
       messagingSenderId: "633874571535",
-      appId: "1:633874571535:web:089380d33aabaa9a4c5e7a",
-      measurementId: "G-S62RHN800Z"
+      appId: "1:633874571535:web:089380d33aabaa9a4c5e7a"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    getAnalytics(app);
     const db = getDatabase(app);
     const messagesRef = ref(db, "messages");
 
-    // Generate unique user ID for session
+    // Unique user ID
     const userId = "user_" + Math.random().toString(36).substr(2, 9);
+
+    // Admin state
+    let isAdmin = false;
+
+    // Admin credentials
+    const ADMIN_USERNAME = "Hacker41";
+    const ADMIN_PASSWORD = "Seprn1210!";
+
+    // Handle Login
+    window.login = function () {
+      const enteredUser = document.getElementById("loginUser").value;
+      const enteredPass = document.getElementById("loginPass").value;
+
+      if (enteredUser === ADMIN_USERNAME && enteredPass === ADMIN_PASSWORD) {
+        isAdmin = true;
+        document.getElementById("loginStatus").textContent = "Logged in as Hacker41 ⭐";
+        document.getElementById("loginStatus").classList.add("admin");
+        document.getElementById("nameInput").disabled = true;
+        document.getElementById("nameInput").value = "Hacker41 ⭐";
+      } else {
+        alert("Incorrect credentials.");
+      }
+    };
 
     // Send a message
     window.sendMessage = function () {
-      const name = document.getElementById("nameInput").value.trim() || "Anonymous";
+      let nameInput = document.getElementById("nameInput");
+      const name = (isAdmin ? "Hacker41 ⭐" : nameInput.value.trim() || "Anonymous");
+
+      // Block fake use of Hacker41 by non-admins
+      if (!isAdmin && nameInput.value.trim() === "Hacker41") {
+        alert("You cannot use the reserved name 'Hacker41'.");
+        return;
+      }
+
       const text = document.getElementById("messageInput").value.trim();
       if (!text) return;
 
@@ -67,7 +107,7 @@
       document.getElementById("messageInput").value = "";
     };
 
-    // Render chat message
+    // Render a message
     function renderMessage(key, data) {
       const container = document.createElement("div");
       container.className = "message";
@@ -75,7 +115,7 @@
 
       const meta = document.createElement("div");
       meta.className = "meta";
-      meta.textContent = `${data.name} @ ${new Date(data.timestamp).toLocaleTimeString()}`;
+      meta.innerHTML = `${data.name}`;
 
       const text = document.createElement("div");
       text.className = "text";
@@ -84,14 +124,15 @@
       container.appendChild(meta);
       container.appendChild(text);
 
-      if (data.userId === userId) {
+      // Admin or message owner can edit/delete
+      if (isAdmin || data.userId === userId) {
         const controls = document.createElement("div");
         controls.className = "controls";
 
         const editBtn = document.createElement("button");
         editBtn.textContent = "Edit";
         editBtn.onclick = () => {
-          const newText = prompt("Edit your message:", data.text);
+          const newText = prompt("Edit message:", data.text);
           if (newText !== null) {
             update(ref(db, `messages/${key}`), { text: newText });
           }
@@ -109,10 +150,10 @@
       return container;
     }
 
-    // Listen for messages
+    // Realtime listeners
     onChildAdded(messagesRef, (snapshot) => {
-      const el = renderMessage(snapshot.key, snapshot.val());
-      document.getElementById("messages").appendChild(el);
+      const msgEl = renderMessage(snapshot.key, snapshot.val());
+      document.getElementById("messages").appendChild(msgEl);
     });
 
     onChildChanged(messagesRef, (snapshot) => {
