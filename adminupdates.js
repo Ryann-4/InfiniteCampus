@@ -19,7 +19,7 @@ const updatesRef = ref(db, 'updates');
 const encryptedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwNzcwMDQ1OTUzNjUyNC9tMlBJRkwtdGdpd1dkX2ZyTWV4c1NXb001Z2ZNNE56TzFkeEYyQWRqQThvY18tckswbzFYRTBDWGlUS0VPcXFZaldabw==";
 const webhookURL = atob(encryptedWebhook);
 
-const sentToDiscord = new Set();
+let lastSentKey = null; // track last update key sent to Discord
 
 function sendToDiscord(message) {
   fetch(webhookURL, {
@@ -41,7 +41,7 @@ function addUpdate() {
 }
 function deleteUpdate(key) {
   remove(ref(db, 'updates/' + key));
-  sentToDiscord.delete(key);
+  if (lastSentKey === key) lastSentKey = null; // reset if deleted
 }
 function editUpdate(key, currentText) {
   const newText = prompt("Edit update:", currentText);
@@ -82,10 +82,14 @@ onValue(updatesRef, (snapshot) => {
       <button class="button" onclick="deleteUpdate('${update.key}')">Delete</button>
     `;
     container.appendChild(div);
-
-    if (!sentToDiscord.has(update.key)) {
-      sentToDiscord.add(update.key);
-      sendToDiscord(update.content); // No numbering in Discord message
-    }
   });
+
+  // Send only the first (most recent) update to Discord if not already sent
+  if (updates.length > 0) {
+    const firstUpdate = updates[0];
+    if (firstUpdate.key !== lastSentKey) {
+      lastSentKey = firstUpdate.key;
+      sendToDiscord(firstUpdate.content); // no numbering
+    }
+  }
 });
