@@ -1,11 +1,9 @@
-// 🔐 Silent decryption block
 let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
 (function () {
   const key = 5;
   const encryptedWebhook = "bXl5dXg/NDRpbnhodHdpM2h0cjRmdW40fGpnbXR0cHg0Njg9Pjs4NTY1Ojs6Pjc5OTw+OjQ2Pl16OHJQPk1qUHVLfV95alpxa2teTTdUS1JWOkc5XGtzXmd4bzdTaFBUVU5VdXA2clRYc11YMl5pSjpceVNfVnNJUA==";
   const encryptedUsername = "TWZocGp3OTY=";
   const encryptedPassword = "WGp1d3M2NzY1Jg==";
-
   function decrypt(base64Str, key) {
     try {
       const shifted = atob(base64Str);
@@ -16,13 +14,10 @@ let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
       return '';
     }
   }
-
   CHAT_WEBHOOK = decrypt(encryptedWebhook, key);
   CHAT_USERNAME = decrypt(encryptedUsername, key);
   CHAT_PASSWORD = decrypt(encryptedPassword, key);
 })();
-
-// Firebase setup and chat system
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import {
   getDatabase,
@@ -34,7 +29,6 @@ import {
   update,
   remove
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-
 const firebaseConfig = {
   apiKey: "Chat_Api_Key",
   authDomain: "website-chat-617b3.firebaseapp.com",
@@ -44,18 +38,14 @@ const firebaseConfig = {
   messagingSenderId: "633874571535",
   appId: "1:633874571535:web:089380d33aabaa9a4c5e7a"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const messagesRef = ref(db, "messages");
 const userId = "user_" + Math.random().toString(36).substr(2, 9);
 let isAdmin = false;
-
 const ADMIN_USERNAME = CHAT_USERNAME;
 const ADMIN_PASSWORD = CHAT_PASSWORD;
 const DISCORD_WEBHOOK = CHAT_WEBHOOK;
-
-// ✅ Check login persistence
 if (localStorage.getItem("hacker41_logged_in") === "true") {
   isAdmin = true;
   document.addEventListener("DOMContentLoaded", () => {
@@ -65,12 +55,9 @@ if (localStorage.getItem("hacker41_logged_in") === "true") {
     document.getElementById("nameInput").value = "Hacker41 ⭐";
   });
 }
-
-// ✅ Login function
 window.login = function () {
   const enteredUser = document.getElementById("loginUser").value;
   const enteredPass = document.getElementById("loginPass").value;
-
   if (enteredUser === ADMIN_USERNAME && enteredPass === ADMIN_PASSWORD) {
     localStorage.setItem("hacker41_logged_in", "true");
     location.reload(); // reload to apply admin changes
@@ -78,28 +65,21 @@ window.login = function () {
     alert("Incorrect credentials.");
   }
 };
-
-// ✅ Logout function (optional)
 window.logout = function () {
   localStorage.removeItem("hacker41_logged_in");
   location.reload();
 };
-
-// Send message
 window.sendMessage = function () {
   const nameInput = document.getElementById("nameInput");
   const textInput = document.getElementById("messageInput");
   const name = isAdmin ? "Hacker41 ⭐" : nameInput.value.trim() || "Anonymous";
   const rawName = nameInput.value.trim();
-
   if (!isAdmin && rawName === "Hacker41") {
     alert("You cannot use the reserved name 'Hacker41'.");
     return;
   }
-
   const text = textInput.value.trim();
   if (!text) return;
-
   const timestamp = new Date().toLocaleString();
   const message = {
     name,
@@ -107,9 +87,7 @@ window.sendMessage = function () {
     userId,
     timestamp: Date.now()
   };
-
   push(messagesRef, message);
-
   fetch(DISCORD_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -117,32 +95,24 @@ window.sendMessage = function () {
       content: `**${name}** @ \`${timestamp}\`\n${text}`
     })
   }).catch(console.error);
-
   if (!isAdmin) nameInput.value = "";
   textInput.value = "";
 };
-
-// Render message with edit/delete if admin
 function renderMessage(key, data) {
   const container = document.createElement("div");
   container.className = "message";
   container.id = key;
-
   const meta = document.createElement("div");
   meta.className = "meta";
   meta.textContent = `${data.name} @ ${new Date(data.timestamp).toLocaleTimeString()}`;
-
   const text = document.createElement("div");
   text.className = "text";
   text.textContent = data.text;
-
   container.appendChild(meta);
   container.appendChild(text);
-
   if (isAdmin || data.userId === userId) {
     const controls = document.createElement("div");
     controls.className = "controls";
-
     const editBtn = document.createElement("button");
     editBtn.textContent = "Edit";
     editBtn.className = "button";
@@ -152,46 +122,35 @@ function renderMessage(key, data) {
         update(ref(db, `messages/${key}`), { text: newText });
       }
     };
-
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Delete";
     deleteBtn.className = "button";
     deleteBtn.onclick = () => remove(ref(db, `messages/${key}`));
-
     controls.appendChild(editBtn);
     controls.appendChild(deleteBtn);
     container.appendChild(controls);
   }
-
   return container;
 }
-
-// Firebase listeners
 onChildAdded(messagesRef, (snapshot) => {
   const msgEl = renderMessage(snapshot.key, snapshot.val());
   document.getElementById("messages").appendChild(msgEl);
 });
-
 onChildChanged(messagesRef, (snapshot) => {
   const updated = renderMessage(snapshot.key, snapshot.val());
   const old = document.getElementById(snapshot.key);
   if (old) old.replaceWith(updated);
 });
-
 onChildRemoved(messagesRef, (snapshot) => {
   const el = document.getElementById(snapshot.key);
   if (el) el.remove();
 });
-
-// Event listeners
 document.getElementById("loginUser").addEventListener("keydown", (e) => {
   if (e.key === "Enter") login();
 });
-
 document.getElementById("loginPass").addEventListener("keydown", (e) => {
   if (e.key === "Enter") login();
 });
-
 document.getElementById("messageInput").addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
