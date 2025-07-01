@@ -1,13 +1,2 @@
-stuff.js
-adminupdates.js
-chat.js
-discord.js
-games.js
-notes.js
-passwords.js
-updates.js
-InfiniteAdminUpdaters.html
-InfiniteArchives.html
-InfiniteNotes.html
-InfiniteSecretPages.html
-InfiniteSecrets.html
+.env
+node_modules/
