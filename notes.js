@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebas
     import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
     const firebaseConfig = {
-      apiKey: "AIzaSyBvbTQcsL1DoipWlO0ckApzkwCZgxBYbzY",
+      apiKey: "Google_Api_Key",
       authDomain: "notes-27f22.firebaseapp.com",
       databaseURL: "https://notes-27f22-default-rtdb.firebaseio.com",
       projectId: "notes-27f22",
