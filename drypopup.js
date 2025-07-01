@@ -1,8 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
-  // Inject HTML
   const popupHTML = `
     <div class="popup2" id="popup">
-      <div id="pupbar" class="bar">
+      <div class="bar">
         <div style="text-align:center; font-size:25px; margin-top:-10px;" id="clocks">
           --:--:-- --
         </div>
@@ -18,7 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
         <br><br><br>
         <a class="button" href="InfiniteBypassers">Open In About:Blank</a>
       </div>
-      <div id="pupbar" class="bar">
+      <div class="bar">
         <center>
           <a class="headerbtn" href="InfiniteContacts" style="margin-top:-15px; margin-left:-50px; font-size:15px;">
             Contact Me
@@ -31,15 +30,11 @@ window.addEventListener('DOMContentLoaded', () => {
     </div>
     <center>
   `;
-
   const wrapper = document.createElement('div');
   wrapper.innerHTML = popupHTML;
   document.body.appendChild(wrapper);
-
-  // Popup behavior
   const button = document.getElementById('trigger');
   const popup = document.getElementById('popup');
-
   if (button && popup) {
     button.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -47,14 +42,12 @@ window.addEventListener('DOMContentLoaded', () => {
       popup.classList.toggle('shows');
       button.classList.toggle('actives', !isOpen);
     });
-
     document.addEventListener('click', (e) => {
       if (!popup.contains(e.target) && !button.contains(e.target)) {
         popup.classList.remove('shows');
         button.classList.remove('actives');
       }
     });
-
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         popup.classList.remove('shows');
@@ -62,8 +55,6 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-
-  // Clock behavior
   function updateTime() {
     const now = new Date();
     let hours = now.getHours();
@@ -80,7 +71,6 @@ window.addEventListener('DOMContentLoaded', () => {
       clocks.textContent = `${displayHours}:${minutes} ${ampm}`;
     }
   }
-
-  updateTime(); // Initialize immediately
+  updateTime();
   setInterval(updateTime, 1000);
 });

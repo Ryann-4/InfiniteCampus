@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Firebase Chat</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+    .chat-box { max-width: 600px; margin: auto; }
+    .message { background: white; padding: 10px; margin: 10px 0; border-radius: 8px; position: relative; }
+    .owner-label { font-weight: bold; color: red; }
+    .name { font-weight: bold; }
+    .timestamp { font-size: 0.8em; color: gray; float: right; }
+    .message-text { margin-top: 5px; white-space: pre-wrap; }
+    .dot-menu { position: absolute; top: 5px; right: 5px; cursor: pointer; font-size: 18px; }
+    .controls { display: none; position: absolute; right: 5px; top: 25px; background: #eee; border: 1px solid #ccc; border-radius: 4px; }
+    .controls button { display: block; background: none; border: none; padding: 5px 10px; cursor: pointer; width: 100%; }
+    textarea { width: 100%; height: 60px; }
+  </style>
+</head>
+<body>
+
+<div class="chat-box">
+  <div id="loginBox">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email"><br>
+    <input type="password" id="loginPassword" placeholder="Password"><br>
+    <button onclick="login()">Login</button>
+    <p id="loginStatus"></p>
+  </div>
+
+  <div id="chatUI" style="display:none;">
+    <div>
+      <input type="text" id="displayName" placeholder="Enter your name (not 'Owner')">
+    </div>
+    <div>
+      <textarea id="messageInput" placeholder="Type your message..."></textarea>
+      <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="messages"></div>
+  </div>
+</div>
+
+<!-- Firebase Setup -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCitR98C18_OtjET6-wbDTytmaYXz01LiY",
+    authDomain: "website-chat-19f3b.firebaseapp.com",
+    projectId: "website-chat-19f3b",
+    storageBucket: "website-chat-19f3b.firebasestorage.app",
+    messagingSenderId: "165247699970",
+    appId: "1:165247699970:web:ae6c99a756e6fb02432b1b",
+    measurementId: "G-BFX8X3BGVZ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const loginBox = document.getElementById('loginBox');
+  const chatUI = document.getElementById('chatUI');
+  const messagesDiv = document.getElementById('messages');
+  const messageInput = document.getElementById('messageInput');
+  const displayNameInput = document.getElementById('displayName');
+
+  let currentUser = null;
+
+  function login() {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        document.getElementById('loginStatus').textContent = '';
+      })
+      .catch((error) => {
+        document.getElementById('loginStatus').textContent = 'Login failed: ' + error.message;
+      });
+  }
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      currentUser = user;
+      loginBox.style.display = 'none';
+      chatUI.style.display = 'block';
+      listenForMessages();
+    } else {
+      loginBox.style.display = 'block';
+      chatUI.style.display = 'none';
+    }
+  });
+
+  async function sendMessage() {
+    const text = messageInput.value.trim();
+    const name = displayNameInput.value.trim();
+    if (!text || !name) return;
+
+    if (name.toLowerCase() === "owner") {
+      alert("You cannot use the name 'Owner'");
+      return;
+    }
+
+    await addDoc(collection(db, "messages"), {
+      uid: currentUser.uid,
+      name,
+      text,
+      timestamp: serverTimestamp(),
+      email: currentUser.email
+    });
+
+    messageInput.value = '';
+  }
+
+  function listenForMessages() {
+    const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+    onSnapshot(q, (snapshot) => {
+      messagesDiv.innerHTML = '';
+      snapshot.forEach(docSnap => {
+        const msg = docSnap.data();
+        const id = docSnap.id;
+        const date = msg.timestamp?.toDate().toLocaleString() || '';
+
+        const isOwner = msg.email === "infinitecodehs@gmail.com";
+        const isCurrentUser = msg.uid === currentUser.uid;
+        const canEdit = isOwner || isCurrentUser;
+
+        const div = document.createElement('div');
+        div.className = 'message';
+
+        const topBar = document.createElement('div');
+        topBar.innerHTML = `<span class="name">${msg.name}</span> <span class="timestamp">${date}</span>`;
+
+        const msgText = document.createElement('div');
+        msgText.className = 'message-text';
+        msgText.textContent = msg.text;
+
+        const menu = document.createElement('div');
+        menu.className = 'dot-menu';
+        menu.textContent = '⋮';
+        menu.onclick = () => {
+          controls.style.display = controls.style.display === 'block' ? 'none' : 'block';
+        };
+
+        const controls = document.createElement('div');
+        controls.className = 'controls';
+
+        if (canEdit) {
+          const editBtn = document.createElement('button');
+          editBtn.textContent = 'Edit';
+          editBtn.onclick = () => {
+            const newText = prompt("Edit message:", msg.text);
+            if (newText !== null) {
+              updateDoc(doc(db, "messages", id), { text: newText });
+            }
+          };
+          const delBtn = document.createElement('button');
+          delBtn.textContent = 'Delete';
+          delBtn.onclick = () => deleteDoc(doc(db, "messages", id));
+          controls.appendChild(editBtn);
+          controls.appendChild(delBtn);
+        }
+
+        if (isOwner) {
+          const label = document.createElement('div');
+          label.className = 'owner-label';
+          label.textContent = 'OWNER';
+          div.appendChild(label);
+        }
+
+        div.appendChild(menu);
+        div.appendChild(controls);
+        div.appendChild(topBar);
+        div.appendChild(msgText);
+        messagesDiv.appendChild(div);
+      });
+    });
+  }
+
+  messageInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+</script>
+
+</body>
+</html>
