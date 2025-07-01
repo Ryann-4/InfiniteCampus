@@ -80,15 +80,15 @@
                 <button class="button" onclick="sendMessage()">
                     Send
                 </button>
-                <div id="loginArea">
-                    <input class="button" type="text" id="loginUser" placeholder="Admin Username">
-                    <input class="button" type="password" id="loginPass" placeholder="Admin Password">
-                    <button class="button" onclick="login()">
+                <div id="loginContainer">
+                    <input id="loginUser" type="text" placeholder="Username" />
+                    <input id="loginPass" type="password" placeholder="Password" />
+                    <button onclick="login()">
                         Login
                     </button>
-                    <p id="loginStatus">
-                    </p>
                 </div>
+                <p id="loginStatus">
+                </p>
                 <div id="messages">
                 </div>
             </div>
