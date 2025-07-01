@@ -9,7 +9,7 @@ async function sendMessage() {
         return;
       }
       const fullMessage = `**${name}**\n${message}`;
-      const webhookURL = "Discord_Webhook_Url";
+      const webhookURL = "DISCORD_WEBHOOK_URL";
       try {
         const response = await fetch(webhookURL, {
           method: "POST",
