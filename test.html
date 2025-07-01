@@ -1,190 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Firebase Chat</title>
+  <title>Realtime Chat</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
-    .chat-box { max-width: 600px; margin: auto; }
-    .message { background: white; padding: 10px; margin: 10px 0; border-radius: 8px; position: relative; }
-    .owner-label { font-weight: bold; color: red; }
-    .name { font-weight: bold; }
-    .timestamp { font-size: 0.8em; color: gray; float: right; }
-    .message-text { margin-top: 5px; white-space: pre-wrap; }
-    .dot-menu { position: absolute; top: 5px; right: 5px; cursor: pointer; font-size: 18px; }
-    .controls { display: none; position: absolute; right: 5px; top: 25px; background: #eee; border: 1px solid #ccc; border-radius: 4px; }
-    .controls button { display: block; background: none; border: none; padding: 5px 10px; cursor: pointer; width: 100%; }
-    textarea { width: 100%; height: 60px; }
+    body { font-family: Arial; margin: 20px; }
+    #chat { max-width: 600px; margin: auto; }
+    .message { padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin: 10px 0; }
+    .meta { font-size: 12px; color: gray; }
+    .controls { margin-top: 5px; }
+    input, textarea { width: 100%; padding: 8px; margin-top: 10px; }
+    button { padding: 8px 12px; margin-top: 10px; }
   </style>
 </head>
 <body>
-
-<div class="chat-box">
-  <div id="loginBox">
-    <h2>Login</h2>
-    <input type="email" id="loginEmail" placeholder="Email"><br>
-    <input type="password" id="loginPassword" placeholder="Password"><br>
-    <button onclick="login()">Login</button>
-    <p id="loginStatus"></p>
-  </div>
-
-  <div id="chatUI" style="display:none;">
-    <div>
-      <input type="text" id="displayName" placeholder="Enter your name (not 'Owner')">
-    </div>
-    <div>
-      <textarea id="messageInput" placeholder="Type your message..."></textarea>
-      <button onclick="sendMessage()">Send</button>
-    </div>
+  <div id="chat">
+    <h2>Live Chat</h2>
+    <input type="text" id="nameInput" placeholder="Your name (optional)">
+    <textarea id="messageInput" placeholder="Your message"></textarea>
+    <button onclick="sendMessage()">Send</button>
     <div id="messages"></div>
   </div>
-</div>
 
-<!-- Firebase Setup -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+  <!-- Firebase SDKs (Modular v11) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded, onChildChanged, onChildRemoved, update, remove } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCitR98C18_OtjET6-wbDTytmaYXz01LiY",
-    authDomain: "website-chat-19f3b.firebaseapp.com",
-    projectId: "website-chat-19f3b",
-    storageBucket: "website-chat-19f3b.firebasestorage.app",
-    messagingSenderId: "165247699970",
-    appId: "1:165247699970:web:ae6c99a756e6fb02432b1b",
-    measurementId: "G-BFX8X3BGVZ"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCW40bRS58QSP6A---j6wCFtd-g8Ta9luA",
+      authDomain: "website-chat-617b3.firebaseapp.com",
+      databaseURL: "https://website-chat-617b3-default-rtdb.firebaseio.com",
+      projectId: "website-chat-617b3",
+      storageBucket: "website-chat-617b3.firebasestorage.app",
+      messagingSenderId: "633874571535",
+      appId: "1:633874571535:web:089380d33aabaa9a4c5e7a",
+      measurementId: "G-S62RHN800Z"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const messagesRef = ref(db, "messages");
 
-  const loginBox = document.getElementById('loginBox');
-  const chatUI = document.getElementById('chatUI');
-  const messagesDiv = document.getElementById('messages');
-  const messageInput = document.getElementById('messageInput');
-  const displayNameInput = document.getElementById('displayName');
+    const userId = "user_" + Math.random().toString(36).slice(2, 9);
 
-  let currentUser = null;
+    function sendMessage() {
+      const name = document.getElementById("nameInput").value.trim() || "Anonymous";
+      const text = document.getElementById("messageInput").value.trim();
+      if (!text) return;
 
-  function login() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        document.getElementById('loginStatus').textContent = '';
-      })
-      .catch((error) => {
-        document.getElementById('loginStatus').textContent = 'Login failed: ' + error.message;
-      });
-  }
+      const message = {
+        name,
+        text,
+        userId,
+        timestamp: Date.now()
+      };
 
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      currentUser = user;
-      loginBox.style.display = 'none';
-      chatUI.style.display = 'block';
-      listenForMessages();
-    } else {
-      loginBox.style.display = 'block';
-      chatUI.style.display = 'none';
-    }
-  });
-
-  async function sendMessage() {
-    const text = messageInput.value.trim();
-    const name = displayNameInput.value.trim();
-    if (!text || !name) return;
-
-    if (name.toLowerCase() === "owner") {
-      alert("You cannot use the name 'Owner'");
-      return;
+      push(messagesRef, message);
+      document.getElementById("messageInput").value = "";
     }
 
-    await addDoc(collection(db, "messages"), {
-      uid: currentUser.uid,
-      name,
-      text,
-      timestamp: serverTimestamp(),
-      email: currentUser.email
-    });
+    function renderMessage(key, data) {
+      const container = document.createElement("div");
+      container.className = "message";
+      container.id = key;
 
-    messageInput.value = '';
-  }
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = `${data.name} @ ${new Date(data.timestamp).toLocaleTimeString()}`;
 
-  function listenForMessages() {
-    const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
-    onSnapshot(q, (snapshot) => {
-      messagesDiv.innerHTML = '';
-      snapshot.forEach(docSnap => {
-        const msg = docSnap.data();
-        const id = docSnap.id;
-        const date = msg.timestamp?.toDate().toLocaleString() || '';
+      const text = document.createElement("div");
+      text.className = "text";
+      text.textContent = data.text;
 
-        const isOwner = msg.email === "infinitecodehs@gmail.com";
-        const isCurrentUser = msg.uid === currentUser.uid;
-        const canEdit = isOwner || isCurrentUser;
+      container.appendChild(meta);
+      container.appendChild(text);
 
-        const div = document.createElement('div');
-        div.className = 'message';
+      if (data.userId === userId) {
+        const controls = document.createElement("div");
+        controls.className = "controls";
 
-        const topBar = document.createElement('div');
-        topBar.innerHTML = `<span class="name">${msg.name}</span> <span class="timestamp">${date}</span>`;
-
-        const msgText = document.createElement('div');
-        msgText.className = 'message-text';
-        msgText.textContent = msg.text;
-
-        const menu = document.createElement('div');
-        menu.className = 'dot-menu';
-        menu.textContent = '⋮';
-        menu.onclick = () => {
-          controls.style.display = controls.style.display === 'block' ? 'none' : 'block';
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edit";
+        editBtn.onclick = () => {
+          const newText = prompt("Edit your message:", data.text);
+          if (newText !== null) {
+            update(ref(db, `messages/${key}`), { text: newText });
+          }
         };
 
-        const controls = document.createElement('div');
-        controls.className = 'controls';
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.onclick = () => {
+          remove(ref(db, `messages/${key}`));
+        };
 
-        if (canEdit) {
-          const editBtn = document.createElement('button');
-          editBtn.textContent = 'Edit';
-          editBtn.onclick = () => {
-            const newText = prompt("Edit message:", msg.text);
-            if (newText !== null) {
-              updateDoc(doc(db, "messages", id), { text: newText });
-            }
-          };
-          const delBtn = document.createElement('button');
-          delBtn.textContent = 'Delete';
-          delBtn.onclick = () => deleteDoc(doc(db, "messages", id));
-          controls.appendChild(editBtn);
-          controls.appendChild(delBtn);
-        }
+        controls.appendChild(editBtn);
+        controls.appendChild(deleteBtn);
+        container.appendChild(controls);
+      }
 
-        if (isOwner) {
-          const label = document.createElement('div');
-          label.className = 'owner-label';
-          label.textContent = 'OWNER';
-          div.appendChild(label);
-        }
-
-        div.appendChild(menu);
-        div.appendChild(controls);
-        div.appendChild(topBar);
-        div.appendChild(msgText);
-        messagesDiv.appendChild(div);
-      });
-    });
-  }
-
-  messageInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+      return container;
     }
-  });
-</script>
 
+    onChildAdded(messagesRef, (snapshot) => {
+      const msgElement = renderMessage(snapshot.key, snapshot.val());
+      document.getElementById("messages").appendChild(msgElement);
+    });
+
+    onChildChanged(messagesRef, (snapshot) => {
+      const updated = renderMessage(snapshot.key, snapshot.val());
+      const old = document.getElementById(snapshot.key);
+      if (old) old.replaceWith(updated);
+    });
+
+    onChildRemoved(messagesRef, (snapshot) => {
+      const el = document.getElementById(snapshot.key);
+      if (el) el.remove();
+    });
+  </script>
 </body>
 </html>
