@@ -1,182 +1,137 @@
-let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
-(function () {
-  const key = 5;
-  const encryptedWebhook = "bXl5dXg/NDRpbnhodHdpM2h0cjRmdW40fGpnbXR0cHg0Njg9Pjs4NTY1Ojs6Pjc5OTw+OjQ2Pl16OHJQPk1qUHVLfV95alpxa2teTTdUS1JWOkc5XGtzXmd4bzdTaFBUVU5VdXA2clRYc11YMl5pSjpceVNfVnNJUA==";
-  const encryptedUsername = "TWZocGp3OTY=";
-  const encryptedPassword = "WGp1d3M2NzY1Jg==";
-  function decrypt(base64Str, key) {
-    try {
-      const shifted = atob(base64Str);
-      return [...shifted].map(c =>
-        String.fromCharCode(c.charCodeAt(0) - key)
-      ).join('');
-    } catch {
-      return '';
-    }
-  }
-  CHAT_WEBHOOK = decrypt(encryptedWebhook, key);
-  CHAT_USERNAME = decrypt(encryptedUsername, key);
-  CHAT_PASSWORD = decrypt(encryptedPassword, key);
-})();
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import {
-  getDatabase,
-  ref,
-  push,
-  onChildAdded,
-  onChildChanged,
-  onChildRemoved,
-  update,
-  remove
-} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "Chat_Api_Key",
-  authDomain: "website-chat-617b3.firebaseapp.com",
-  databaseURL: "https://website-chat-617b3-default-rtdb.firebaseio.com",
-  projectId: "website-chat-617b3",
-  storageBucket: "website-chat-617b3.firebasestorage.app",
-  messagingSenderId: "633874571535",
-  appId: "1:633874571535:web:089380d33aabaa9a4c5e7a"
-};
+    const firebaseConfig = {
+      apiKey: "Google_Api_Key",
+      authDomain: "website-updates-485ea.firebaseapp.com",
+      databaseURL: "https://website-updates-485ea-default-rtdb.firebaseio.com",
+      projectId: "website-updates-485ea",
+      storageBucket: "website-updates-485ea.appspot.com",
+      messagingSenderId: "184900273791",
+      appId: "1:184900273791:web:5a28c7ac05587b2f79a14a",
+      measurementId: "G-VXNTBEKM3W"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const messagesRef = ref(db, "messages");
-const userId = "user_" + Math.random().toString(36).substr(2, 9);
-let isAdmin = false;
-const ADMIN_USERNAME = CHAT_USERNAME;
-const ADMIN_PASSWORD = CHAT_PASSWORD;
-const DISCORD_WEBHOOK = CHAT_WEBHOOK;
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const updatesRef = ref(db, 'updates');
 
-if (localStorage.getItem("hacker41_logged_in") === "true") {
-  isAdmin = true;
-}
+    const encryptedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwNzcwMDQ1OTUzNjUyNC9tMlBJRkwtdGdpd1dkX2ZyTWV4c1NXb001Z2ZNNE56TzFkeEYyQWRqQThvY18tckswbzFYRTBDWGlUS0VPcXFZaldabw==";
+    const webhookURL = atob(encryptedWebhook);
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (isAdmin) {
-    document.getElementById("loginStatus").textContent = "Logged in as Hacker41 ⭐";
-    document.getElementById("loginStatus").classList.add("admin");
-    document.getElementById("nameInput").disabled = true;
-    document.getElementById("nameInput").value = "Hacker41 ⭐";
-
-    const loginContainer = document.getElementById("loginContainer");
-    if (loginContainer) loginContainer.remove();
-
-    const logoutBtn = document.createElement("button");
-    logoutBtn.textContent = "Logout";
-    logoutBtn.className = "button";
-    logoutBtn.onclick = logout;
-
-    document.getElementById("loginStatus").after(logoutBtn);
-  }
-});
-
-window.login = function () {
-  const enteredUser = document.getElementById("loginUser").value;
-  const enteredPass = document.getElementById("loginPass").value;
-  if (enteredUser === ADMIN_USERNAME && enteredPass === ADMIN_PASSWORD) {
-    localStorage.setItem("hacker41_logged_in", "true");
-    location.reload();
-  } else {
-    alert("Incorrect credentials.");
-  }
-};
-
-window.logout = function () {
-  localStorage.removeItem("hacker41_logged_in");
-  location.reload();
-};
-
-window.sendMessage = function () {
-  const nameInput = document.getElementById("nameInput");
-  const textInput = document.getElementById("messageInput");
-  const name = isAdmin ? "Hacker41 ⭐" : nameInput.value.trim() || "Anonymous";
-  const rawName = nameInput.value.trim();
-  if (!isAdmin && rawName === "Hacker41") {
-    alert("You cannot use the reserved name 'Hacker41'.");
-    return;
-  }
-  const text = textInput.value.trim();
-  if (!text) return;
-  const timestamp = new Date().toLocaleString();
-  const message = {
-    name,
-    text,
-    userId,
-    timestamp: Date.now()
-  };
-  push(messagesRef, message);
-  fetch(DISCORD_WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      content: `**${name}** @ \`${timestamp}\`\n${text}`
-    })
-  }).catch(console.error);
-  if (!isAdmin) nameInput.value = "";
-  textInput.value = "";
-};
-
-function renderMessage(key, data) {
-  const container = document.createElement("div");
-  container.className = "message";
-  container.id = key;
-  const meta = document.createElement("div");
-  meta.className = "meta";
-  meta.textContent = `${data.name} @ ${new Date(data.timestamp).toLocaleTimeString()}`;
-  const text = document.createElement("div");
-  text.className = "text";
-  text.textContent = data.text;
-  container.appendChild(meta);
-  container.appendChild(text);
-  if (isAdmin || data.userId === userId) {
-    const controls = document.createElement("div");
-    controls.className = "controls";
-    const editBtn = document.createElement("button");
-    editBtn.textContent = "Edit";
-    editBtn.className = "button";
-    editBtn.onclick = () => {
-      const newText = prompt("Edit message:", data.text);
-      if (newText !== null) {
-        update(ref(db, `messages/${key}`), { text: newText });
+    const credentials = {
+      hacker41: {
+        username: atob("SGFja2VyNDE="),        
+        password: atob("U2Vwcm4xMjEwIQ==")     
+      },
+      nitrix: {
+        username: atob("Tml0cml4"),            
+        password: atob("RGFkZHlOaXRyaXg2OQ==") 
       }
     };
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "Delete";
-    deleteBtn.className = "button";
-    deleteBtn.onclick = () => remove(ref(db, `messages/${key}`));
-    controls.appendChild(editBtn);
-    controls.appendChild(deleteBtn);
-    container.appendChild(controls);
-  }
-  return container;
-}
 
-onChildAdded(messagesRef, (snapshot) => {
-  const msgEl = renderMessage(snapshot.key, snapshot.val());
-  document.getElementById("messages").appendChild(msgEl);
-});
-onChildChanged(messagesRef, (snapshot) => {
-  const updated = renderMessage(snapshot.key, snapshot.val());
-  const old = document.getElementById(snapshot.key);
-  if (old) old.replaceWith(updated);
-});
-onChildRemoved(messagesRef, (snapshot) => {
-  const el = document.getElementById(snapshot.key);
-  if (el) el.remove();
-});
+    let loggedInUser = localStorage.getItem("loggedInUser");
 
-document.getElementById("loginUser").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") login();
-});
-document.getElementById("loginPass").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") login();
-});
-document.getElementById("messageInput").addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-});
+    function login() {
+      const u = document.getElementById('username').value;
+      const p = document.getElementById('password').value;
+
+      if (u === credentials.hacker41.username && p === credentials.hacker41.password) {
+        localStorage.setItem("loggedInUser", "hacker41");
+        location.reload();
+      } else if (u === credentials.nitrix.username && p === credentials.nitrix.password) {
+        localStorage.setItem("loggedInUser", "nitrix");
+        location.reload();
+      } else {
+        alert("Invalid credentials");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      location.reload();
+    }
+
+    function sendToDiscord(message) {
+      fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: message })
+      }).catch(e => console.error("Discord webhook error:", e));
+    }
+
+    function addUpdate() {
+      const content = document.getElementById('newUpdate').value.trim();
+      if (content) {
+        push(updatesRef, {
+          content,
+          timestamp: Date.now(),
+          author: loggedInUser || "anonymous"
+        });
+        document.getElementById('newUpdate').value = '';
+      }
+    }
+
+    function deleteUpdate(key) {
+      remove(ref(db, 'updates/' + key));
+      if (lastSentKey === key) lastSentKey = null;
+    }
+
+    function editUpdate(key, currentText) {
+      const newText = prompt("Edit update:", currentText);
+      if (newText && newText.trim() !== "") {
+        update(ref(db, 'updates/' + key), {
+          content: newText.trim(),
+          timestamp: Date.now()
+        });
+      }
+    }
+
+    window.addUpdate = addUpdate;
+    window.deleteUpdate = deleteUpdate;
+    window.editUpdate = editUpdate;
+    window.login = login;
+
+    let lastSentKey = null;
+
+    onValue(updatesRef, (snapshot) => {
+      const updates = [];
+      snapshot.forEach(child => {
+        updates.push({ key: child.key, ...child.val() });
+      });
+      updates.sort((a, b) => b.timestamp - a.timestamp);
+      if (updates.length > 10) {
+        updates.slice(10).forEach(u => deleteUpdate(u.key));
+      }
+
+      const container = document.getElementById('updates');
+      container.innerHTML = '';
+      updates.slice(0, 10).forEach((update, index) => {
+        const canEdit =
+          loggedInUser === "hacker41" ||
+          (loggedInUser === "nitrix" && update.author !== "hacker41");
+
+        const div = document.createElement('div');
+        div.className = `update-box ${index % 2 === 0 ? 'r' : 'y'}`;
+        div.innerHTML = `
+          ${canEdit ? `<button class="button" onclick="editUpdate('${update.key}', \`${update.content.replace(/`/g, '\\`')}\`)">Edit</button>` : ''}
+          ${index + 1}. ${update.content}
+          ${canEdit ? `<button class="button" onclick="deleteUpdate('${update.key}')">Delete</button>` : ''}
+        `;
+        container.appendChild(div);
+      });
+
+      if (updates.length > 0 && updates[0].key !== lastSentKey) {
+        lastSentKey = updates[0].key;
+        sendToDiscord(updates[0].content);
+      }
+    });
+
+    // Show current login state
+    if (loggedInUser) {
+      const label = loggedInUser === "nitrix" ? "🔵Nitrix" : "💎Hacker41";
+      document.getElementById('auth').innerHTML = `<button onclick="logout()">Logout</button>`;
+      document.getElementById('loggedInAs').innerText = `Logged in as: ${label}`;
+      window.logout = logout;
+    }
