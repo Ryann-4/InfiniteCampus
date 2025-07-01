@@ -14,9 +14,9 @@
     const messagesRef = ref(db, "messages");
     const userId = "user_" + Math.random().toString(36).substr(2, 9);
     let isAdmin = false;
-    const ADMIN_USERNAME = "Chat_Username";
-    const ADMIN_PASSWORD = "Chat_Password";
-    const DISCORD_WEBHOOK = "Chat_Webhook";
+    const ADMIN_USERNAME = CHAT_USERNAME;
+    const ADMIN_PASSWORD = CHAT_PASSWORD;
+    const DISCORD_WEBHOOK = CHAT_WEBHOOK;
     window.login = function () {
       const enteredUser = document.getElementById("loginUser").value;
       const enteredPass = document.getElementById("loginPass").value;

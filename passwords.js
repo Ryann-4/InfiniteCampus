@@ -7,14 +7,7 @@ function checkCredentials() {
     var username = document.getElementById("username").value;
     var password = document.getElementById("password").value;
     var message = document.getElementById("message");
-    var validCredentials = {
-        "2030kallison@johnstonschools.org":"2030k",
-        "44736@student.southeastpolk.org": "44736",
-        "infinitecodehs@gmail.com": "infinite",
-        "48161@student.southeastpolk.org": "48161",
-        "55581@student.southeastpolk.org": "55581"
-    };
-    if (validCredentials[username] === password) {
+    if (VALID_CREDENTIALS[username] === password) {
         window.location.href = "InfiniteSecretPages";
     } else {
         message.textContent = "Err#4 Username and/or password is incorrect";
