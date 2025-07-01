@@ -9,9 +9,9 @@ async function sendMessage() {
         return;
       }
       const fullMessage = `**${name}**\n${message}`;
-      const webhookURL = "DISCORD_WEBHOOK_URL";
+      const DISCORD_WEBHOOK_URL = DISCORD_WEBHOOK_URL;
       try {
-        const response = await fetch(webhookURL, {
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content: fullMessage })
