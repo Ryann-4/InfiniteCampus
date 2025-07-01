@@ -100,6 +100,15 @@
             <br>
             <br>
         </center>
+<script>
+  const source = document.getElementById('site-header');
+  const target = document.querySelector('.bar');
+
+  setInterval(() => {
+    const bgColor = window.getComputedStyle(source).backgroundColor;
+    target.style.backgroundColor = bgColor;
+  }, 100); // checks every 100ms
+</script>
         <script src="drypopup.js">
         </script>
         <script src="footer.js">
