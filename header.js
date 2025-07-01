@@ -13,7 +13,7 @@ const headerHTML = `
                 <a class="headerbtn" style="right:650; top:14" href="InfiniteApps">
                     Apps
                 </a>
-                <a class="headerbtn" style="right:590; top:14" href="InfiniteTalkers" >
+                <a class="headerbtn" style="right:590; top:14" href="InfiniteChats" >
                     Chat
                 </a>
                 <a class="headerbtn" style="right:470; top:14" href="InfiniteSupport" >
