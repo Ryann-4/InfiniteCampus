@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
     const firebaseConfig = {
-      apiKey: "AIzaSyCQ492BiasyGJyXPQcm-2TFAeWdZybScz0",
+      apiKey: "Google_Api_Key",
       authDomain: "website-updates-485ea.firebaseapp.com",
       databaseURL: "https://website-updates-485ea-default-rtdb.firebaseio.com",
       projectId: "website-updates-485ea",
