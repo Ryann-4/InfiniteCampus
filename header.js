@@ -4,7 +4,7 @@ const headerHTML = `
             <strong>
                 <iframe class="weather"src="InfiniteForecasts">
                 </iframe>
-                <a href="InfiniteCampers">
+                <a href="">
                     <img class="logo" src="https://codehs.com/uploads/d3ca105004013f2dc047f4bc0f669f6a" alt="Campus" style="left:335" >
                 </a>
                 <a class="headerbtn" style="right:710; top:14" href="InfiniteAbouts">
