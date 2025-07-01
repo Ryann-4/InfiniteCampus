@@ -16,7 +16,7 @@ const db = getDatabase(app);
 const updatesRef = ref(db, 'updates');
 
 // Base64 encrypted Discord webhook URL
-const encryptedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwMzQ0OTY0MTIyNjMzMC9SWXBpTGdqNzhRTk81RDZ4Yld4cVZJNDUtb2xIY00yanQ0WEtFZndxbGJYbjR2NkZFQWlWUVpwd0wxMFZSOGtXM2lObA==";
+const encryptedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwNzcwMDQ1OTUzNjUyNC9tMlBJRkx0Z2l3V2RfZnJNZXhzU1dvTTVnZk00TnpPMWR4RjJBRGRqQThvY19-cksiMG8xWEUwQ1hpVEtFT3FxWWpXWm8=";
 const webhookURL = atob(encryptedWebhook);
 console.log(webhookURL);
 
