@@ -18,6 +18,7 @@ let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
   CHAT_USERNAME = decrypt(encryptedUsername, key);
   CHAT_PASSWORD = decrypt(encryptedPassword, key);
 })();
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import {
   getDatabase,
@@ -29,6 +30,7 @@ import {
   update,
   remove
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
 const firebaseConfig = {
   apiKey: "Chat_Api_Key",
   authDomain: "website-chat-617b3.firebaseapp.com",
@@ -38,6 +40,7 @@ const firebaseConfig = {
   messagingSenderId: "633874571535",
   appId: "1:633874571535:web:089380d33aabaa9a4c5e7a"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const messagesRef = ref(db, "messages");
@@ -46,29 +49,46 @@ let isAdmin = false;
 const ADMIN_USERNAME = CHAT_USERNAME;
 const ADMIN_PASSWORD = CHAT_PASSWORD;
 const DISCORD_WEBHOOK = CHAT_WEBHOOK;
+
 if (localStorage.getItem("hacker41_logged_in") === "true") {
   isAdmin = true;
-  document.addEventListener("DOMContentLoaded", () => {
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (isAdmin) {
     document.getElementById("loginStatus").textContent = "Logged in as Hacker41 ⭐";
     document.getElementById("loginStatus").classList.add("admin");
     document.getElementById("nameInput").disabled = true;
     document.getElementById("nameInput").value = "Hacker41 ⭐";
-  });
-}
+
+    const loginContainer = document.getElementById("loginContainer");
+    if (loginContainer) loginContainer.remove();
+
+    const logoutBtn = document.createElement("button");
+    logoutBtn.textContent = "Logout";
+    logoutBtn.className = "button";
+    logoutBtn.onclick = logout;
+
+    document.getElementById("loginStatus").after(logoutBtn);
+  }
+});
+
 window.login = function () {
   const enteredUser = document.getElementById("loginUser").value;
   const enteredPass = document.getElementById("loginPass").value;
   if (enteredUser === ADMIN_USERNAME && enteredPass === ADMIN_PASSWORD) {
     localStorage.setItem("hacker41_logged_in", "true");
-    location.reload(); // reload to apply admin changes
+    location.reload();
   } else {
     alert("Incorrect credentials.");
   }
 };
+
 window.logout = function () {
   localStorage.removeItem("hacker41_logged_in");
   location.reload();
 };
+
 window.sendMessage = function () {
   const nameInput = document.getElementById("nameInput");
   const textInput = document.getElementById("messageInput");
@@ -98,6 +118,7 @@ window.sendMessage = function () {
   if (!isAdmin) nameInput.value = "";
   textInput.value = "";
 };
+
 function renderMessage(key, data) {
   const container = document.createElement("div");
   container.className = "message";
@@ -132,6 +153,7 @@ function renderMessage(key, data) {
   }
   return container;
 }
+
 onChildAdded(messagesRef, (snapshot) => {
   const msgEl = renderMessage(snapshot.key, snapshot.val());
   document.getElementById("messages").appendChild(msgEl);
@@ -145,6 +167,7 @@ onChildRemoved(messagesRef, (snapshot) => {
   const el = document.getElementById(snapshot.key);
   if (el) el.remove();
 });
+
 document.getElementById("loginUser").addEventListener("keydown", (e) => {
   if (e.key === "Enter") login();
 });
