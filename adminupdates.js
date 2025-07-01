@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const updatesRef = ref(db, 'updates');
 
-// Your new Discord webhook URL encoded in Base64
+// Discord webhook URL (Base64 encoded)
 const encryptedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwNzcwMDQ1OTUzNjUyNC9tMlBJRkwtdGdpd1dkX2ZyTWV4c1NXb001Z2ZNNE56TzFkeEYyQWRqQThvY18tckswbzFYRTBDWGlUS0VPcXFZaldabw==";
 const webhookURL = atob(encryptedWebhook);
 
@@ -85,7 +85,7 @@ onValue(updatesRef, (snapshot) => {
 
     if (!sentToDiscord.has(update.key)) {
       sentToDiscord.add(update.key);
-      sendToDiscord(`${index + 1}. ${update.content}`);
+      sendToDiscord(update.content); // No numbering in Discord message
     }
   });
 });
