@@ -61,38 +61,40 @@
       if (!isAdmin) nameInput.value = "";
       textInput.value = "";
     };
-    function renderMessage(key, data) {
-      const container = document.createElement("div");
-      container.className = "message";
-      container.id = key;
-      const meta = document.createElement("div");
-      meta.className = "meta";
-      meta.textContent = `${data.name} @ ${new Date(data.timestamp).toLocaleTimeString()}`;
-      const text = document.createElement("div");
-      text.className = "text";
-      text.textContent = data.text;
-      container.appendChild(meta);
-      container.appendChild(text);
-      if (isAdmin || data.userId === userId) {
-        const controls = document.createElement("div");
-        controls.className = "controls";
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.onclick = () => {
-          const newText = prompt("Edit message:", data.text);
-          if (newText !== null) {
-            update(ref(db, `messages/${key}`), { text: newText });
-          }
-        };
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
-        deleteBtn.onclick = () => remove(ref(db, `messages/${key}`));
-        controls.appendChild(editBtn);
-        controls.appendChild(deleteBtn);
-        container.appendChild(controls);
+function renderMessage(key, data) {
+  const container = document.createElement("div");
+  container.className = "message";
+  container.id = key;
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  meta.textContent = `${data.name} @ ${new Date(data.timestamp).toLocaleTimeString()}`;
+  const text = document.createElement("div");
+  text.className = "text";
+  text.textContent = data.text;
+  container.appendChild(meta);
+  container.appendChild(text);
+  if (isAdmin || data.userId === userId) {
+    const controls = document.createElement("div");
+    controls.className = "controls";
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit";
+    editBtn.className = "button";
+    editBtn.onclick = () => {
+      const newText = prompt("Edit message:", data.text);
+      if (newText !== null) {
+        update(ref(db, `messages/${key}`), { text: newText });
       }
-      return container;
-    }
+    };
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.className = "button";
+    deleteBtn.onclick = () => remove(ref(db, `messages/${key}`));
+    controls.appendChild(editBtn);
+    controls.appendChild(deleteBtn);
+    container.appendChild(controls);
+  }
+  return container;
+}
     onChildAdded(messagesRef, (snapshot) => {
       const msgEl = renderMessage(snapshot.key, snapshot.val());
       document.getElementById("messages").appendChild(msgEl);

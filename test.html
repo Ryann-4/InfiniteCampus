@@ -29,11 +29,15 @@
                 padding: 10px; 
                 border: 1px solid white; 
                 border-radius: 10px; 
-                margin: 10px 0; 
+                margin: 10px 0;
+                color:white;
+                text-align:left;
+                width:25vw;
+                background-color:black
             }
             .meta { 
                 font-size: 12px; 
-                color: gray; 
+                color: white; 
             }
             .controls { 
                 margin-top: 5px; 
@@ -50,6 +54,11 @@
             }
             #loginArea { 
                 margin-bottom: 20px; 
+                width:200px;
+            }
+            ::placeholder {
+                color:white;
+                font-size:110%;
             }
         </style>
     </head>
@@ -63,6 +72,16 @@
                 <h1 class="tptxt">
                     Chat
                 </h1>
+                <input style="width:200px;" class="button" type="text" id="nameInput" placeholder="Name (optional)">
+                <br>
+                <textarea style="width:300px;" rows="3" class="button" id="messageInput" placeholder="Message"></textarea>
+                <br>
+                <br>
+                <button class="button" onclick="sendMessage()">
+                    Send
+                </button>
+                <div id="messages">
+                </div>
                 <div id="loginArea">
                     <input class="button" type="text" id="loginUser" placeholder="Admin Username">
                     <input class="button" type="password" id="loginPass" placeholder="Admin Password">
@@ -71,13 +90,6 @@
                     </button>
                     <p id="loginStatus">
                     </p>
-                </div>
-                <input class="button" type="text" id="nameInput" placeholder="Name (optional)">
-                <textarea class="button" id="messageInput" placeholder="Message"></textarea>
-                <button class="button" onclick="sendMessage()">
-                    Send
-                </button>
-                <div id="messages">
                 </div>
             </div>
             <script type="module" src="chat.js">
