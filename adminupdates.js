@@ -1,6 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
 import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
-
 const firebaseConfig = {
   apiKey: "Google_Api_Key",
   authDomain: "website-updates-485ea.firebaseapp.com",
@@ -14,13 +13,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const updatesRef = ref(db, 'updates');
-
-// Discord webhook URL (Base64 encoded)
 const encryptedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwNzcwMDQ1OTUzNjUyNC9tMlBJRkwtdGdpd1dkX2ZyTWV4c1NXb001Z2ZNNE56TzFkeEYyQWRqQThvY18tckswbzFYRTBDWGlUS0VPcXFZaldabw==";
 const webhookURL = atob(encryptedWebhook);
-
-let lastSentKey = null; // track last update key sent to Discord
-
+let lastSentKey = null; 
 function sendToDiscord(message) {
   fetch(webhookURL, {
     method: "POST",
@@ -28,7 +23,6 @@ function sendToDiscord(message) {
     body: JSON.stringify({ content: message })
   }).catch(e => console.error("Discord webhook error:", e));
 }
-
 function addUpdate() {
   const content = document.getElementById('newUpdate').value.trim();
   if (content) {
@@ -55,13 +49,11 @@ function editUpdate(key, currentText) {
 window.addUpdate = addUpdate;
 window.deleteUpdate = deleteUpdate;
 window.editUpdate = editUpdate;
-
 onValue(updatesRef, (snapshot) => {
   const updates = [];
   snapshot.forEach(child => {
     updates.push({ key: child.key, ...child.val() });
   });
-
   updates.sort((a, b) => b.timestamp - a.timestamp);
 
   if (updates.length > 10) {
@@ -69,10 +61,8 @@ onValue(updatesRef, (snapshot) => {
       deleteUpdate(u.key);
     });
   }
-
   const container = document.getElementById('updates');
   container.innerHTML = '';
-
   updates.slice(0, 10).forEach((update, index) => {
     const div = document.createElement('div');
     div.className = `update-box ${index % 2 === 0 ? 'r' : 'y'}`;
@@ -83,8 +73,6 @@ onValue(updatesRef, (snapshot) => {
     `;
     container.appendChild(div);
   });
-
-  // Send only the first (most recent) update to Discord if not already sent
   if (updates.length > 0) {
     const firstUpdate = updates[0];
     if (firstUpdate.key !== lastSentKey) {
