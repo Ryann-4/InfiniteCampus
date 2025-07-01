@@ -18,6 +18,7 @@ const updatesRef = ref(db, 'updates');
 // Base64 encrypted Discord webhook URL
 const encryptedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwMzQ0OTY0MTIyNjMzMC9SWXBpTGdqNzhRTk81RDZ4Yld4cVZJNDUtb2xIY00yanQ0WEtFZndxbGJYbjR2NkZFQWlWUVpwd0wxMFZSOGtXM2lObA==";
 const webhookURL = atob(encryptedWebhook);
+console.log(webhookURL);
 
 // Keep track of which updates have been sent to Discord (by key)
 const sentToDiscord = new Set();
