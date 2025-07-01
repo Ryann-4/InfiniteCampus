@@ -15,12 +15,10 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const updatesRef = ref(db, 'updates');
 
-// Base64 encrypted Discord webhook URL
+// Your new Discord webhook URL encoded in Base64
 const encryptedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwNzcwMDQ1OTUzNjUyNC9tMlBJRkx0Z2l3V2RfZnJNZXhzU1dvTTVnZk00TnpPMWR4RjJBRGRqQThvY19-cksiMG8xWEUwQ1hpVEtFT3FxWWpXWm8=";
 const webhookURL = atob(encryptedWebhook);
-console.log(webhookURL);
 
-// Keep track of which updates have been sent to Discord (by key)
 const sentToDiscord = new Set();
 
 function sendToDiscord(message) {
@@ -43,7 +41,7 @@ function addUpdate() {
 }
 function deleteUpdate(key) {
   remove(ref(db, 'updates/' + key));
-  sentToDiscord.delete(key); // Remove from sent set if deleted
+  sentToDiscord.delete(key);
 }
 function editUpdate(key, currentText) {
   const newText = prompt("Edit update:", currentText);
@@ -66,7 +64,6 @@ onValue(updatesRef, (snapshot) => {
 
   updates.sort((a, b) => b.timestamp - a.timestamp);
 
-  // Keep only the latest 10, delete the rest
   if (updates.length > 10) {
     updates.slice(10).forEach(u => {
       deleteUpdate(u.key);
@@ -77,7 +74,6 @@ onValue(updatesRef, (snapshot) => {
   container.innerHTML = '';
 
   updates.slice(0, 10).forEach((update, index) => {
-    // Display updates with edit/delete buttons
     const div = document.createElement('div');
     div.className = `update-box ${index % 2 === 0 ? 'r' : 'y'}`;
     div.innerHTML = `
@@ -87,7 +83,6 @@ onValue(updatesRef, (snapshot) => {
     `;
     container.appendChild(div);
 
-    // Send new or edited updates to Discord only once per update key
     if (!sentToDiscord.has(update.key)) {
       sentToDiscord.add(update.key);
       sendToDiscord(`${index + 1}. ${update.content}`);
