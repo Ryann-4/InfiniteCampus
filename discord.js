@@ -9,9 +9,9 @@ async function sendMessage() {
         return;
       }
       const fullMessage = `**${name}**\n${message}`;
-      const DISCORD_WEBHOOK_URL = DISCORD_WEBHOOK_URL;
+      const webhookURL = "Discord_Webhook_Url";
       try {
-        const response = await fetch(DISCORD_WEBHOOK_URL, {
+        const response = await fetch(webhookURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content: fullMessage })
