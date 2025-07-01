@@ -2,7 +2,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Inject HTML
   const popupHTML = `
     <div class="popup2" id="popup">
-      <div class="bar">
+      <div id="pupbar" class="bar">
         <div style="text-align:center; font-size:25px; margin-top:-10px;" id="clocks">
           --:--:-- --
         </div>
@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
         <br><br><br>
         <a class="button" href="InfiniteBypassers">Open In About:Blank</a>
       </div>
-      <div class="bar">
+      <div id="pupbar" class="bar">
         <center>
           <a class="headerbtn" href="InfiniteContacts" style="margin-top:-15px; margin-left:-50px; font-size:15px;">
             Contact Me
