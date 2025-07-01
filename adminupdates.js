@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
 import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
 const firebaseConfig = {
   apiKey: "Google_Api_Key",
   authDomain: "website-updates-485ea.firebaseapp.com",
@@ -13,6 +14,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const updatesRef = ref(db, 'updates');
+
+// Base64 encrypted Discord webhook URL
+const encryptedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwMzQ0OTY0MTIyNjMzMC9SWXBpTGdqNzhRTk81RDZ4Yld4cVZJNDUtb2xIY00yanQ0WEtFZndxbGJYbjR2NkZFQWlWUVpwd0wxMFZSOGtXM2lObA==";
+const webhookURL = atob(encryptedWebhook);
+
+// Keep track of which updates have been sent to Discord (by key)
+const sentToDiscord = new Set();
+
+function sendToDiscord(message) {
+  fetch(webhookURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content: message })
+  }).catch(e => console.error("Discord webhook error:", e));
+}
+
 function addUpdate() {
   const content = document.getElementById('newUpdate').value.trim();
   if (content) {
@@ -25,6 +42,7 @@ function addUpdate() {
 }
 function deleteUpdate(key) {
   remove(ref(db, 'updates/' + key));
+  sentToDiscord.delete(key); // Remove from sent set if deleted
 }
 function editUpdate(key, currentText) {
   const newText = prompt("Edit update:", currentText);
@@ -38,18 +56,27 @@ function editUpdate(key, currentText) {
 window.addUpdate = addUpdate;
 window.deleteUpdate = deleteUpdate;
 window.editUpdate = editUpdate;
+
 onValue(updatesRef, (snapshot) => {
   const updates = [];
   snapshot.forEach(child => {
     updates.push({ key: child.key, ...child.val() });
   });
+
   updates.sort((a, b) => b.timestamp - a.timestamp);
+
+  // Keep only the latest 10, delete the rest
   if (updates.length > 10) {
-    updates.slice(10).forEach(u => deleteUpdate(u.key));
+    updates.slice(10).forEach(u => {
+      deleteUpdate(u.key);
+    });
   }
-  const container = document.getElementById('updates'); 
+
+  const container = document.getElementById('updates');
   container.innerHTML = '';
+
   updates.slice(0, 10).forEach((update, index) => {
+    // Display updates with edit/delete buttons
     const div = document.createElement('div');
     div.className = `update-box ${index % 2 === 0 ? 'r' : 'y'}`;
     div.innerHTML = `
@@ -58,5 +85,11 @@ onValue(updatesRef, (snapshot) => {
       <button class="button" onclick="deleteUpdate('${update.key}')">Delete</button>
     `;
     container.appendChild(div);
+
+    // Send new or edited updates to Discord only once per update key
+    if (!sentToDiscord.has(update.key)) {
+      sentToDiscord.add(update.key);
+      sendToDiscord(`${index + 1}. ${update.content}`);
+    }
   });
 });
