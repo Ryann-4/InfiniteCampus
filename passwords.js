@@ -1,4 +1,4 @@
-// 🔐 Auto-decrypt and assign VALID_CREDENTIALS
+// 🔐 Decrypt and assign VALID_CREDENTIALS
   let VALID_CREDENTIALS;
   (function () {
     const key = 5;
@@ -10,8 +10,10 @@
         const decoded = [...shifted].map(c =>
           String.fromCharCode(c.charCodeAt(0) - key)
         ).join('');
-        return JSON.parse(decoded.replace(/'/g, '"'));
-      } catch {
+        const jsonSafe = decoded.replace(/'/g, '"');
+        return JSON.parse(jsonSafe);
+      } catch (err) {
+        console.error("Decryption failed:", err);
         return {};
       }
     }
@@ -19,7 +21,7 @@
     VALID_CREDENTIALS = decrypt(encrypted, key);
   })();
 
-  // ✅ Login event listeners
+  // ✅ Login functionality
   document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("loginBtn").addEventListener("click", checkCredentials);
     document.getElementById("username").addEventListener("keypress", handleKeyPress);
@@ -27,9 +29,9 @@
   });
 
   function checkCredentials() {
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    var message = document.getElementById("message");
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const message = document.getElementById("message");
 
     if (VALID_CREDENTIALS[username] === password) {
       window.location.href = "InfiniteSecretPages";
