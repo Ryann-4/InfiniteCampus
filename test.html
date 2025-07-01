@@ -54,34 +54,40 @@
         </style>
     </head>
     <body>
-        <div id="chat">
-            <h1 class="tptxt">
-                Chat
-            </h1>
-            <div id="loginArea">
-                <input class="button" type="text" id="loginUser" placeholder="Admin Username">
-                <input class="button" type="password" id="loginPass" placeholder="Admin Password">
-                <button class="button" onclick="login()">
-                    Login
+        <center>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div id="chat">
+                <h1 class="tptxt">
+                    Chat
+                </h1>
+                <div id="loginArea">
+                    <input class="button" type="text" id="loginUser" placeholder="Admin Username">
+                    <input class="button" type="password" id="loginPass" placeholder="Admin Password">
+                    <button class="button" onclick="login()">
+                        Login
+                    </button>
+                    <p id="loginStatus">
+                    </p>
+                </div>
+                <input class="button" type="text" id="nameInput" placeholder="Name (optional)">
+                <textarea class="button" id="messageInput" placeholder="Message"></textarea>
+                <button class="button" onclick="sendMessage()">
+                    Send
                 </button>
-                <p id="loginStatus">
-                </p>
+                <div id="messages">
+                </div>
             </div>
-            <input class="button" type="text" id="nameInput" placeholder="Name (optional)">
-            <textarea class="button" id="messageInput" placeholder="Message"></textarea>
-            <button class="button" onclick="sendMessage()">
-                Send
-            </button>
-            <div id="messages">
-            </div>
-        </div>
-        <script type="module" src="chat.js">
-        </script>
-        <script src="drypopup.js">
-        </script>
-        <script src="footer.js">
-        </script>
-        <script src="header.js">
-        </script>
+            <script type="module" src="chat.js">
+            </script>
+            <script src="drypopup.js">
+            </script>
+            <script src="footer.js">
+            </script>
+            <script src="header.js">
+            </script>
+        </center>
     </body>
 </html>
