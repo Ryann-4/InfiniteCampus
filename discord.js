@@ -9,7 +9,7 @@ async function sendMessage() {
         return;
       }
       const fullMessage = `**${name}**\n${message}`;
-      const webhookURL = "https://discord.com/api/webhooks/1389334372707991822/rwD0_F_PBCrmgwBqihL6e1P0BIsQM_GjshpyTRM1OgWfArYqt4_lbBKS10sKwNK8C2FQ";
+      const webhookURL = "Discord_Webhook_Url";
       try {
         const response = await fetch(webhookURL, {
           method: "POST",
