@@ -2,16 +2,17 @@ let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
 (function () {
   const key = 5;
 
-  // Hacker41 credentials (encrypted + base64)
+  // Hacker41 credentials (Caesar shift 5 + base64)
   const encryptedWebhook = "bXl5dXg/NDRpbnhodHdpM2h0cjRmdW40fGpnbXR0cHg0Njg9Pjs4NTY1Ojs6Pjc5OTw+OjQ2Pl16OHJQPk1qUHVLfV95alpxa2teTTdUS1JWOkc5XGtzXmd4bzdTaFBUVU5VdXA2clRYc11YMl5pSjpceVNfVnNJUA==";
   const encryptedUsername = "TWZocGp3OTY="; // Hacker41
   const encryptedPassword = "WGp1d3M2NzY1Jg=="; // Seprn1210!
 
-  // Nitrix credentials (encrypted + base64, shift 5)
-  const encryptedUsernameNitrix = "U2l3enKe";        // Nitrix encrypted
-  const encryptedPasswordNitrix = "IFIGdFRdcnl4NjQ="; // DaddyNitrix69 encrypted
+  // Nitrix credentials (only base64)
+  const encryptedUsernameNitrix = "Tml0cml4";        // "Nitrix"
+  const encryptedPasswordNitrix = "RGFkZHlOaXRyaXg2OQ=="; // "DaddyNitrix69"
 
-  function decrypt(base64Str, key) {
+  // decrypt function for Caesar cipher + base64
+  function decryptCaesar(base64Str, key) {
     try {
       const shifted = atob(base64Str);
       return [...shifted].map(c =>
@@ -22,12 +23,21 @@ let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
     }
   }
 
-  CHAT_WEBHOOK = decrypt(encryptedWebhook, key);
-  CHAT_USERNAME = decrypt(encryptedUsername, key);
-  CHAT_PASSWORD = decrypt(encryptedPassword, key);
+  // decrypt function for plain base64
+  function decryptBase64(base64Str) {
+    try {
+      return atob(base64Str);
+    } catch {
+      return '';
+    }
+  }
 
-  window.USERNAME_NITRIX = decrypt(encryptedUsernameNitrix, key);
-  window.PASSWORD_NITRIX = decrypt(encryptedPasswordNitrix, key);
+  CHAT_WEBHOOK = decryptCaesar(encryptedWebhook, key);
+  CHAT_USERNAME = decryptCaesar(encryptedUsername, key);
+  CHAT_PASSWORD = decryptCaesar(encryptedPassword, key);
+
+  window.USERNAME_NITRIX = decryptBase64(encryptedUsernameNitrix);
+  window.PASSWORD_NITRIX = decryptBase64(encryptedPasswordNitrix);
 })();
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
