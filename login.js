@@ -26,7 +26,7 @@ const encryptedUsers = [
       if (valid) {
         window.location.href = decodeBase64(redirectURL);
       } else {
-        alert("Invalid username or password.");
+        alert("ERR#4 Invalid username or password.");
       }
     }
     document.addEventListener("keydown", function (e) {

@@ -22,7 +22,7 @@ function sendToDiscord(message) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content: message })
-  }).catch(e => console.error("Discord webhook error:", e));
+  }).catch(e => console.error("ERR#7 Discord webhook error:", e));
 }
 function addUpdate() {
   const contentEl = document.getElementById('newUpdate');

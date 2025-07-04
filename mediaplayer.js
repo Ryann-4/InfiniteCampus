@@ -76,7 +76,6 @@ function updatePlaylistUI() {
             updatePlaylistUI();
         });
         li.addEventListener('dragend', () => li.classList.remove('dragging'));
-
         playlistElement.appendChild(li);
     });
 }
@@ -113,7 +112,7 @@ async function loadTrack(index) {
     updateMediaSession(cleanName, artworkURL);
 };
 img.onerror = () => {
-    console.warn('Failed to load album art image, using fallback');
+    console.warn('ERR#9 Failed To Load Album Art Image, Using Fallback');
     artworkURL = 'https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d';
     img.onload = () => {
         albumArt.src = artworkURL;
@@ -138,11 +137,9 @@ playPauseBtn.addEventListener('click', async () => {
     if (audio.paused) {
         await audio.play();
         playPauseBtn.textContent = '||';
-        
         const file = playlist[currentTrack];
         const cleanName = file.name.replace(/\.mp3$/i, '');
         const artworkURL = document.getElementById('albumArt').src;
-
         updateMediaSession(cleanName, artworkURL);
     } else {
         audio.pause();

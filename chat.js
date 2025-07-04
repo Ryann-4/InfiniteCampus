@@ -90,7 +90,7 @@ window.login = function () {
     localStorage.setItem("chat_logged_in", "nitrix");
     location.reload();
   } else {
-    alert("Incorrect credentials.");
+    alert("ERR#4 Incorrect credentials.");
   }
 };
 window.logout = function () {
@@ -102,7 +102,7 @@ window.sendMessage = function () {
   const textInput = document.getElementById("messageInput");
   const rawName = nameInput.value.trim();
   if (!isAdmin && rawName === "Hacker41") {
-    alert("You cannot use the reserved name 'Hacker41'.");
+    alert("ERR#6 You cannot use the reserved name 'Hacker41'.");
     return;
   }
   const name = displayName || rawName || "Anonymous";
