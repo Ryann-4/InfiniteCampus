@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
 import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
 const firebaseConfig = {
   apiKey: "Google_Api_Key",
   authDomain: "website-updates-485ea.firebaseapp.com",
@@ -10,12 +11,17 @@ const firebaseConfig = {
   appId: "1:184900273791:web:5a28c7ac05587b2f79a14a",
   measurementId: "G-VXNTBEKM3W"
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const updatesRef = ref(db, 'updates');
+
 const encryptedWebhook = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwNzcwMDQ1OTUzNjUyNC9tMlBJRkwtdGdpd1dkX2ZyTWV4c1NXb001Z2ZNNE56TzFkeEYyQWRqQThvY18tckswbzFYRTBDWGlUS0VPcXFZaldabw==";
 const webhookURL = atob(encryptedWebhook);
-let lastSentKey = null; 
+
+let lastSentKey = null;
+let hasLoaded = false;
+
 function sendToDiscord(message) {
   fetch(webhookURL, {
     method: "POST",
@@ -23,6 +29,7 @@ function sendToDiscord(message) {
     body: JSON.stringify({ content: message })
   }).catch(e => console.error("Discord webhook error:", e));
 }
+
 function addUpdate() {
   const content = document.getElementById('newUpdate').value.trim();
   if (content) {
@@ -33,10 +40,12 @@ function addUpdate() {
     document.getElementById('newUpdate').value = '';
   }
 }
+
 function deleteUpdate(key) {
   remove(ref(db, 'updates/' + key));
   if (lastSentKey === key) lastSentKey = null; // reset if deleted
 }
+
 function editUpdate(key, currentText) {
   const newText = prompt("Edit update:", currentText);
   if (newText !== null && newText.trim() !== "") {
@@ -46,9 +55,11 @@ function editUpdate(key, currentText) {
     });
   }
 }
+
 window.addUpdate = addUpdate;
 window.deleteUpdate = deleteUpdate;
 window.editUpdate = editUpdate;
+
 onValue(updatesRef, (snapshot) => {
   const updates = [];
   snapshot.forEach(child => {
@@ -61,6 +72,7 @@ onValue(updatesRef, (snapshot) => {
       deleteUpdate(u.key);
     });
   }
+
   const container = document.getElementById('updates');
   container.innerHTML = '';
   updates.slice(0, 10).forEach((update, index) => {
@@ -73,11 +85,16 @@ onValue(updatesRef, (snapshot) => {
     `;
     container.appendChild(div);
   });
+
   if (updates.length > 0) {
     const firstUpdate = updates[0];
-    if (firstUpdate.key !== lastSentKey) {
+
+    if (hasLoaded && firstUpdate.key !== lastSentKey) {
       lastSentKey = firstUpdate.key;
-      sendToDiscord(firstUpdate.content); // no numbering
+      sendToDiscord(firstUpdate.content); // Send only after initial load
+    } else if (!hasLoaded) {
+      lastSentKey = firstUpdate.key; // Set lastSentKey on initial load to prevent sending
+      hasLoaded = true;
     }
   }
 });
