@@ -14,3 +14,6 @@ function exploit() {
 function thumbnail() {
     window.open("https://tagmp3.net/")
 }
+function ITU() {
+    window.open("https://postimage.org/")
+}

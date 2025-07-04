@@ -193,11 +193,3 @@ document.getElementById("messageInput").addEventListener("keydown", (e) => {
     sendMessage();
   }
 });
-document.addEventListener("DOMContentLoaded", () => {
-  const redirectBtn = document.getElementById("redirectToImageUploader");
-  if (redirectBtn) {
-    redirectBtn.addEventListener("click", () => {
-      window.open("https://postimages.org/", "_blank");
-    });
-  }
-});
