@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+    }
+    input {
+      width: 200px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username" autocomplete="off">
+  <input type="password" id="password" placeholder="Password" autocomplete="off">
+  <button onclick="checkLogin()">Login</button>
+
+  <script>
+    // Base64 Encrypted values
+    const encryptedUsers = [
+      {
+        username: "SGFja2VyNDE=",
+        password: "U2Vwcm4xMjEwIQ=="
+      },
+      {
+        username: "Tml0cml4",
+        password: "RGFkZHlOaXRyaXg2OQ=="
+      }
+    ];
+
+    const redirectURL = "SW5maW5pdGVBZG1pbkNoYXRzLmh0bWw=";
+
+    // Base64 decoder
+    function decodeBase64(str) {
+      try {
+        return atob(str);
+      } catch (e) {
+        return "";
+      }
+    }
+
+    // Main login check
+    function checkLogin() {
+      const inputUser = document.getElementById("username").value.trim();
+      const inputPass = document.getElementById("password").value;
+
+      const valid = encryptedUsers.some(user =>
+        decodeBase64(user.username) === inputUser &&
+        decodeBase64(user.password) === inputPass
+      );
+
+      if (valid) {
+        window.location.href = decodeBase64(redirectURL);
+      } else {
+        alert("Invalid username or password.");
+      }
+    }
+
+    // Enter key handler
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        checkLogin();
+      }
+    });
+  </script>
+</body>
+</html>
