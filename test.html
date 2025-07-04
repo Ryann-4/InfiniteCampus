@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #popup {
+            width: 300px;
+            padding: 20px;
+            background-color: lightblue;
+            border: 1px solid #ccc;
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            cursor: move;
+            z-index: 100;
+        }
+
+        #popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #popup .close-btn {
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #countdown {
+            font-size: 18px;
+        }
+
+        input, button {
+            margin: 5px;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="input-container">
+        <label for="dateInput">Enter Date (DD/MM/YYYY):</label>
+        <input type="text" id="dateInput">
+        <br>
+        <label for="timeInput">Enter Time (HH:MM:SS):</label>
+        <input type="text" id="timeInput">
+        <button onclick="startCountdown()">Start Countdown</button>
+    </div>
+
+    <div id="popup" style="display:none;">
+        <div id="popup-header">
+            <span>Countdown</span>
+            <span class="close-btn" onclick="closePopup()">X</span>
+        </div>
+        <div id="countdown">
+            <p id="days"></p>
+            <p id="hours"></p>
+            <p id="minutes"></p>
+            <p id="seconds"></p>
+        </div>
+    </div>
+
+    <script src="countdown.js"></script>
+</body>
+</html>

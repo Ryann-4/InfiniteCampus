@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.min.css">
+        <script src="main.js">
+        </script>
+        <script src="title.js">
+        </script>
+        <script src="countdown.js">
+        </script>
+        <script src="global.js">
+        </script>
+        <style>
+            select, input, button {
+                margin: 0.5em;
+                padding: 0.5em;
+                font-size: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <center>
+            <br>
+            <br>
+            <br>
+            <br>
+            <h1 class="tptxt">
+                Countdown Timer
+            </h1>
+            <div>
+                <label class="txt" for="format">
+                    Date Format:
+                </label>
+                <br>
+                <select class="button" id="format">
+                    <option class="button" style="font-size:100%;" value="mdy">
+                        MM/DD/YYYY
+                    </option>
+                    <option class="button" style="font-size:100%;" value="dmy">
+                        DD/MM/YYYY
+                    </option>
+                </select>
+            </div>
+            <div>
+                <input class="button" id="dateInput" placeholder="Enter date (EX: 12/25/2026)" />
+            </div>
+            <div>
+                <input class="button" id="timeInput" placeholder="Optional time (EX: 14:30:00)" />
+            </div>
+            <div>
+                <button class="button" onclick="startCountdown()">
+                    Start Countdown
+                </button>
+            </div>
+            <div class="time-section" id="days">
+            </div>
+            <div class="time-section" id="hours">
+            </div>
+            <div class="time-section" id="minutes">
+            </div>
+            <div class="time-section" id="seconds">
+            </div>
+            <p class="ajt">
+                Also join the 
+                <a href="https://discord.gg/4d9hJSVXca" class="discord">
+                    Discord
+                </a>
+            </p>
+            <br>
+            <br>
+        </center>
+        <script src="drypopup.js">
+        </script>
+        <script src="footer.js">
+        </script>
+        <script src="header.js">
+        </script>
+    </body>
+</html>
