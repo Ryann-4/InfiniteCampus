@@ -46,15 +46,18 @@
             <h1 class="tptxt"> 
                 Change Infinite Campus Updates 
             </h1>
-            <div class="update-container">
-                <textarea class="button" style="width:25vw; height:5vh; font-size:20px;" id="newUpdate" rows="1" value=""placeholder="Write Here"></textarea>
-                <br>
-                <button class="button" onclick="addUpdate()">
-                    Add Update
-                </button>
-                <div id="updates">
-                </div>
-            </div>
+            <div id="loginBox">
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- ✅ Update UI (Hidden until login) -->
+  <div id="updateUI" style="display: none;">
+    <input id="newUpdate" placeholder="New update...">
+    <button onclick="addUpdate()">Add Update</button>
+    <div id="updates"></div>
+  </div>
             <script type="module" src="adminupdates.js">
             </script>
             <p class="ajt">
