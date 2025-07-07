@@ -35,31 +35,43 @@
         <br>
         <br>
         <center>
-            <widgetbot
-  server="1002698920809463808"
-  channel="1309160050904006696"
-  width="800"
-  height="600"
-></widgetbot>
-<script src="https://cdn.jsdelivr.net/npm/@widgetbot/html-embed"></script>
+  <h1>Discord Server Info</h1>
+  <div id="server" class="server-info">
+    <p>Loading...</p>
+  </div>
+  <script>
+    const serverContainer = document.getElementById('server');
+
+    fetch('https://discord.com/api/guilds/1002698920809463808/widget.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Widget not enabled or guild ID invalid.");
+        }
+        return response.json();
+      })
+      .then(data => {
+        const serverName = data.name;
+        const presenceCount = data.presence_count;
+        const inviteLink = data.instant_invite;
+        const members = data.members;
+
+        serverContainer.innerHTML = `
+          <h2>${serverName}</h2>
+          <p><strong>Online Members:</strong> ${presenceCount}</p>
+          <p><a href="${inviteLink}" target="_blank">Join Server</a></p>
+          <h3>Online Users:</h3>
+          <ul>
+            ${members.map(m => `<li>${m.username} (${m.status})</li>`).join('')}
+          </ul>
+        `;
+      })
+      .catch(error => {
+        serverContainer.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+      });
+  </script>
         </center>
-        <footer id="site-footer" style="bottom:-4; text-align:left">
-            <p>
-                Totally Made By Noah White And Not A Different Person.
-            </p>
-        </footer>
-        <footer id="text-only-footer" style="background-color:transparent; text-align:right; bottom:-4">
-            <p>
-                Pissing off your teachers since 2024
-            </p>
-        </footer>
-        <center>
-            <footer style="background-color:transparent; text-align:center; font-size:120%">
-                <a class="headerbtn" onclick="padlet()">
-                    Open
-                </a>
-            </footer>
-        </center>
+        <script src="footer.js">
+        </script>
         <script src="header.js">
         </script>
     </body>
