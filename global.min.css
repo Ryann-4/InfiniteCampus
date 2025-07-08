@@ -255,6 +255,7 @@ input, button {
     display: inline-block;
     padding: 12px 15px 13px;
     transition: all 0.3s ease;
+    font-weight:bold;
     font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif
 }
 .headerbtn:hover {

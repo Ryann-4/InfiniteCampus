@@ -17,6 +17,7 @@ const headerHTML = `
         border: none;
         padding: 10px;
         text-align: left;
+        background-color:transparent;
         cursor: pointer;
         font-weight: bold;
         color: white;
@@ -33,7 +34,6 @@ const headerHTML = `
 </style>
 
 <header id="site-header">
-    <strong>
         <iframe class="weather" src="InfiniteForecasts">
         </iframe>
         <a href="https://ryann-4.github.io/InfiniteCampus">
@@ -77,7 +77,6 @@ const headerHTML = `
         <a class="contactme" style="right:0; top:10; margin-right:10px" href="InfiniteContacts">
             Contact Me
         </a>
-    </strong>
 </header>
 `;
 document.addEventListener("DOMContentLoaded", () => {
