@@ -9,15 +9,16 @@ const headerHTML = `
         flex-direction: column;
         border-radius: 8px;
         overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         z-index: 1000;
-        background-color:inherit;
+        background: inherit; /* Inherits from header */
     }
 
     .dropdown button {
+        background: transparent;
         border: none;
-        padding: 10px;
+        padding: 10px 15px;
         text-align: left;
-        background-color:transparent;
         cursor: pointer;
         font-weight: bold;
         color: white;
@@ -25,7 +26,7 @@ const headerHTML = `
     }
 
     .dropdown button:hover {
-        opacity: 0.85;
+        background: rgba(255, 255, 255, 0.1);
     }
 
     .dropdown-toggle {
@@ -49,14 +50,14 @@ const headerHTML = `
             Chat
         </div>
         <div class="dropdown" id="chatDropdown">
-            <button onclick="location.href='InfiniteTalkers'">
-                Padlet
+            <button onclick="location.href='InfiniteChats'">
+                General Chat
             </button>
-            <button onclick="location.href='InfiniteChatters'">
-                Website Chat
+            <button onclick="location.href='InfiniteAdminChats'">
+                Admin Chat
             </button>
-            <button onclick="location.href='InfiniteDiscords'">
-                Live Discord Chat
+            <button onclick="location.href='InfiniteImageChats'">
+                Image Chat
             </button>
         </div>
         <a class="headerbtn" style="right:470; top:14" href="InfiniteSupport">
@@ -79,21 +80,19 @@ const headerHTML = `
         </a>
 </header>
 `;
+
 document.addEventListener("DOMContentLoaded", () => {
   const headerWrapper = document.createElement("div");
   headerWrapper.innerHTML = headerHTML;
   document.body.insertBefore(headerWrapper, document.body.firstChild);
+
   const dropdownToggle = document.querySelector('.dropdown-toggle');
   const dropdownMenu = document.getElementById('chatDropdown');
+
   dropdownToggle.addEventListener('click', () => {
     dropdownMenu.style.display = dropdownMenu.style.display === 'flex' ? 'none' : 'flex';
   });
-  const headerColor = getComputedStyle(document.getElementById('site-header')).backgroundColor;
-  dropdownMenu.style.backgroundColor = headerColor;
-  const buttons = dropdownMenu.querySelectorAll('button');
-  buttons.forEach(btn => {
-    btn.style.backgroundColor = headerColor;
-  });
+
   document.addEventListener('click', (e) => {
     if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
       dropdownMenu.style.display = 'none';
