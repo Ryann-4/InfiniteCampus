@@ -11,30 +11,26 @@ const headerHTML = `
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         z-index: 1000;
-        background: inherit; /* Inherits from header */
+        background: inherit;
     }
-
     .dropdown button {
         background: transparent;
         border: none;
         padding: 10px 15px;
         text-align: left;
         cursor: pointer;
-        font-weight: bold;
         color: white;
         transition: background 0.3s;
     }
-
     .dropdown button:hover {
-        background: rgba(255, 255, 255, 0.1);
+    background-color:transparent
     }
-
     .dropdown-toggle {
         cursor: pointer;
     }
 </style>
-
-<header id="site-header">
+<strong>
+    <header id="site-header">
         <iframe class="weather" src="InfiniteForecasts">
         </iframe>
         <a href="https://ryann-4.github.io/InfiniteCampus">
@@ -50,14 +46,14 @@ const headerHTML = `
             Chat
         </div>
         <div class="dropdown" id="chatDropdown">
-            <button onclick="location.href='InfiniteChats'">
-                General Chat
+            <button onclick="location.href='InfiniteTalkers'">
+                Padlet
             </button>
-            <button onclick="location.href='InfiniteAdminChats'">
-                Admin Chat
+            <button onclick="location.href='InfiniteChatters'">
+                Website Chat
             </button>
-            <button onclick="location.href='InfiniteImageChats'">
-                Image Chat
+            <button onclick="location.href='InfiniteDiscords'">
+                Live Discord Chat
             </button>
         </div>
         <a class="headerbtn" style="right:470; top:14" href="InfiniteSupport">
@@ -78,7 +74,8 @@ const headerHTML = `
         <a class="contactme" style="right:0; top:10; margin-right:10px" href="InfiniteContacts">
             Contact Me
         </a>
-</header>
+    </header>
+</strong>
 `;
 
 document.addEventListener("DOMContentLoaded", () => {
