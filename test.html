@@ -1,78 +1,187 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
-        </script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-7SV03ZXJ9R');
-        </script>
-        <title>
-            Infinite Campus
-        </title>
-        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
-        <link rel="stylesheet" href="global.min.css">
-        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
-        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
-        <meta property="og:title" content="Infinite Campus">
-        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
-        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
-        <meta name="theme-color" content="#8cbe37">
-        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
-        <script src="main.js">
-        </script>
-        <script src="title.js">
-        </script>
-        <script src="global.js">
-        </script>
-        <script src="buttons.js">
-        </script>
-    </head>
-    <body>
-        <br>
-        <br>
-        <br>
-        <center>
-  <h1>Discord Server Info</h1>
-  <div id="server" class="server-info">
-    <p>Loading...</p>
+<head>
+  <title>Infinite Campus</title>
+  <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+  <link rel="stylesheet" href="global.min.css">
+  <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+  <meta name="theme-color" content="#8cbe37">
+  <meta property="og:image" content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477">
+
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    #chat, #discordChat {
+      max-width: 600px;
+      margin: 50px auto;
+      text-align: center;
+    }
+    .message {
+      padding: 10px;
+      border: 1px solid white;
+      border-radius: 10px;
+      margin: 10px auto;
+      color: white;
+      text-align: left;
+      width: 25vw;
+      background-color: black;
+    }
+    .meta {
+      font-size: 12px;
+      color: white;
+      margin-bottom: 5px;
+    }
+    .controls {
+      margin-top: 5px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+      box-sizing: border-box;
+    }
+    .button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background-color: #7289da;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    ::placeholder {
+      color: white;
+      font-size: 110%;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat">
+    <h1 class="tptxt">Firebase Chat</h1>
+    <input class="button" type="text" id="nameInput" placeholder="Name (optional)">
+    <br>
+    <textarea class="button" id="messageInput" placeholder="Message" rows="3"></textarea>
+    <br>
+    <button class="button" onclick="sendMessage()">Send</button>
+    <br><br>
+    <div id="messages"></div>
   </div>
-  <script>
-    const serverContainer = document.getElementById('server');
 
-    fetch('https://discord.com/api/guilds/1002698920809463808/widget.json')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Widget not enabled or guild ID invalid.");
-        }
-        return response.json();
-      })
-      .then(data => {
-        const serverName = data.name;
-        const presenceCount = data.presence_count;
-        const inviteLink = data.instant_invite;
-        const members = data.members;
+  <!-- ✅ Discord Feed -->
+  <div id="discordChat">
+    <h2 class="tptxt">Discord Feed</h2>
+    <div id="discordMessages"></div>
+  </div>
 
-        serverContainer.innerHTML = `
-          <h2>${serverName}</h2>
-          <p><strong>Online Members:</strong> ${presenceCount}</p>
-          <p><a href="${inviteLink}" target="_blank">Join Server</a></p>
-          <h3>Online Users:</h3>
-          <ul>
-            ${members.map(m => `<li>${m.username} (${m.status})</li>`).join('')}
-          </ul>
-        `;
-      })
-      .catch(error => {
-        serverContainer.innerHTML = `<p class="error">Error: ${error.message}</p>`;
-      });
+  <!-- Scripts -->
+  <script type="module">
+    const DISCORD_BACKEND = "https://discord-proxy1.onrender.com";
+    const userId = "user_" + Math.random().toString(36).substr(2, 9);
+    let loggedInUser = localStorage.getItem("chat_logged_in");
+    let displayName = loggedInUser === "hacker41" ? "Hacker41 💎"
+                    : loggedInUser === "nitrix" ? "Nitrix 🔵"
+                    : "";
+
+    // Send to Firebase and Discord
+    window.sendMessage = function () {
+      const nameInput = document.getElementById("nameInput");
+      const textInput = document.getElementById("messageInput");
+      const rawName = nameInput.value.trim();
+      const text = textInput.value.trim();
+      const name = displayName || rawName || "Anonymous";
+      const timestamp = new Date().toLocaleString();
+
+      if (!text) return;
+
+      // Send to Discord
+      fetch(`${DISCORD_BACKEND}/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `message=${encodeURIComponent(`**${name}** @ ${timestamp}\n${text}`)}`
+      }).catch(console.error);
+
+      // (Optional) send to Firebase — remove if not needed
+      const msg = {
+        name,
+        text,
+        userId,
+        timestamp: Date.now()
+      };
+      const db = firebase.database();
+      firebase.database().ref("messages").push(msg);
+
+      textInput.value = "";
+      if (!displayName) nameInput.value = "";
+    };
+
+    // Firebase setup
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    const firebaseConfig = {
+      apiKey: "Chat_Api_Key",
+      authDomain: "website-chat-617b3.firebaseapp.com",
+      databaseURL: "https://website-chat-617b3-default-rtdb.firebaseio.com",
+      projectId: "website-chat-617b3",
+      storageBucket: "website-chat-617b3.appspot.com",
+      messagingSenderId: "633874571535",
+      appId: "1:633874571535:web:089380d33aabaa9a4c5e7a"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const messagesRef = ref(db, "messages");
+
+    onChildAdded(messagesRef, (snapshot) => {
+      const data = snapshot.val();
+      const container = document.createElement("div");
+      container.className = "message";
+      container.innerHTML = `
+        <div class="meta"><strong>${data.name}</strong> @ ${new Date(data.timestamp).toLocaleTimeString()}</div>
+        <div class="text">${data.text}</div>
+      `;
+      document.getElementById("messages").appendChild(container);
+    });
+
+    // Load Discord messages
+    async function loadDiscordMessages() {
+      try {
+        const res = await fetch(`${DISCORD_BACKEND}/api/messages`);
+        const data = await res.json();
+        const container = document.getElementById("discordMessages");
+        container.innerHTML = '';
+
+        data.reverse().forEach(msg => {
+          const avatar = msg.author.avatar
+            ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
+            : `https://cdn.discordapp.com/embed/avatars/0.png`;
+
+          const timestamp = new Date(msg.timestamp).toLocaleString();
+
+          const messageBox = document.createElement("div");
+          messageBox.className = "message";
+
+          const meta = document.createElement("div");
+          meta.className = "meta";
+          meta.innerHTML = `
+            <img src="${avatar}" style="width:20px; height:20px; border-radius:50%; vertical-align:middle;"> 
+            <strong>${msg.author.username}</strong> @ ${timestamp}
+          `;
+
+          const content = document.createElement("div");
+          content.textContent = msg.content;
+
+          messageBox.appendChild(meta);
+          messageBox.appendChild(content);
+          container.appendChild(messageBox);
+        });
+      } catch (e) {
+        console.error("Failed to load Discord messages:", e);
+      }
+    }
+
+    loadDiscordMessages();
+    setInterval(loadDiscordMessages, 10000);
   </script>
-        </center>
-        <script src="footer.js">
-        </script>
-        <script src="header.js">
-        </script>
-    </body>
+</body>
 </html>
