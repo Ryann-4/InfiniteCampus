@@ -77,19 +77,15 @@ const headerHTML = `
     </header>
 </strong>
 `;
-
 document.addEventListener("DOMContentLoaded", () => {
   const headerWrapper = document.createElement("div");
   headerWrapper.innerHTML = headerHTML;
   document.body.insertBefore(headerWrapper, document.body.firstChild);
-
   const dropdownToggle = document.querySelector('.dropdown-toggle');
   const dropdownMenu = document.getElementById('chatDropdown');
-
   dropdownToggle.addEventListener('click', () => {
     dropdownMenu.style.display = dropdownMenu.style.display === 'flex' ? 'none' : 'flex';
   });
-
   document.addEventListener('click', (e) => {
     if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
       dropdownMenu.style.display = 'none';

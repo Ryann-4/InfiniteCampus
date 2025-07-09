@@ -8,6 +8,8 @@ setMessage(6, "You Cannot Use The Name Hacker41");
 setMessage(7, "Discord Webhook Error");
 setMessage(8, "Message Cannot Be Empty");
 setMessage(9, "Failed To Load Album Art Image, Using Fallback");
+setMessage(10, "Failed To Fetch Messages");
+setMessage(11, "Failed To Send Message");
 function setMessage(num, message) {
     numberMessageMap[num] = message;
 }

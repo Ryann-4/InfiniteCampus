@@ -30,7 +30,7 @@ const backendUrl = 'https://discord-proxy1.onrender.com';
 						list.prepend(li);
 					});
 				} catch (err) {
-					console.error('Error fetching messages:', err);
+					console.error('ERR#10 Error fetching messages:', err);
 				}
 			}
 			async function sendMessage(name, content) {
@@ -46,7 +46,7 @@ const backendUrl = 'https://discord-proxy1.onrender.com';
 					document.getElementById('nameInput').value = '';
 					fetchMessages();
 				} catch (err) {
-					console.error('Error sending message:', err);
+					console.error('ERR#11 Error sending message:', err);
 				}
 			}
 			document.getElementById('sendForm').addEventListener('submit', (e) => {
