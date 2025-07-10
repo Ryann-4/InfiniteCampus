@@ -49,34 +49,39 @@ async function fetchMessages() {
 
 
 
-async function sendMessage(name, content) {
+async function sendMessage(name, content, file) {
   const channelId = getSelectedChannelId();
+  const formData = new FormData();
+  formData.append('channelId', channelId);
+  formData.append('message', `${name}\n${content}`);
+  if (file) {
+    formData.append('file', file);
+  }
+
   try {
     await fetch(`${backendUrl}/send`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: `${name}\n${content}`,
-        channelId
-      })
+      body: formData
     });
+
     document.getElementById('msgInput').value = '';
     document.getElementById('nameInput').value = '';
+    document.getElementById('imageInput').value = '';
     fetchMessages();
   } catch (err) {
     console.error('Error sending message:', err);
   }
 }
 
+
 document.getElementById('channelSelector').addEventListener('change', fetchMessages);
 
 			document.getElementById('sendForm').addEventListener('submit', (e) => {
-				e.preventDefault();
-				const name = document.getElementById('nameInput').value.trim();
-				const msg = document.getElementById('msgInput').value.trim();
-				if (name && msg) sendMessage(name, msg);
-			});
+  e.preventDefault();
+  const name = document.getElementById('nameInput').value.trim();
+  const msg = document.getElementById('msgInput').value.trim();
+  const file = document.getElementById('imageInput').files[0];
+  if (name && (msg || file)) sendMessage(name, msg, file);
+});
 			fetchMessages();
 			setInterval(fetchMessages, 5000);

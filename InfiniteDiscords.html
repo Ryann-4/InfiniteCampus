@@ -129,15 +129,17 @@
 					ai chat
 				</option>
 			</select>
-			<form id="sendForm">
-				<input class="button" type="text" id="nameInput" placeholder="Your name" required />
-				<br>
-				<input class="button" type="text" id="msgInput" placeholder="Type your message..." required />
-				<br>
-				<button class="button" type="submit">
-					Send
-				</button>
-			</form>
+			<form id="sendForm" enctype="multipart/form-data">
+  <input class="button" type="text" id="nameInput" placeholder="Your name" required />
+  <br>
+  <input class="button" type="text" id="msgInput" placeholder="Type your message..." required />
+  <br>
+  <input type="file" id="imageInput" accept="image/*" />
+  <br>
+  <button class="button" type="submit">
+    Send
+  </button>
+</form>
 		</center>
 		<ul id="messages">
 		</ul>
