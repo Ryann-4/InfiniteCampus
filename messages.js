@@ -18,8 +18,8 @@ async function fetchMessages() {
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
       const timestamp = new Date(msg.timestamp).toLocaleString();
 
-      // Auto-wrap image URLs in <img> tags
-      const imageRegex = /(https?:\/\/[^\s]+?\.(png|jpe?g|gif|webp))/gi;
+      // ✅ Match full image URLs including query strings
+      const imageRegex = /(https?:\/\/[^\s]+?\.(png|jpe?g|gif|webp)(\?[^\s]*)?)/gi;
       const formattedContent = msg.content.replace(imageRegex, (url) => {
         return `<br><img class="message-img" src="${url}" alt="image">`;
       });
