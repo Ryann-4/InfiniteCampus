@@ -13,7 +13,6 @@ async function fetchMessages() {
     const data = await res.json();
     const list = document.getElementById('messages');
 
-    // Data from API is usually newest first, so reverse for oldest first:
     const messages = data.slice().reverse();
 
     messages.forEach(msg => {
