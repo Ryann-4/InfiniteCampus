@@ -99,4 +99,4 @@ document.getElementById('imageInput').addEventListener('change', function () {
 });
 
 fetchMessages();
-setInterval(fetchMessages, 5000);
+setInterval(fetchMessages, 10000);
