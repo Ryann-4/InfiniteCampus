@@ -18,11 +18,20 @@ async function fetchMessages() {
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
       const timestamp = new Date(msg.timestamp).toLocaleString();
 
-      // ✅ Match full image URLs including query strings
+      // Replace any image URLs in the message content
       const imageRegex = /(https?:\/\/[^\s]+?\.(png|jpe?g|gif|webp)(\?[^\s]*)?)/gi;
-      const formattedContent = msg.content.replace(imageRegex, (url) => {
+      let formattedContent = msg.content.replace(imageRegex, (url) => {
         return `<br><img class="message-img" src="${url}" alt="image">`;
       });
+
+      // Check for image attachments and add them
+      if (msg.attachments && msg.attachments.length > 0) {
+        msg.attachments.forEach(attachment => {
+          if (attachment.content_type?.startsWith('image/') || /\.(png|jpe?g|gif|webp)$/i.test(attachment.filename)) {
+            formattedContent += `<br><img class="message-img" src="${attachment.url}" alt="attachment">`;
+          }
+        });
+      }
 
       li.innerHTML = `
         <img src="${avatarUrl}" class="avatar">
@@ -37,6 +46,7 @@ async function fetchMessages() {
     console.error('Error fetching messages:', err);
   }
 }
+
 
 
 async function sendMessage(name, content) {
