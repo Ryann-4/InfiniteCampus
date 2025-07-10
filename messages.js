@@ -18,17 +18,22 @@ async function fetchMessages() {
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
       const timestamp = new Date(msg.timestamp).toLocaleString();
 
-      // Replace any image URLs in the message content
       const imageRegex = /(https?:\/\/[^\s]+?\.(png|jpe?g|gif|webp)(\?[^\s]*)?)/gi;
       let formattedContent = msg.content.replace(imageRegex, (url) => {
         return `<br><img class="message-img" src="${url}" alt="image">`;
       });
 
-      // Check for image attachments and add them
+      // Handle attachments
       if (msg.attachments && msg.attachments.length > 0) {
-        msg.attachments.forEach(attachment => {
-          if (attachment.content_type?.startsWith('image/') || /\.(png|jpe?g|gif|webp)$/i.test(attachment.filename)) {
-            formattedContent += `<br><img class="message-img" src="${attachment.url}" alt="attachment">`;
+        msg.attachments.forEach(att => {
+          if (att.content_type?.startsWith('image/')) {
+            formattedContent += `<br><img class="message-img" src="${att.url}" alt="image">`;
+          } else if (att.content_type?.startsWith('video/')) {
+            formattedContent += `<br><video class="message-img" controls src="${att.url}"></video>`;
+          } else if (att.content_type?.startsWith('audio/')) {
+            formattedContent += `<br><audio controls src="${att.url}"></audio>`;
+          } else {
+            formattedContent += `<br><a href="${att.url}" target="_blank" style="color: lightblue;">📎 ${att.filename}</a>`;
           }
         });
       }
@@ -46,8 +51,6 @@ async function fetchMessages() {
     console.error('Error fetching messages:', err);
   }
 }
-
-
 
 async function sendMessage(name, content, file) {
   const channelId = getSelectedChannelId();
@@ -67,21 +70,33 @@ async function sendMessage(name, content, file) {
     document.getElementById('msgInput').value = '';
     document.getElementById('nameInput').value = '';
     document.getElementById('imageInput').value = '';
+    document.getElementById('fileLabel').textContent = ''; // Clear filename text
+
     fetchMessages();
   } catch (err) {
     console.error('Error sending message:', err);
   }
 }
 
-
 document.getElementById('channelSelector').addEventListener('change', fetchMessages);
 
-			document.getElementById('sendForm').addEventListener('submit', (e) => {
+document.getElementById('sendForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const name = document.getElementById('nameInput').value.trim();
   const msg = document.getElementById('msgInput').value.trim();
   const file = document.getElementById('imageInput').files[0];
   if (name && (msg || file)) sendMessage(name, msg, file);
 });
-			fetchMessages();
-			setInterval(fetchMessages, 5000);
+
+// Display selected filename
+document.getElementById('imageInput').addEventListener('change', function () {
+  const fileLabel = document.getElementById('fileLabel');
+  if (this.files.length > 0) {
+    fileLabel.textContent = `Selected: ${this.files[0].name}`;
+  } else {
+    fileLabel.textContent = '';
+  }
+});
+
+fetchMessages();
+setInterval(fetchMessages, 5000);
