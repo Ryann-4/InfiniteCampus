@@ -4,15 +4,25 @@ function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
 
+const displayedMessageIds = new Set();
+
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
   try {
     const res = await fetch(`${backendUrl}/api/messages?channelId=${channelId}`);
     const data = await res.json();
     const list = document.getElementById('messages');
-    list.innerHTML = '';
-    data.reverse().forEach(msg => {
+
+    // Data from API is usually newest first, so reverse for oldest first:
+    const messages = data.slice().reverse();
+
+    messages.forEach(msg => {
+      if (displayedMessageIds.has(msg.id)) return; // skip already displayed
+
+      displayedMessageIds.add(msg.id);
+
       const li = document.createElement('li');
+      // ... same code as before to build li innerHTML ...
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
@@ -23,7 +33,6 @@ async function fetchMessages() {
         return `<br><img class="message-img" src="${url}" alt="image">`;
       });
 
-      // Handle attachments
       if (msg.attachments && msg.attachments.length > 0) {
         msg.attachments.forEach(att => {
           if (att.content_type?.startsWith('image/')) {
@@ -45,7 +54,8 @@ async function fetchMessages() {
           <div>${formattedContent}</div>
           <div class="timestamp">${timestamp}</div>
         </div>`;
-      list.prepend(li);
+
+      list.appendChild(li);  // append new messages at the bottom
     });
   } catch (err) {
     console.error('Error fetching messages:', err);
