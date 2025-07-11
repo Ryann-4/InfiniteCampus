@@ -1,134 +1,171 @@
 <html>
-<head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-7SV03ZXJ9R');
-  </script>
-  <title>Infinite Campus</title>
-  <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
-  <link rel="stylesheet" href="global.min.css">
-  <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
-  <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
-  <meta property="og:title" content="Infinite Campus">
-  <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
-  <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
-  <meta name="theme-color" content="#8cbe37">
-  <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
-  <script src="main.js"></script>
-  <script src="title.js"></script>
-  <script src="global.js"></script>
-  <style>
-    form {
-      margin-bottom: 20px;
-    }
-    input[type="text"] {
-      padding: 8px;
-      width: 300px;
-      margin-bottom: 10px;
-    }
-    button {
-      padding: 8px 12px;
-      background: #7289da;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 15px;
-      background-color: black;
-      width: 75vw;
-      overflow-wrap: anywhere;
-      margin-left: 12.5vw;
-      padding: 10px;
-      border-radius: 25px;
-      color: white;
-      border: 1px solid white;
-    }
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 10px;
-      border: 1px solid white;
-    }
-    .content {
-      flex: 1;
-    }
-    .timestamp {
-      font-size: 0.75em;
-      color: white;
-      margin-top: 4px;
-    }
-    .message-img {
-      max-width: 100%;
-      border-radius: 5px;
-      margin-top: 8px;
-    }
-    #fileLabel {
-      color: white;
-      margin-top: 5px;
-      font-style: italic;
-      min-height: 1.2em;
-    }
-  </style>
-</head>
-<body>
-  <center>
-    <br><br><br><br>
-    <h1 class="tptxt">Live Discord Chat</h1>
-    <select id="channelSelector" class="button">
-      <option value="1334376148087603294">Rules</option>
-      <option value="1334377158789042226">Suggestions</option>
-      <option value="1334377258609147967">Event</option>
-      <option value="1336026895405551667">Site Updates</option>
-      <option value="1389630067457527879">Website Chat</option>
-      <option value="1392882466351616153">Welcome</option>
-      <option value="1309160050904006696">General</option>
-      <option value="1309164699417448550">Memes</option>
-      <option value="1007051892821594183">Advertisements</option>
-      <option value="1086362556203028540">Gaming</option>
-      <option value="1334945403912720586">Support</option>
-      <option value="1391898825588740108">ai chat</option>
-    </select>
-    <form id="sendForm" enctype="multipart/form-data">
-      <input class="button" type="text" id="nameInput" placeholder="Your name" required />
-      <br>
-      <input class="button" type="text" id="msgInput" placeholder="Type your message..." required />
-      <br>
-      <label for="imageInput" class="custom-file-upload">Choose a file</label>
-      <input style="display:none;" type="file" id="imageInput" />
-      <br>
-      <div id="fileLabel"></div>
-      <button class="button" type="submit">Send</button>
-    </form>
-  </center>
-  <ul id="messages"></ul>
-  <br><br><br><br>
-  <script src="messages.js"></script>
-  <script src="footer.js"></script>
-  <script src="drypopup.js"></script>
-  <script src="header.js"></script>
-
-  <script>
-    // Show filename when user selects a file
-    document.getElementById('imageInput').addEventListener('change', function () {
-      const fileLabel = document.getElementById('fileLabel');
-      if (this.files.length > 0) {
-        fileLabel.textContent = `Selected: ${this.files[0].name}`;
-      } else {
-        fileLabel.textContent = '';
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+    </script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-7SV03ZXJ9R');
+    </script>
+    <title>
+      Infinite Campus
+    </title>
+    <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+    <link rel="stylesheet" href="global.min.css">
+    <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+    <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+    <meta property="og:title" content="Infinite Campus">
+    <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+    <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+    <meta name="theme-color" content="#8cbe37">
+    <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+    <script src="main.js">
+    </script>
+    <script src="title.js">
+    </script>
+    <script src="global.js">
+    </script>
+    <style>
+      form {
+        margin-bottom: 20px;
       }
-    });
-  </script>
-</body>
+      input[type="text"] {
+        padding: 8px;
+        width: 300px;
+        margin-bottom: 10px;
+      }
+      button {
+        padding: 8px 12px;
+        background: #7289da;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        background-color: black;
+        width: 75vw;
+        overflow-wrap: anywhere;
+        margin-left: 12.5vw;
+        padding: 10px;
+        border-radius: 25px;
+        color: white;
+        border: 1px solid white;
+      }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+        border: 1px solid white;
+      }
+      .content {
+        flex: 1;
+      }
+      .timestamp {
+        font-size: 0.75em;
+        color: white;
+        margin-top: 4px;
+      }
+      .message-img {
+        max-width: 100%;
+        border-radius: 5px;
+        margin-top: 8px;
+      }
+      #fileLabel {
+        color: white;
+        margin-top: 5px;
+        font-style: italic;
+        min-height: 1.2em;
+      }
+    </style>
+  </head>
+  <body>
+    <center>
+      <br>
+      <br>
+      <br>
+      <br>
+      <h1 class="tptxt">
+        Live Discord Chat
+      </h1>
+      <select id="channelSelector" class="button">
+        <option value="1334376148087603294">
+          Rules
+        </option>
+        <option value="1334377158789042226">
+          Suggestions
+        </option>
+        <option value="1334377258609147967">
+          Event
+        </option>
+        <option value="1336026895405551667">
+          Site Updates
+        </option>
+        <option value="1389630067457527879">
+          Website Chat
+        </option>
+        <option value="1392882466351616153">
+          Welcome
+        </option>
+        <option value="1309160050904006696">
+          General
+        </option>
+        <option value="1309164699417448550">
+          Memes
+        </option>
+        <option value="1007051892821594183">
+          Advertisements
+        </option>
+        <option value="1086362556203028540">
+          Gaming
+        </option>
+        <option value="1334945403912720586">
+          Support
+        </option>
+        <option value="1391898825588740108">
+          Ai Chat
+        </option>
+      </select>
+      <form id="sendForm" enctype="multipart/form-data">
+        <input class="button" type="text" id="nameInput" placeholder="Your name" required />
+        <br>
+        <input class="button" type="text" id="msgInput" placeholder="Type your message..." required />
+        <br>
+        <label for="imageInput" class="custom-file-upload">
+          Choose a file
+        </label>
+        <input style="display:none;" type="file" id="imageInput" />
+        <br>
+        <div id="fileLabel">
+        </div>
+        <button class="button" type="submit">
+          Send
+        </button>
+      </form>
+    </center>
+    <ul id="messages"></ul>
+    <br>
+    <br>
+    <br>
+    <br>
+    <script src="messages.js">
+    </script>
+    <script src="footer.js">
+    </script>
+    <script src="drypopup.js">
+    </script>
+    <script src="header.js">
+    </script>
+    <script src="files.js">
+    </script>
+  </body>
 </html>
