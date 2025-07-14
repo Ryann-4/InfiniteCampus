@@ -46,13 +46,13 @@ const headerHTML = `
             Chat
         </div>
         <div class="dropdown" id="chatDropdown">
-            <button onclick="location.href='InfiniteTalkers'">
+            <button style="font-weight:bold;" onclick="location.href='InfiniteTalkers'">
                 Padlet
             </button>
-            <button onclick="location.href='InfiniteChatters'">
+            <button style="font-weight:bold;" onclick="location.href='InfiniteChatters'">
                 Website Chat
             </button>
-            <button onclick="location.href='InfiniteDiscords'">
+            <button style="font-weight:bold;" onclick="location.href='InfiniteDiscords'">
                 Live Discord Chat
             </button>
         </div>
