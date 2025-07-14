@@ -6,6 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     <footer id="text-only-footer" style="background-color:transparent; text-align:right; bottom:-4">
       <p>Pissing off your teachers since 2024</p>
     </footer>
+    <center>
+      <footer style="background-color:transparent; text-align:center; font-size:120%">
+        <a class="headerbtn" href="InfinitePolicys">
+          Warnings And Disclaimers
+        </a>
+      </footer>
+    </center>
   `;
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = footerHTML;
