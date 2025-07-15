@@ -56,9 +56,20 @@ const headerHTML = `
                 Live Discord Chat
             </button>
         </div>
-        <a class="headerbtn" style="right:470; top:14" href="InfiniteSupport">
+        <div id="helpToggle" class="dropdown-toggle headerbtn" style="right:470; top:14; position:absolute;">
             Help/Support
-        </a>
+        </div>
+        <div class="dropdown" id="helpDropdown">
+            <button style="font-weight:bold;" onclick="location.href='InfiniteQuestions'">
+                Commonly Asked Questions
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteIssues'">
+                Report A Bug
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteErrors'">
+                Check Error Codes
+            </button>
+        </div>
         <a class="headerbtn" style="right:400; top:14" href="InfiniteGamers">
             Games
         </a>
@@ -102,15 +113,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const downloadToggle = document.getElementById('downloadToggle');
     const downloadDropdown = document.getElementById('downloadDropdown');
 
+    const helpToggle = document.getElementById('helpToggle');
+    const helpDropdown = document.getElementById('helpDropdown');
+
     chatToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         chatDropdown.style.display = chatDropdown.style.display === 'flex' ? 'none' : 'flex';
         downloadDropdown.style.display = 'none';
+        helpDropdown.style.display = 'none';
     });
 
     downloadToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         downloadDropdown.style.display = downloadDropdown.style.display === 'flex' ? 'none' : 'flex';
+        chatDropdown.style.display = 'none';
+        helpDropdown.style.display = 'none';
+    });
+
+    helpToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        helpDropdown.style.display = helpDropdown.style.display === 'flex' ? 'none' : 'flex';
+        downloadDropdown.style.display = 'none';
         chatDropdown.style.display = 'none';
     });
 
@@ -120,6 +143,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (!downloadDropdown.contains(e.target) && !downloadToggle.contains(e.target)) {
             downloadDropdown.style.display = 'none';
+        }
+        if (!helpDropdown.contains(e.target) && !helpToggle.contains(e.target)) {
+            helpDropdown.style.display = 'none';
         }
     });
 });
