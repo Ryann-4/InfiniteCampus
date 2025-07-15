@@ -71,7 +71,7 @@ const headerHTML = `
         <div class="dropdown-toggle headerbtn" style="right:120; top:14; position:absolute;">
             Download Games
         </div>
-        <div class="dropdown" id="downloadDropdown">
+        <div class="dropdown2" id="downloadDropdown">
             <button style="font-weight:bold;" onclick="location.href='InfiniteMiners'">
                 How To Download Minecraft
             </button>
