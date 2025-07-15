@@ -59,7 +59,7 @@ const headerHTML = `
         <div id="helpToggle" class="dropdown-toggle headerbtn" style="right:470; top:14; position:absolute;">
             Help/Support
         </div>
-        <div class="dropdown" id="helpDropdown">
+        <div style="right:400;" class="dropdown" id="helpDropdown">
             <button style="font-weight:bold;" onclick="location.href='InfiniteQuestions'">
                 Commonly Asked Questions
             </button>
