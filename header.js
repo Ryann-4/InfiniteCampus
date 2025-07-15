@@ -68,9 +68,23 @@ const headerHTML = `
         <a class="headerbtn" style="right:250; top:14" href="InfiniteUpdaters">
             Updates
         </a>
-        <a class="headerbtn" style="right:120; top:14" href="InfiniteFiles">
+        <div class="dropdown-toggle headerbtn" style="right:120; top:14; position:absolute;">
             Download Games
-        </a>
+        </div>
+        <div class="dropdown" id="chatDropdown">
+            <button style="font-weight:bold;" onclick="location.href='InfiniteMiners'">
+                How To Download Minecraft
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteOpeners'">
+                Download This Webpage
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='https://downloadgames-14894445.codehs.me/ngon.html'">
+                Download Ngon
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='https://downloadgames-14894445.codehs.me/OVO.html'">
+                Download 0v0
+            </button>
+        </div>
         <a class="contactme" style="right:0; top:10; margin-right:10px" href="InfiniteContacts">
             Contact Me
         </a>
