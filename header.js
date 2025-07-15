@@ -71,7 +71,7 @@ const headerHTML = `
         <div class="dropdown-toggle headerbtn" style="right:120; top:14; position:absolute;">
             Download Games
         </div>
-        <div class="dropdown" id="chatDropdown">
+        <div class="dropdown" id="downloadDropdown">
             <button style="font-weight:bold;" onclick="location.href='InfiniteMiners'">
                 How To Download Minecraft
             </button>
@@ -97,12 +97,17 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.insertBefore(headerWrapper, document.body.firstChild);
   const dropdownToggle = document.querySelector('.dropdown-toggle');
   const dropdownMenu = document.getElementById('chatDropdown');
+  const dropdownMenus = document.getElementById('downloadDropdown');
   dropdownToggle.addEventListener('click', () => {
     dropdownMenu.style.display = dropdownMenu.style.display === 'flex' ? 'none' : 'flex';
+    dropdownMenus.style.display = dropdownMenus.style.display === 'flex' ? 'none' : 'flex;'
   });
   document.addEventListener('click', (e) => {
     if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
       dropdownMenu.style.display = 'none';
+    if (!dropdownToggle.contains(e.target) && !dropdownMenus.contains(e.target)) {
+      dropdownMenus.style.display = 'none';
+    }
     }
   });
 });
