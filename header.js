@@ -42,7 +42,7 @@ const headerHTML = `
         <a class="headerbtn" style="right:650; top:14" href="InfiniteApps">
             Apps
         </a>
-        <div class="dropdown-toggle headerbtn" style="right:595; top:14; position:absolute;">
+        <div id="chatToggle" class="dropdown-toggle headerbtn" style="right:595; top:14; position:absolute;">
             Chat
         </div>
         <div class="dropdown" id="chatDropdown">
@@ -68,10 +68,10 @@ const headerHTML = `
         <a class="headerbtn" style="right:250; top:14" href="InfiniteUpdaters">
             Updates
         </a>
-        <div class="dropdown-toggle headerbtn" style="right:120; top:14; position:absolute;">
+        <div id="downloadToggle" class="dropdown-toggle headerbtn" style="right:120; top:14; position:absolute;">
             Download Games
         </div>
-        <div class="dropdown2" id="downloadDropdown">
+        <div class="dropdown" id="downloadDropdown">
             <button style="font-weight:bold;" onclick="location.href='InfiniteMiners'">
                 How To Download Minecraft
             </button>
@@ -92,23 +92,34 @@ const headerHTML = `
 </strong>
 `;
 document.addEventListener("DOMContentLoaded", () => {
-  const headerWrapper = document.createElement("div");
-  headerWrapper.innerHTML = headerHTML;
-  document.body.insertBefore(headerWrapper, document.body.firstChild);
-  const dropdownToggle = document.querySelector('.dropdown-toggle');
-  const dropdownMenu = document.getElementById('chatDropdown');
-  const dropdownMenus = document.getElementById('downloadDropdown');
-  dropdownToggle.addEventListener('click', () => {
-    dropdownMenu.style.display = dropdownMenu.style.display === 'flex' ? 'none' : 'flex';
-    dropdownMenus.style.display = dropdownMenus.style.display === 'flex' ? 'none' : 'flex;'
-  });
-  document.addEventListener('click', (e) => {
-    if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
-      dropdownMenu.style.display = 'none';
-    }else {
-        if (!dropdownToggle.contains(e.target) && !dropdownMenus.contains(e.target)) {
-      dropdownMenus.style.display = 'none';
-    }
-    }
-  });
+    const headerWrapper = document.createElement("div");
+    headerWrapper.innerHTML = headerHTML;
+    document.body.insertBefore(headerWrapper, document.body.firstChild);
+
+    const chatToggle = document.getElementById('chatToggle');
+    const chatDropdown = document.getElementById('chatDropdown');
+
+    const downloadToggle = document.getElementById('downloadToggle');
+    const downloadDropdown = document.getElementById('downloadDropdown');
+
+    chatToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        chatDropdown.style.display = chatDropdown.style.display === 'flex' ? 'none' : 'flex';
+        downloadDropdown.style.display = 'none';
+    });
+
+    downloadToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        downloadDropdown.style.display = downloadDropdown.style.display === 'flex' ? 'none' : 'flex';
+        chatDropdown.style.display = 'none';
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!chatDropdown.contains(e.target) && !chatToggle.contains(e.target)) {
+            chatDropdown.style.display = 'none';
+        }
+        if (!downloadDropdown.contains(e.target) && !downloadToggle.contains(e.target)) {
+            downloadDropdown.style.display = 'none';
+        }
+    });
 });
