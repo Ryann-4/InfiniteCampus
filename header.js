@@ -105,7 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener('click', (e) => {
     if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
       dropdownMenu.style.display = 'none';
-    if (!dropdownToggle.contains(e.target) && !dropdownMenus.contains(e.target)) {
+    }else {
+        if (!dropdownToggle.contains(e.target) && !dropdownMenus.contains(e.target)) {
       dropdownMenus.style.display = 'none';
     }
     }
