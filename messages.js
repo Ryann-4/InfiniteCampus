@@ -68,7 +68,6 @@ async function sendMessage(name, content, file) {
       body: formData
     });
     document.getElementById('msgInput').value = '';
-    document.getElementById('nameInput').value = '';
     document.getElementById('imageInput').value = '';
     fetchMessages();
   } catch (err) {
