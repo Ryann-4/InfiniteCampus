@@ -69,6 +69,7 @@ async function sendMessage(name, content, file) {
     });
     document.getElementById('msgInput').value = '';
     document.getElementById('imageInput').value = '';
+    document.getElementById('fileLabel').textContent = ''; // Reset file label
     fetchMessages();
   } catch (err) {
     console.error('Error sending message:', err);
@@ -87,6 +88,14 @@ document.getElementById('sendForm').addEventListener('submit', (e) => {
   const msg = document.getElementById('msgInput').value.trim();
   const file = document.getElementById('imageInput').files[0];
   if (name && (msg || file)) sendMessage(name, msg, file);
+});
+document.getElementById('imageInput').addEventListener('change', function () {
+  const fileLabel = document.getElementById('fileLabel');
+  if (this.files.length > 0) {
+    fileLabel.textContent = `Selected: ${this.files[0].name}`;
+  } else {
+    fileLabel.textContent = '';
+  }
 });
 fetchMessages();
 setInterval(fetchMessages, 5000);
