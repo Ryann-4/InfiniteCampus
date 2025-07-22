@@ -69,7 +69,7 @@ async function sendMessage(name, content, file) {
     });
     document.getElementById('msgInput').value = '';
     document.getElementById('imageInput').value = '';
-    document.getElementById('fileLabel').textContent = ''; // Reset file label
+    document.getElementById('fileLabel').textContent = '';
     fetchMessages();
   } catch (err) {
     console.error('Error sending message:', err);
