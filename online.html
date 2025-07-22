@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Infinite Campus</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: transparent;
+      color: white;
+    }
+    h1 {
+      text-align: center;
+      color: #7289da;
+    }
+    #presenceCount {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 10px;
+      color: #50fa7b;
+    }
+    #members {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .member {
+      background: transparent;
+      padding: 3px;
+      border-radius: 8px;
+      text-align: center;
+      width: 120px;
+      position: relative;
+    }
+    .member img {
+      width: 60px;
+      height: 60px;
+      border:1px solid white;
+      border-radius: 50%;
+      display: block;
+      margin: 0 auto 5px;
+      position: relative;
+      z-index: 1;
+    }
+    .status-indicator {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      border: 2.5px solid #1e1e2e;
+      right: 40px;
+      margin-top: -20px;
+      z-index: 2;
+      box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    }
+    .status-online {
+      background-color: #43b581;
+    }
+    .status-idle {
+      background-color: #faa61a;
+    }
+    .status-dnd {
+      background-color: #f04747;
+    }
+    .status-offline {
+      background-color: #747f8d;
+    }
+    .member-username {
+      font-weight: 600;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <p id="presenceCount">Loading presence count...</p>
+  <div id="members">Loading members...</div>
+  <pre id="output" style="display:none;"></pre>
+  <script>
+    const url = "https://discord.com/api/guilds/1002698920809463808/widget.json";
+    const presenceCountEl = document.getElementById("presenceCount");
+    const membersEl = document.getElementById("members");
+    const output = document.getElementById("output");
+    const excludeNames = [
+      "Dad",
+      "Default Bot",
+      "Infinite Campus",
+      "Log Bot",
+      "Music Bot",
+    ];
+    function getStatusClass(status) {
+      switch (status) {
+        case "online":
+          return "status-online";
+        case "idle":
+          return "status-idle";
+        case "dnd":
+          return "status-dnd";
+        case "offline":
+        default:
+          return "status-offline";
+      }
+    }
+    async function fetchDiscordWidget() {
+      output.textContent = "Fetching data...";
+      presenceCountEl.textContent = "Loading presence count...";
+      membersEl.innerHTML = "Loading members...";
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Failed to fetch data: " + response.status);
+        }
+        const data = await response.json();
+        output.textContent = JSON.stringify(data, null, 2);
+        if (Array.isArray(data.members) && data.members.length > 0) {
+          const filteredMembers = data.members.filter(
+            (member) => !excludeNames.includes(member.username)
+          );
+
+          presenceCountEl.textContent = `Online Members: ${filteredMembers.length}`;
+
+          if (filteredMembers.length > 0) {
+            membersEl.innerHTML = filteredMembers
+              .map((member) => {
+                const status = member.status || "offline";
+                const statusClass = getStatusClass(status);
+                return `
+                  <div class="member">
+                    <img src="${member.avatar_url}" alt="${member.username}" />
+                    <span class="status-indicator ${statusClass}" title="${status}"></span>
+                    <div class="member-username">${member.username}</div>
+                  </div>
+                `;
+              })
+              .join("");
+          } else {
+            membersEl.textContent = "No members online after filtering.";
+          }
+        } else {
+          presenceCountEl.textContent = "Presence count not available.";
+          membersEl.textContent = "No members online.";
+        }
+      } catch (error) {
+        output.textContent = "Error: " + error;
+        presenceCountEl.textContent = "Error fetching presence count.";
+        membersEl.textContent = "Error loading members.";
+      }
+    }
+    fetchDiscordWidget();
+    setInterval(fetchDiscordWidget, 10000);
+  </script>
+</body>
+</html>

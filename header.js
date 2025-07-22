@@ -32,6 +32,7 @@ const headerHTML = `
 <strong>
     <header id="site-header">
         <iframe class="weather" src="InfiniteForecasts">
+            Loading Weather...
         </iframe>
         <a href="https://ryann-4.github.io/InfiniteCampus">
             <img class="logo" src="https://codehs.com/uploads/d3ca105004013f2dc047f4bc0f669f6a" alt="Campus" style="left:335">
