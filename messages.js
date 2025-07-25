@@ -1,4 +1,3 @@
-const m = 'https://discord-proxy1.onrender.com';
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }

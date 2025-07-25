@@ -5,9 +5,6 @@ function base64Decode(str) {
     return '';
   }
 }
-const n = atob("aW5maW5pdGVjb2RlaHNAZ21haWwuY29t");
-const o = atob("aW5maW5pdGU=");
-const p = "SW5maW5pdGVTZWNyZXRQYWdlcw==";
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("loginBtn").addEventListener("click", checkCredentials);
   document.getElementById("username").addEventListener("keypress", handleKeyPress);

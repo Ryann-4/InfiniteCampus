@@ -8,7 +8,6 @@ const encryptedUsers = [
         password: "RGFkZHlOaXRyaXg2OQ=="
       }
     ];
-    const l = "SW5maW5pdGVBZG1pblVwZGF0ZXJz";
     function decodeBase64(str) {
       try {
         return atob(str);

@@ -1,11 +1,5 @@
 let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
 (function () {
-  const key = 5;
-  const f = "bXl5dXg/NDRpbnhodHdpM2h0cjRmdW40fGpnbXR0cHg0Njg9Pjs4NTY1Ojs6Pjc5OTw+OjQ2Pl16OHJQPk1qUHVLfV95alpxa2teTTdUS1JWOkc5XGtzXmd4bzdTaFBUVU5VdXA2clRYc11YMl5pSjpceVNfVnNJUA==";
-  const g = "TWZocGp3OTY=";
-  const h = "WGp1d3M2NzY1Jg==";
-  const i = "Tml0cml4";
-  const j = "RGFkZHlOaXRyaXg2OQ==";
   function decryptCaesar(base64Str, key) {
     try {
       const shifted = atob(base64Str);
