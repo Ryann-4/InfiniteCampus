@@ -1,4 +1,5 @@
 async function showLocationAndIp() {
+    const infoEl = document.getElementById("ligma");
     try {
         const res  = await fetch("https://ipapi.co/json/");
         const data = await res.json();
@@ -9,7 +10,6 @@ async function showLocationAndIp() {
         const zipCode = data.postal ?? "Zip Code";
         const latitude = data.latitude ?? "0";
         const longitude = data.longitude ?? "0";
-        const infoEl = document.getElementById("ligma");
         if (infoEl) {
             infoEl.innerText =
             `Current State:\n ${currentState}\n` +
@@ -24,7 +24,7 @@ async function showLocationAndIp() {
     } catch (err) {
         infoEl.innerText =
         `Error #3`;
-        info.El.classList.add("show");
+        infoEl.classList.add("show");
     }
 }
 async function init() {
