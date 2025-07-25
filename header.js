@@ -62,7 +62,7 @@ const headerHTML = `
         </div>
         <div style="right:400;" class="dropdown" id="helpDropdown">
             <button style="font-weight:bold;" onclick="location.href='InfiniteQuestions'">
-                Commonly Asked Questions
+                FAQ
             </button>
             <button style="font-weight:bold;" onclick="location.href='InfiniteIssues'">
                 Report A Bug
