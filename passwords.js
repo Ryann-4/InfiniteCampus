@@ -14,8 +14,8 @@ function checkCredentials() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
   const message = document.getElementById("message");
-  const redirectUrl = base64Decode(p);
-  if (username === n && password === o) {
+  const redirectUrl = base64Decode(l);
+  if (username === j && password === k) {
     window.location.href = redirectUrl;
   } else {
     message.textContent = "Err#4 Username And/Or Password Is Incorrect";

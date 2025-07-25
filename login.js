@@ -23,7 +23,7 @@ const encryptedUsers = [
         decodeBase64(user.password) === inputPass
       );
       if (valid) {
-        window.location.href = decodeBase64(l);
+        window.location.href = decodeBase64(h);
       } else {
         alert("ERR#4 Invalid username or password.");
       }

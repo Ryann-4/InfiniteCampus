@@ -32,7 +32,7 @@
     async function fetchDiscordPresence() {
       presenceCountEl.textContent = "Loading presence count...";
       try {
-        const response = await fetch(q);
+        const response = await fetch(m);
         if (!response.ok) {
           throw new Error("Failed to fetch data: " + response.status);
         }

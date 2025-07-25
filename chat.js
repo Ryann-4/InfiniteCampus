@@ -18,10 +18,10 @@ let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
     }
   }
   CHAT_WEBHOOK = decryptCaesar(f, key);
-  CHAT_USERNAME = decryptCaesar(g, key);
-  CHAT_PASSWORD = decryptCaesar(h, key);
-  window.USERNAME_NITRIX = decryptBase64(i);
-  window.PASSWORD_NITRIX = decryptBase64(j);
+  CHAT_USERNAME = decryptCaesar(a, key);
+  CHAT_PASSWORD = decryptCaesar(b, key);
+  window.USERNAME_NITRIX = decryptBase64(c);
+  window.PASSWORD_NITRIX = decryptBase64(d);
 })();
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import {

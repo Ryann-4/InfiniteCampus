@@ -12,7 +12,7 @@ async function fetchMessages() {
     displayedMessageIds.set(channelId, channelSet);
   }
   try {
-    const res = await fetch(`${m}/api/messages?channelId=${channelId}`);
+    const res = await fetch(`${i}/api/messages?channelId=${channelId}`);
     const data = await res.json();
     const list = document.getElementById('messages');
     if (data.length === 0) {
@@ -70,7 +70,7 @@ async function sendMessage(name, content, file) {
     formData.append('file', file);
   }
   try {
-    await fetch(`${m}/send`, {
+    await fetch(`${i}/send`, {
       method: 'POST',
       body: formData
     });

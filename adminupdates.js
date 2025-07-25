@@ -13,7 +13,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const updatesRef = ref(db, 'updates');
-const webhookURL = atob(r);
+const webhookURL = atob(n);
 let lastSentKey = null;
 let hasLoaded = false;
 function sendToDiscord(message) {

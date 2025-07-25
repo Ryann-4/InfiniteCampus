@@ -11,7 +11,7 @@
           return '';
         }
       }
-      DISCORD_WEBHOOK_URL = decrypt(k, key);
+      DISCORD_WEBHOOK_URL = decrypt(g, key);
     })();
     async function sendMessage() {
       const nameInput = document.getElementById("name").value.trim();
