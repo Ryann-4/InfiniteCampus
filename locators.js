@@ -22,7 +22,7 @@ async function showLocationAndIp() {
             infoEl.classList.add("show");
         }
     } catch (err) {
-        document.body.innerHTML = "<center><br><br><br><br><div style='color:white;'>Error#3</div></center><script src='header.js'></script><script src='footer.js'></script><script src='drypopup.js'></script>";
+        document.center.innerHTML = "<br><br><br><br><div style='color:white;'>Error#3</div>";
     }
 }
 async function init() {
