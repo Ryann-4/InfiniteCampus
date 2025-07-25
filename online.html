@@ -19,7 +19,6 @@
 <body>
   <p style="padding:0px; margin:0px;" id="presenceCount">Loading presence count...</p>
   <script>
-    const url = "https://discord.com/api/guilds/1002698920809463808/widget.json";
     const presenceCountEl = document.getElementById("presenceCount");
     const excludeNames = [
       "Dad",
@@ -31,7 +30,7 @@
     async function fetchDiscordPresence() {
       presenceCountEl.textContent = "Loading presence count...";
       try {
-        const response = await fetch(url);
+        const response = await fetch(q);
         if (!response.ok) {
           throw new Error("Failed to fetch data: " + response.status);
         }
