@@ -10,6 +10,8 @@ setMessage(8, "Message Cannot Be Empty");
 setMessage(9, "Failed To Load Album Art Image, Using Fallback");
 setMessage(10, "Failed To Fetch Messages");
 setMessage(11, "Failed To Send Message");
+setMessage(12, "Failed To Load Messages");
+setMessage(13, "Failed To Fetch Prescence Count");
 function setMessage(num, message) {
     numberMessageMap[num] = message;
 }

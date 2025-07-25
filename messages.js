@@ -58,8 +58,8 @@ async function fetchMessages() {
       list.prepend(li);
     });
   } catch (err) {
-    console.error('Error fetching messages:', err);
-    loadingEl.textContent = 'Failed to load messages.';
+    console.error('ERR#10 Error fetching messages:', err);
+    loadingEl.textContent = 'ERR#12 Failed to load messages.';
   }
 }
 async function sendMessage(name, content, file) {
@@ -80,7 +80,7 @@ async function sendMessage(name, content, file) {
     document.getElementById('fileLabel').textContent = '';
     fetchMessages();
   } catch (err) {
-    console.error('Error sending message:', err);
+    console.error('ERR#11 Error sending message:', err);
   }
 }
 document.getElementById('channelSelector').addEventListener('change', () => {
