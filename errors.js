@@ -27,4 +27,3 @@ document.getElementById('inputNumber').addEventListener('keydown', function(even
         checkNumber();
     }
 });
-// test
