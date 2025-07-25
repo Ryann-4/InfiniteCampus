@@ -4,6 +4,8 @@ function getSelectedChannelId() {
 }
 const displayedMessageIds = new Map();
 async function fetchMessages() {
+  const loadingEl = document.getElementById('loadingMessage');
+  loadingEl.style.display = 'block';
   const channelId = getSelectedChannelId();
   let channelSet = displayedMessageIds.get(channelId);
   if (!channelSet) {
@@ -14,6 +16,11 @@ async function fetchMessages() {
     const res = await fetch(`${backendUrl}/api/messages?channelId=${channelId}`);
     const data = await res.json();
     const list = document.getElementById('messages');
+    if (data.length === 0) {
+      loadingEl.textContent = 'No messages here yet.';
+    } else {
+      loadingEl.style.display = 'none';
+    }
     data.reverse().forEach(msg => {
       if (channelSet.has(msg.id)) return;
       channelSet.add(msg.id);
@@ -52,6 +59,7 @@ async function fetchMessages() {
     });
   } catch (err) {
     console.error('Error fetching messages:', err);
+    loadingEl.textContent = 'Failed to load messages.';
   }
 }
 async function sendMessage(name, content, file) {
