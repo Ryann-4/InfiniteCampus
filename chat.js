@@ -1,11 +1,11 @@
 let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
 (function () {
   const key = 5;
-  const encryptedWebhook = "bXl5dXg/NDRpbnhodHdpM2h0cjRmdW40fGpnbXR0cHg0Njg9Pjs4NTY1Ojs6Pjc5OTw+OjQ2Pl16OHJQPk1qUHVLfV95alpxa2teTTdUS1JWOkc5XGtzXmd4bzdTaFBUVU5VdXA2clRYc11YMl5pSjpceVNfVnNJUA==";
-  const encryptedUsername = "TWZocGp3OTY=";
-  const encryptedPassword = "WGp1d3M2NzY1Jg==";
-  const encryptedUsernameNitrix = "Tml0cml4";
-  const encryptedPasswordNitrix = "RGFkZHlOaXRyaXg2OQ==";
+  const f = "bXl5dXg/NDRpbnhodHdpM2h0cjRmdW40fGpnbXR0cHg0Njg9Pjs4NTY1Ojs6Pjc5OTw+OjQ2Pl16OHJQPk1qUHVLfV95alpxa2teTTdUS1JWOkc5XGtzXmd4bzdTaFBUVU5VdXA2clRYc11YMl5pSjpceVNfVnNJUA==";
+  const g = "TWZocGp3OTY=";
+  const h = "WGp1d3M2NzY1Jg==";
+  const i = "Tml0cml4";
+  const j = "RGFkZHlOaXRyaXg2OQ==";
   function decryptCaesar(base64Str, key) {
     try {
       const shifted = atob(base64Str);
@@ -23,11 +23,11 @@ let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
       return '';
     }
   }
-  CHAT_WEBHOOK = decryptCaesar(encryptedWebhook, key);
-  CHAT_USERNAME = decryptCaesar(encryptedUsername, key);
-  CHAT_PASSWORD = decryptCaesar(encryptedPassword, key);
-  window.USERNAME_NITRIX = decryptBase64(encryptedUsernameNitrix);
-  window.PASSWORD_NITRIX = decryptBase64(encryptedPasswordNitrix);
+  CHAT_WEBHOOK = decryptCaesar(f, key);
+  CHAT_USERNAME = decryptCaesar(g, key);
+  CHAT_PASSWORD = decryptCaesar(h, key);
+  window.USERNAME_NITRIX = decryptBase64(i);
+  window.PASSWORD_NITRIX = decryptBase64(j);
 })();
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import {

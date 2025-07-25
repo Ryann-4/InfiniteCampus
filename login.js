@@ -8,7 +8,7 @@ const encryptedUsers = [
         password: "RGFkZHlOaXRyaXg2OQ=="
       }
     ];
-    const redirectURL = "SW5maW5pdGVBZG1pblVwZGF0ZXJz";
+    const l = "SW5maW5pdGVBZG1pblVwZGF0ZXJz";
     function decodeBase64(str) {
       try {
         return atob(str);
@@ -24,7 +24,7 @@ const encryptedUsers = [
         decodeBase64(user.password) === inputPass
       );
       if (valid) {
-        window.location.href = decodeBase64(redirectURL);
+        window.location.href = decodeBase64(l);
       } else {
         alert("ERR#4 Invalid username or password.");
       }

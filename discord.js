@@ -1,6 +1,6 @@
     let DISCORD_WEBHOOK_URL;
     (function () {
-      const encrypted = "bXl5dXg/NDRpbnhodHdpM2h0cjRmdW40fGpnbXR0cHg0Njg9Pjg4OTg8Nzw1PD4+Nj03NzR3fEk1ZEtkVUdId3JsfEd2bm1RO2o2VTVHTnhWUmRMb3htdX5ZV1I2VGxca0Z3XnZ5OWRxZ0dQWDY1eFB8U1A9SDdLVg==";
+      const k = "bXl5dXg/NDRpbnhodHdpM2h0cjRmdW40fGpnbXR0cHg0Njg9Pjg4OTg8Nzw1PD4+Nj03NzR3fEk1ZEtkVUdId3JsfEd2bm1RO2o2VTVHTnhWUmRMb3htdX5ZV1I2VGxca0Z3XnZ5OWRxZ0dQWDY1eFB8U1A9SDdLVg==";
       const key = 5;
       function decrypt(str, key) {
         try {
@@ -12,7 +12,7 @@
           return '';
         }
       }
-      DISCORD_WEBHOOK_URL = decrypt(encrypted, key);
+      DISCORD_WEBHOOK_URL = decrypt(k, key);
     })();
     async function sendMessage() {
       const nameInput = document.getElementById("name").value.trim();

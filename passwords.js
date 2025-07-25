@@ -5,9 +5,9 @@ function base64Decode(str) {
     return '';
   }
 }
-const VALID_USERNAME = atob("aW5maW5pdGVjb2RlaHNAZ21haWwuY29t");
-const VALID_PASSWORD = atob("aW5maW5pdGU=");
-const REDIRECT_URL_BASE64 = "SW5maW5pdGVTZWNyZXRQYWdlcw==";
+const n = atob("aW5maW5pdGVjb2RlaHNAZ21haWwuY29t");
+const o = atob("aW5maW5pdGU=");
+const p = "SW5maW5pdGVTZWNyZXRQYWdlcw==";
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("loginBtn").addEventListener("click", checkCredentials);
   document.getElementById("username").addEventListener("keypress", handleKeyPress);
@@ -17,8 +17,8 @@ function checkCredentials() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
   const message = document.getElementById("message");
-  const redirectUrl = base64Decode(REDIRECT_URL_BASE64);
-  if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+  const redirectUrl = base64Decode(p);
+  if (username === n && password === o) {
     window.location.href = redirectUrl;
   } else {
     message.textContent = "Err#4 Username And/Or Password Is Incorrect";

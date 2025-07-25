@@ -1,9 +1,4 @@
 (function () {
-  const encryptedUsername = "TWZocGp3OTY=";
-  const encryptedPassword = "WGp1d3M2NzY1Jg==";
-  const encryptedUsernameNitrix = "Tml0cml4";
-  const encryptedPasswordNitrix = "RGFkZHlOaXRyaXg2OQ==";
-  const encryptedApiKey = "QWl6YVN5QWd6NjZYNW9RRzZKdnJKamlWRVd3VEtJNFRsZnhBNHF3";
   function decryptCaesar(base64Str, key = 5) {
     try {
       const shifted = atob(base64Str);
@@ -21,11 +16,11 @@
       return '';
     }
   }
-  window.CHAT_USERNAME = decryptCaesar(encryptedUsername);
-  window.CHAT_PASSWORD = decryptCaesar(encryptedPassword);
-  window.USERNAME_NITRIX = decryptBase64(encryptedUsernameNitrix);
-  window.PASSWORD_NITRIX = decryptBase64(encryptedPasswordNitrix);
-  window.API_KEY = decryptBase64(encryptedApiKey);
+  window.CHAT_USERNAME = decryptCaesar(a);
+  window.CHAT_PASSWORD = decryptCaesar(b);
+  window.USERNAME_NITRIX = decryptBase64(c);
+  window.PASSWORD_NITRIX = decryptBase64(d);
+  window.API_KEY = decryptBase64(e);
 })();
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";

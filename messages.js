@@ -1,4 +1,4 @@
-const backendUrl = 'https://discord-proxy1.onrender.com';
+const m = 'https://discord-proxy1.onrender.com';
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
@@ -13,7 +13,7 @@ async function fetchMessages() {
     displayedMessageIds.set(channelId, channelSet);
   }
   try {
-    const res = await fetch(`${backendUrl}/api/messages?channelId=${channelId}`);
+    const res = await fetch(`${m}/api/messages?channelId=${channelId}`);
     const data = await res.json();
     const list = document.getElementById('messages');
     if (data.length === 0) {
@@ -71,7 +71,7 @@ async function sendMessage(name, content, file) {
     formData.append('file', file);
   }
   try {
-    await fetch(`${backendUrl}/send`, {
+    await fetch(`${m}/send`, {
       method: 'POST',
       body: formData
     });
