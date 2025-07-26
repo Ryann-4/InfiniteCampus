@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Discord Presence Count</title>
+  <title>
+    Infinite Campus
+  </title>
   <script src="main.js">
   </script>
   <style>
@@ -19,7 +21,9 @@
   </style>
 </head>
 <body>
-  <p style="padding:0px; margin:0px;" id="presenceCount">Loading presence count...</p>
+  <p style="padding:0px; margin:0px;" id="presenceCount">
+    Loading presence count...
+  </p>
   <script>
     const presenceCountEl = document.getElementById("presenceCount");
     async function fetchDiscordPresence() {
@@ -27,7 +31,7 @@
       try {
         const response = await fetch(m);
         if (!response.ok) {
-          throw new Error("Failed to fetch data: " + response.status);
+          throw new Error("ERR#13 Failed to fetch data: " + response.status);
         }
         const data = await response.json();
         if (Array.isArray(data.members) && data.members.length > 0) {
