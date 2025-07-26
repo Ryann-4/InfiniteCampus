@@ -12,6 +12,23 @@
   const l = "SW5maW5pdGVTZWNyZXRQYWdlcw==";
   const m = "https://discord.com/api/guilds/1002698920809463808/widget.json";
   const n = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTM4OTcwNzcwMDQ1OTUzNjUyNC9tMlBJRkwtdGdpd1dkX2ZyTWV4c1NXb001Z2ZNNE56TzFkeEYyQWRqQThvY18tckswbzFYRTBDWGlUS0VPcXFZaldabw==";
+  const o = [
+      "Dad",
+      "Default Bot",
+      "Infinite Campus",
+      "Log Bot",
+      "Music Bot",
+    ];
+  const p = [
+    {
+      username: "SGFja2VyNDE=",
+      password: "U2Vwcm4xMjEwIQ=="
+    },
+    {
+      username: "Tml0cml4",
+      password: "RGFkZHlOaXRyaXg2OQ=="
+    }
+    ];
   const key = 5;
 console.log('%cWelcome To The Console If You Do Not Know What You Are Doing, Close It, If You Do I Would Be Happy To Let You Develop The Website With Me infinitecodehs@gmail.com', 'color: purple; font-size: 24px; font-weight: bold;');
             console.log('%cC', `

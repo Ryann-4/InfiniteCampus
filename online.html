@@ -22,13 +22,6 @@
   <p style="padding:0px; margin:0px;" id="presenceCount">Loading presence count...</p>
   <script>
     const presenceCountEl = document.getElementById("presenceCount");
-    const excludeNames = [
-      "Dad",
-      "Default Bot",
-      "Infinite Campus",
-      "Log Bot",
-      "Music Bot",
-    ];
     async function fetchDiscordPresence() {
       presenceCountEl.textContent = "Loading presence count...";
       try {
@@ -39,7 +32,7 @@
         const data = await response.json();
         if (Array.isArray(data.members) && data.members.length > 0) {
           const filteredMembers = data.members.filter(
-            (member) => !excludeNames.includes(member.username)
+            (member) => !o.includes(member.username)
           );
           presenceCountEl.textContent = `Online Members: ${filteredMembers.length}`;
         } else {

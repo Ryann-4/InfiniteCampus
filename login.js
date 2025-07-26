@@ -1,13 +1,3 @@
-const encryptedUsers = [
-      {
-        username: "SGFja2VyNDE=",
-        password: "U2Vwcm4xMjEwIQ=="
-      },
-      {
-        username: "Tml0cml4",
-        password: "RGFkZHlOaXRyaXg2OQ=="
-      }
-    ];
     function decodeBase64(str) {
       try {
         return atob(str);
@@ -18,7 +8,7 @@ const encryptedUsers = [
     function checkLogin() {
       const inputUser = document.getElementById("username").value.trim();
       const inputPass = document.getElementById("password").value;
-      const valid = encryptedUsers.some(user =>
+      const valid = p.some(user =>
         decodeBase64(user.username) === inputUser &&
         decodeBase64(user.password) === inputPass
       );
