@@ -31,9 +31,15 @@ const headerHTML = `
 </style>
 <strong>
     <header id="site-header">
-        <iframe class="weather" src="InfiniteForecasts">
-            Loading Weather...
-        </iframe>
+        <div id="location">
+        </div>
+        <div id="global-text weather-container">
+            <pre id="weather">
+            </pre>
+            <button class="cfbtn" id="toggle">
+                °C
+            </button>
+        </div>
         <a href="https://ryann-4.github.io/InfiniteCampus">
             <img class="logo" src="https://codehs.com/uploads/d3ca105004013f2dc047f4bc0f669f6a" alt="Campus" style="left:335">
         </a>
