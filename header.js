@@ -30,17 +30,19 @@ const headerHTML = `
     }
 </style>
 <strong>
-    <script src="forecast.js">
-    </script>
     <header id="site-header">
         <div id="location">
         </div>
-        <div id="global-text weather-container">
-            <pre id="weather">
-            </pre>
-            <button class="cfbtn" id="toggle">
-                °C
-            </button>
+        <div id="weather-container">
+            <div id="global-text">
+                <pre id="weather">
+                </pre>
+            </div>
+            <div id="global-text">
+                <button class="cfbtn" id="toggle">
+                    °C
+                </button>
+            </div>
         </div>
         <a href="https://ryann-4.github.io/InfiniteCampus">
             <img class="logo" src="https://codehs.com/uploads/d3ca105004013f2dc047f4bc0f669f6a" alt="Campus" style="left:335">
