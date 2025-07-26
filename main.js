@@ -34,11 +34,9 @@ function converter() { window.open("https://spotidownloader.com/en"); }
 function puter() { window.open("https://puter.com"); }
 function thumbnail() { window.open("https://tagmp3.net/"); }
 function ITU() { window.open("https://postimage.org/"); }
-// Weather + Dark Mode logic (file 1)
 window.addEventListener('DOMContentLoaded', () => {
   let isFahrenheit = true;
   let currentCity = "";
-
   function applyDarkModeClass() {
     const isDark = localStorage.getItem("globalDarkTheme") === "true";
     const toggle = document.getElementById("toggle");
@@ -53,13 +51,11 @@ window.addEventListener('DOMContentLoaded', () => {
       if (weather) weather.classList.remove("w");
     }
   }
-
   async function getLocation() {
     const locRes = await fetch("https://ipapi.co/json/");
     const loc = await locRes.json();
     currentCity = loc.city;
   }
-
   async function getWeather(city, useFahrenheit) {
     city = city.replace(/\+/g, "");
     const unit = useFahrenheit ? "u" : "m";
@@ -77,7 +73,6 @@ window.addEventListener('DOMContentLoaded', () => {
     removePlusSignsFromPage();
     applyDarkModeClass();
   }
-
   function removePlusSignsFromPage() {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
     while (walker.nextNode()) {
@@ -85,30 +80,23 @@ window.addEventListener('DOMContentLoaded', () => {
       node.nodeValue = node.nodeValue.replace(/\+/g, "");
     }
   }
-
   document.getElementById("toggle")?.addEventListener("click", () => {
     isFahrenheit = !isFahrenheit;
     document.getElementById("toggle").innerText = isFahrenheit ? "°C" : "°F";
     getWeather(currentCity, isFahrenheit);
   });
-
   async function initWeather() {
     await getLocation();
     getWeather(currentCity, isFahrenheit);
     removePlusSignsFromPage();
     applyDarkModeClass();
   }
-
-  // Load custom title & favicon (from file 2)
   const savedTitle = localStorage.getItem('pageTitle');
   if (savedTitle) document.title = savedTitle;
-
   const savedFavicon = localStorage.getItem('customFavicon');
   if (savedFavicon) {
     const favicon = document.getElementById('dynamic-favicon');
     if (favicon) favicon.href = savedFavicon;
   }
-
-  // Initialize weather logic
   initWeather();
 });
