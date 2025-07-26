@@ -1,6 +1,6 @@
-let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
+let CW, CU, CP;
 (function () {
-  function decryptCaesar(base64Str, key) {
+  function DC(base64Str, key) {
     try {
       const shifted = atob(base64Str);
       return [...shifted].map(c =>
@@ -10,18 +10,18 @@ let CHAT_WEBHOOK, CHAT_USERNAME, CHAT_PASSWORD;
       return '';
     }
   }
-  function decryptBase64(base64Str) {
+  function DB32(base64Str) {
     try {
       return atob(base64Str);
     } catch {
       return '';
     }
   }
-  CHAT_WEBHOOK = decryptCaesar(f, key);
-  CHAT_USERNAME = decryptCaesar(a, key);
-  CHAT_PASSWORD = decryptCaesar(b, key);
-  window.USERNAME_NITRIX = decryptBase64(c);
-  window.PASSWORD_NITRIX = decryptBase64(d);
+  CW = DC(f, key);
+  CU = DC(a, key);
+  CP = DC(b, key);
+  window.UN = DB32(c);
+  window.PN = DB32(d);
 })();
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import {
@@ -47,11 +47,11 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const messagesRef = ref(db, "messages");
 const userId = "user_" + Math.random().toString(36).substr(2, 9);
-const ADMIN_USERNAME = CHAT_USERNAME;
-const ADMIN_PASSWORD = CHAT_PASSWORD;
-const NITRIX_USERNAME = window.USERNAME_NITRIX;
-const NITRIX_PASSWORD = window.PASSWORD_NITRIX;
-const DISCORD_WEBHOOK = CHAT_WEBHOOK;
+const AU = CU;
+const AP = CP;
+const NU = window.UN;
+const NP = window.PN;
+const DW = CW;
 let loggedInUser = localStorage.getItem("chat_logged_in");
 let isAdmin = loggedInUser === "hacker41";
 let displayName = "";
@@ -77,10 +77,10 @@ document.addEventListener("DOMContentLoaded", () => {
 window.login = function () {
   const enteredUser = document.getElementById("loginUser").value;
   const enteredPass = document.getElementById("loginPass").value;
-  if (enteredUser === ADMIN_USERNAME && enteredPass === ADMIN_PASSWORD) {
+  if (enteredUser === AU && enteredPass === AP) {
     localStorage.setItem("chat_logged_in", "hacker41");
     location.reload();
-  } else if (enteredUser === NITRIX_USERNAME && enteredPass === NITRIX_PASSWORD) {
+  } else if (enteredUser === NU && enteredPass === NP) {
     localStorage.setItem("chat_logged_in", "nitrix");
     location.reload();
   } else {
@@ -111,7 +111,7 @@ window.sendMessage = function () {
     timestamp: Date.now()
   };
   push(messagesRef, message);
-  fetch(DISCORD_WEBHOOK, {
+  fetch(DW, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

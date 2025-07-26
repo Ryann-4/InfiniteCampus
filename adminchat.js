@@ -1,5 +1,5 @@
 (function () {
-  function decryptCaesar(base64Str, key = 5) {
+  function DC(base64Str, key = 5) {
     try {
       const shifted = atob(base64Str);
       return [...shifted].map(c =>
@@ -9,18 +9,18 @@
       return '';
     }
   }
-  function decryptBase64(base64Str) {
+  function DB32(base64Str) {
     try {
       return atob(base64Str);
     } catch {
       return '';
     }
   }
-  window.CHAT_USERNAME = decryptCaesar(a);
-  window.CHAT_PASSWORD = decryptCaesar(b);
-  window.USERNAME_NITRIX = decryptBase64(c);
-  window.PASSWORD_NITRIX = decryptBase64(d);
-  window.API_KEY = decryptBase64(e);
+  window.CU = DC(a);
+  window.CP = DC(b);
+  window.UN = DB32(c);
+  window.PN = DB32(d);
+  window.API_KEY = DB32(e);
 })();
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
@@ -48,10 +48,10 @@ const analytics = getAnalytics(app);
 const db = getDatabase(app);
 const messagesRef = ref(db, "messages");
 const userId = "user_" + Math.random().toString(36).substr(2, 9);
-const ADMIN_USERNAME = window.CHAT_USERNAME;
-const ADMIN_PASSWORD = window.CHAT_PASSWORD;
-const NITRIX_USERNAME = window.USERNAME_NITRIX;
-const NITRIX_PASSWORD = window.PASSWORD_NITRIX;
+const AU = window.CU;
+const AP = window.CP;
+const NU = window.UN;
+const NP = window.PN;
 let loggedInUser = localStorage.getItem("chat_logged_in");
 let isAdmin = loggedInUser === "hacker41";
 let displayName = "";
@@ -79,10 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
 window.login = function () {
   const enteredUser = document.getElementById("loginUser").value;
   const enteredPass = document.getElementById("loginPass").value;
-  if (enteredUser === ADMIN_USERNAME && enteredPass === ADMIN_PASSWORD) {
+  if (enteredUser === AU && enteredPass === AP) {
     localStorage.setItem("chat_logged_in", "hacker41");
     location.reload();
-  } else if (enteredUser === NITRIX_USERNAME && enteredPass === NITRIX_PASSWORD) {
+  } else if (enteredUser === NU && enteredPass === NP) {
     localStorage.setItem("chat_logged_in", "nitrix");
     location.reload();
   } else {
