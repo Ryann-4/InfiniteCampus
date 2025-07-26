@@ -30,6 +30,8 @@ const headerHTML = `
     }
 </style>
 <strong>
+    <script src="forecast.js">
+    </script>
     <header id="site-header">
         <div id="location">
         </div>

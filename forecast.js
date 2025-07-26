@@ -1,3 +1,4 @@
+window.addEventListener('DOMContentLoaded', () => {
 let isFahrenheit = true;
 let currentCity = "";
 function applyDarkModeClass() {
@@ -55,3 +56,4 @@ async function init() {
     applyDarkModeClass(); 
 }
 init();
+});
