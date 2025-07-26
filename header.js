@@ -33,7 +33,7 @@ const headerHTML = `
     <header id="site-header">
         <div id="location">
         </div>
-        <div id="weather-container">
+        <div style="margin-top:1.5vh;" id="weather-container">
             <div id="global-text">
                 <pre id="weather">
                 </pre>
