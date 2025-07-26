@@ -1,31 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>
-    Infinite Campus
-  </title>
-  <script src="main.js">
-  </script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: transparent;
-      color: white;
-      padding: 0px;
-      text-align: center;
-      font-size: 18px;
-      margin:0px;
-    }
-  </style>
-</head>
-<body>
-  <p style="padding:0px; margin:0px;" id="presenceCount">
-    Loading presence count...
-  </p>
-  <script>
-    const presenceCountEl = document.getElementById("presenceCount");
+const presenceCountEl = document.getElementById("presenceCount");
     async function fetchDiscordPresence() {
       presenceCountEl.textContent = "Loading presence count...";
       try {
@@ -49,6 +22,3 @@
     }
     fetchDiscordPresence();
     setInterval(fetchDiscordPresence, 10000);
-  </script>
-</body>
-</html>
