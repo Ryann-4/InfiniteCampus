@@ -18,7 +18,7 @@ const p = [
   { username: "Tml0cml4", password: "RGFkZHlOaXRyaXg2OQ==" }
 ];
 const key = 5;
-console.log('%cWelcome To The Console If You Do Not Know What You Are Doing, Close It, If You Do I Would Be Happy To Let You Develop The Website With Me infinitecodehs@gmail.com', 'color: purple; font-size: 24px; font-weight: bold;');
+console.log('%cWelcome To The Console, If You Do Not Know What You Are Doing, Close It, If You Do I Would Be Happy To Let You Develop The Website With Me infinitecodehs@gmail.com', 'color: purple; font-size: 24px; font-weight: bold;');
 console.log('%cC', `
   font-size: 100px;
   padding: 1px 35px 1px 35px;
@@ -61,8 +61,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const unit = useFahrenheit ? "u" : "m";
     const res = await fetch(`https://wttr.in/${city}?format=3&${unit}`);
     const text = await res.text();
-    if (text.startsWith("Unknown location")) {
-      document.body.innerHTML = "<div>Error#3</div>";
+    if (text.startsWith("Unknown Location")) {
+      document.body.innerHTML = "<div>Error #3</div>";
       return;
     }
     const weatherEl = document.getElementById("weather");

@@ -2,7 +2,7 @@ async function showLocationAndIp() {
     let infoEl = document.getElementById("ligma");
     try {
         const res  = await fetch("https://ipapi.co/json/");
-        if (!res.ok) throw new Error("Fetch failed");
+        if (!res.ok) throw new Error("Fetch Failed");
         const data = await res.json();
         if (!infoEl) {
             infoEl = document.createElement("div");
@@ -11,15 +11,15 @@ async function showLocationAndIp() {
         }
         infoEl.innerText =
             `Current State:\n ${data.region ?? "Your State"}\n` +
-            `You are currently located near:\n ${data.city ?? "Your Area"}\n` +
-            `Your IPv4 address is currently:\n ${data.ip ?? "Unknown"}\n` +
+            `You Are Currently Located Near:\n ${data.city ?? "Your Area"}\n` +
+            `Your IPv4 Address Is Currently:\n ${data.ip ?? "Unknown"}\n` +
             `Current Org:\n ${data.org ?? "None"}\n` +
             `Current Zip Code:\n ${data.postal ?? "Zip Code"}\n` +
             `Current Latitude:\n ${data.latitude ?? "0"}\n` +
             `Current Longitude:\n ${data.longitude ?? "0"}`;
         infoEl.classList.add("show");
     } catch (err) {
-        console.error("Error fetching location:", err);
+        console.error("Error Fetching Location:", err);
         if (!infoEl) {
             infoEl = document.createElement("div");
             infoEl.id = "ligma";

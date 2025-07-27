@@ -62,7 +62,7 @@ if (loggedInUser === "hacker41") {
 }
 document.addEventListener("DOMContentLoaded", () => {
   if (loggedInUser) {
-    document.getElementById("loginStatus").textContent = `Logged in as ${displayName}`;
+    document.getElementById("loginStatus").textContent = `Logged In As ${displayName}`;
     document.getElementById("nameInput").disabled = true;
     document.getElementById("nameInput").value = displayName;
     const loginContainer = document.getElementById("loginContainer");

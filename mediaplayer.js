@@ -102,7 +102,7 @@ async function loadTrack(index) {
             artworkURL = `data:${picture.format};base64,${base64String}`;
         }
     } catch (e) {
-        console.warn('ERR#9 Could not extract album art:', e.message);
+        console.warn('ERR#9 Could Not Extract Album Art:', e.message);
     }
     const img = new Image();
     img.src = artworkURL;

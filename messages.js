@@ -16,7 +16,7 @@ async function fetchMessages() {
     const data = await res.json();
     const list = document.getElementById('messages');
     if (data.length === 0) {
-      loadingEl.textContent = 'No messages here yet.';
+      loadingEl.textContent = 'No Messages Here Yet.';
     } else {
       loadingEl.style.display = 'none';
     }
@@ -57,8 +57,8 @@ async function fetchMessages() {
       list.prepend(li);
     });
   } catch (err) {
-    console.error('ERR#10 Error fetching messages:', err);
-    loadingEl.textContent = 'ERR#12 Failed to load messages.';
+    console.error('ERR#10 Error Fetching Messages:', err);
+    loadingEl.textContent = 'ERR#12 Failed To Load Messages.';
   }
 }
 async function sendMessage(name, content, file) {
@@ -79,7 +79,7 @@ async function sendMessage(name, content, file) {
     document.getElementById('fileLabel').textContent = '';
     fetchMessages();
   } catch (err) {
-    console.error('ERR#11 Error sending message:', err);
+    console.error('ERR#11 Error Sending Message:', err);
   }
 }
 document.getElementById('channelSelector').addEventListener('change', () => {

@@ -117,37 +117,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerWrapper = document.createElement("div");
     headerWrapper.innerHTML = headerHTML;
     document.body.insertBefore(headerWrapper, document.body.firstChild);
-
     const chatToggle = document.getElementById('chatToggle');
     const chatDropdown = document.getElementById('chatDropdown');
-
     const downloadToggle = document.getElementById('downloadToggle');
     const downloadDropdown = document.getElementById('downloadDropdown');
-
     const helpToggle = document.getElementById('helpToggle');
     const helpDropdown = document.getElementById('helpDropdown');
-
     chatToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         chatDropdown.style.display = chatDropdown.style.display === 'flex' ? 'none' : 'flex';
         downloadDropdown.style.display = 'none';
         helpDropdown.style.display = 'none';
     });
-
     downloadToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         downloadDropdown.style.display = downloadDropdown.style.display === 'flex' ? 'none' : 'flex';
         chatDropdown.style.display = 'none';
         helpDropdown.style.display = 'none';
     });
-
     helpToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         helpDropdown.style.display = helpDropdown.style.display === 'flex' ? 'none' : 'flex';
         downloadDropdown.style.display = 'none';
         chatDropdown.style.display = 'none';
     });
-
     document.addEventListener('click', (e) => {
         if (!chatDropdown.contains(e.target) && !chatToggle.contains(e.target)) {
             chatDropdown.style.display = 'none';

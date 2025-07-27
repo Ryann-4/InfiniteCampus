@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("chatContainer").style.display = "none";
     return;
   }
-  document.getElementById("loginStatus").textContent = `Logged in as ${displayName}`;
+  document.getElementById("loginStatus").textContent = `Logged In As ${displayName}`;
   document.getElementById("nameInput").disabled = true;
   document.getElementById("nameInput").value = displayName;
   const loginContainer = document.getElementById("loginContainer");
@@ -86,7 +86,7 @@ window.login = function () {
     localStorage.setItem("chat_logged_in", "nitrix");
     location.reload();
   } else {
-    alert("ERR#4 Incorrect credentials.");
+    alert("ERR#4 Incorrect Credentials.");
   }
 };
 window.logout = function () {

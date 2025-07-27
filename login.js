@@ -15,7 +15,7 @@
       if (valid) {
         window.location.href = decodeBase64(h);
       } else {
-        alert("ERR#4 Invalid username or password.");
+        alert("ERR#4 Invalid Username Or Password.");
       }
     }
     document.addEventListener("keydown", function (e) {

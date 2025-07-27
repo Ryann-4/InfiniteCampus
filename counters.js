@@ -39,7 +39,7 @@ function updateCountdown(targetDate) {
     let diff = Math.floor((targetDate - now) / 1000);
     if (diff <= 0) {
         clearInterval(timer);
-        document.getElementById("days").textContent = "Time's up!";
+        document.getElementById("days").textContent = "Time's Up!";
         document.getElementById("hours").textContent = "";
         document.getElementById("minutes").textContent = "";
         document.getElementById("seconds").textContent = "";
