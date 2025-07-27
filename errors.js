@@ -24,8 +24,3 @@ function checkNumber() {
         output.textContent = '';
     }, 5000);
 }
-document.getElementById('inputNumber').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        checkNumber();
-    }
-});
