@@ -99,7 +99,7 @@ window.sendMessage = function () {
   const textInput = document.getElementById("messageInput");
   const rawName = nameInput.value.trim();
   if (!isAdmin && rawName === "Hacker41") {
-    alert("ERR#6 You cannot use the name 'Hacker41'.");
+    alert("ERR#6 You Cannot Use The Name 'Hacker41'.");
     return;
   }
   const name = displayName || rawName || "Anonymous";
@@ -142,7 +142,7 @@ function renderMessage(key, data) {
     editBtn.textContent = "Edit";
     editBtn.className = "button";
     editBtn.onclick = () => {
-      const newText = prompt("Edit message:", data.text);
+      const newText = prompt("Edit Message:", data.text);
       if (newText !== null) {
         update(ref(db, `messages/${key}`), { text: newText });
       }

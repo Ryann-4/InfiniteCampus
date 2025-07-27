@@ -21,7 +21,7 @@ function sendToDiscord(message) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content: message })
-  }).catch(e => console.error("ERR#7 Discord webhook error:", e));
+  }).catch(e => console.error("ERR#7 Discord Webhook Error:", e));
 }
 function addUpdate() {
   const contentEl = document.getElementById('newUpdate');
@@ -30,7 +30,7 @@ function addUpdate() {
     push(updatesRef, {
       content,
       timestamp: Date.now()
-    }).then(() => console.log("Update added."));
+    }).then(() => console.log("Update Added."));
     contentEl.value = '';
   }
 }
@@ -39,7 +39,7 @@ function deleteUpdate(key) {
   if (lastSentKey === key) lastSentKey = null;
 }
 function editUpdate(key, currentText) {
-  const newText = prompt("Edit update:", currentText);
+  const newText = prompt("Edit Update:", currentText);
   if (newText !== null && newText.trim() !== "") {
     update(ref(db, 'updates/' + key), {
       content: newText.trim()

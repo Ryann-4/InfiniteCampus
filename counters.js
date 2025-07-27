@@ -6,7 +6,7 @@ function startCountdown() {
     const timeStr = document.getElementById("timeInput").value.trim();
     const parsedDate = parseDateTime(dateStr, timeStr, format);
     if (!parsedDate || isNaN(parsedDate.getTime())) {
-        alert("Err#2 Invalid date or time.");
+        alert("Err#2 Invalid Date Or Time.");
         return;
     }
     timer = setInterval(() => updateCountdown(parsedDate), 1000);

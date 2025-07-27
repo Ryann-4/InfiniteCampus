@@ -19,7 +19,7 @@
       const message = document.getElementById("message").value.trim();
       const status = document.getElementById("status");
       if (!message) {
-        status.textContent = "ERR#8 Message cannot be empty!";
+        status.textContent = "ERR#8 Message Cannot Be empty!";
         status.style.color = "orange";
         return;
       }
@@ -31,16 +31,16 @@
           body: JSON.stringify({ content: fullMessage })
         });
         if (response.ok) {
-          status.textContent = "✅ Message sent!";
+          status.textContent = "✅ Message Sent!";
           status.style.color = "lightgreen";
           document.getElementById("name").value = "";
           document.getElementById("message").value = "";
         } else {
-          status.textContent = "ERR#7 ❌ Failed to send message.";
+          status.textContent = "ERR#7 ❌ Failed To Send Message.";
           status.style.color = "red";
         }
       } catch (error) {
-        status.textContent = "ERR#7 ⚠️ Error sending message.";
-        status.style.color = "red";
+        status.textContent = "ERR#7 ⚠️ Error Sending Message.";
+        status.style.color = "orange";
       }
     }

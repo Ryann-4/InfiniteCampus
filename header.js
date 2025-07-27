@@ -98,7 +98,7 @@ const headerHTML = `
                 How To Download Minecraft
             </button>
             <button style="font-weight:bold;" onclick="location.href='InfiniteOpeners'">
-                Download This Webpage
+                Download This Website
             </button>
             <button style="font-weight:bold;" onclick="location.href='https://downloadgames-14894445.codehs.me/ngon.html'">
                 Download Ngon

@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <p>Totally Made By Noah White And Not A Different Person.</p>
     </footer>
     <footer id="text-only-footer" style="background-color:transparent; text-align:right; bottom:-4">
-      <p>Pissing off your teachers since 2024</p>
+      <p>Pissing Off Your Teachers Since 2024</p>
     </footer>
   `;
   const tempDiv = document.createElement('div');
