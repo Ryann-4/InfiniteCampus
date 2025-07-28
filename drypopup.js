@@ -2,8 +2,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const popupHTML = `
     <div class="popup2" id="popup">
       <div class="bar test">
-        <div style="text-align:center; font-size:25px; margin-top:-10px;" id="clocks">
-          --:--:-- --
+        <div id="global-text">
+          <div style="text-align:center; font-size:25px; margin-top:-10px;" id="clocks">
+            --:--:-- --
+          </div>
         </div>
       </div>
       <div class="text">
@@ -19,9 +21,11 @@ window.addEventListener('DOMContentLoaded', () => {
       </div>
       <div class="bar test">
         <center>
-          <a class="bar headerbtn" href="InfiniteContacts" style="height:auto; width:auto; background:none; margin-top:-15px; margin-left:-50px; font-size:15px; color:inherit;">
-            Contact Me
-          </a>
+          <div id="global-text">
+            <a class="bar headerbtn" href="InfiniteContacts" style="height:auto; width:auto; background:none; margin-top:-15px; margin-left:-50px; font-size:15px; color:inherit;">
+              Contact Me
+            </a>
+          </div>
         </center>
       </div>
     </div>
