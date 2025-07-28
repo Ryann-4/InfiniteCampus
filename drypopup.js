@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
       </div>
       <div class="bar test">
         <center>
-          <a id="clocks" class="bar headerbtn" href="InfiniteContacts" style="margin-top:-15px; margin-left:-50px; font-size:15px;">
+          <a id="clocks" class="w headerbtn" href="InfiniteContacts" style="margin-top:-15px; margin-left:-50px; font-size:15px;">
             Contact Me
           </a>
         </center>
