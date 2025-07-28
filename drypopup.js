@@ -1,10 +1,12 @@
 window.addEventListener('DOMContentLoaded', () => {
   const popupHTML = `
     <div class="popup2" id="popup">
+    <div class="test"
       <div class="bar">
         <div style="text-align:center; font-size:25px; margin-top:-10px;" id="clocks">
           --:--:-- --
         </div>
+      </div>
       </div>
       <div class="text">
         <p class="txt">Settings</p>
@@ -17,6 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
         <br><br><br>
         <a class="button" href="InfiniteBypassers">Open In About:Blank</a>
       </div>
+      <div class="test">
       <div class="bar">
         <center>
           <a class="headerbtn" href="InfiniteContacts" style="margin-top:-15px; margin-left:-50px; font-size:15px;">
@@ -24,9 +27,12 @@ window.addEventListener('DOMContentLoaded', () => {
           </a>
         </center>
       </div>
+      </div>
     </div>
+    <div class="test">
     <div class="settings-button" id="trigger">
       <img src="https://codehs.com/uploads/fdacfa996601fc09d8da4d63fd2ca986" alt="Icon">
+    </div>
     </div>
     <center>
   `;

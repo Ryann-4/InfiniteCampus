@@ -1,5 +1,4 @@
 const headerHTML = `
-<!-- Header -->
 <style>
     .dropdown {
         position: absolute;
@@ -31,6 +30,8 @@ const headerHTML = `
 </style>
 <strong>
     <header id="site-header">
+        <div class="test">
+        </div>
         <div id="location">
         </div>
         <div style="margin-top:1.5vh;" id="weather-container">
