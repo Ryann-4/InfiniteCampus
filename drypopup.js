@@ -1,7 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
   const popupHTML = `
     <div class="popup2" id="popup">
-      <div class="bar">
+      <div class="bar test">
         <div style="text-align:center; font-size:25px; margin-top:-10px;" id="clocks">
           --:--:-- --
         </div>
@@ -9,9 +9,6 @@ window.addEventListener('DOMContentLoaded', () => {
       <div class="text">
         <p class="txt">Settings</p>
         <br>
-        <a class="test">
-        test
-        </a>
         <a class="button" href="InfiniteTitles">Tab Cloaking</a>
         <br><br><br>
         <a class="button" href="InfiniteColors">Change Header/Footer Color</a>
@@ -20,7 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
         <br><br><br>
         <a class="button" href="InfiniteBypassers">Open In About:Blank</a>
       </div>
-      <div class="bar">
+      <div class="bar test">
         <center>
           <a class="headerbtn" href="InfiniteContacts" style="margin-top:-15px; margin-left:-50px; font-size:15px;">
             Contact Me
@@ -28,7 +25,7 @@ window.addEventListener('DOMContentLoaded', () => {
         </center>
       </div>
     </div>
-    <div class="settings-button" id="trigger">
+    <div class="settings-button test" id="trigger">
       <img src="https://codehs.com/uploads/fdacfa996601fc09d8da4d63fd2ca986" alt="Icon">
     </div>
     <center>
