@@ -18,7 +18,6 @@ const p = [
   { username: "Tml0cml4", password: "RGFkZHlOaXRyaXg2OQ==" }
 ];
 const key = 5;
-
 console.log('%cWelcome To The Console, If You Do Not Know What You Are Doing, Close It, If You Do I Would Be Happy To Let You Develop The Website With Me infinitecodehs@gmail.com', 'color: purple; font-size: 24px; font-weight: bold;');
 console.log('%cC', `
   font-size: 100px;
@@ -30,53 +29,43 @@ console.log('%cC', `
   color: #8BC53F;
   background-color: #121212;
 `);
-
 function padlet() { window.open("https://padlet.com/newsomr95/chat-room-br2tjbusbebezr2n"); }
 function converter() { window.open("https://spotidownloader.com/en"); }
 function puter() { window.open("https://puter.com"); }
 function thumbnail() { window.open("https://tagmp3.net/"); }
 function ITU() { window.open("https://postimage.org/"); }
-
 window.addEventListener('DOMContentLoaded', () => {
   let isFahrenheit = true;
   let currentCity = "";
-
   function setPopup2Color() {
     document.querySelectorAll('.popup2').forEach(el => {
       el.style.color = 'white';
     });
   }
-
   function applyDarkModeClass() {
     const isDark = localStorage.getItem("globalDarkTheme") === "true";
     const toggle = document.getElementById("toggle");
     const weather = document.getElementById("weather");
     const poppups = document.getElementById("ppupcolor");
-
     if (isDark) {
       document.body.classList.add("w");
       if (toggle) toggle.classList.add("w");
       if (weather) weather.classList.add("w");
       if (poppups) poppups.classList.add("w");
-      setPopup2Color(); // Ensure popup2 elements are white in dark mode
+      setPopup2Color();
     } else {
       document.body.classList.remove("w");
       if (toggle) toggle.classList.remove("w");
       if (weather) weather.classList.remove("w");
-      if (poppups) poppups.classList.remove("w");
     }
   }
-
-  // Observe DOM changes to automatically set .popup2 color
   const observer = new MutationObserver(setPopup2Color);
   observer.observe(document.body, { childList: true, subtree: true });
-
   async function getLocation() {
     const locRes = await fetch("https://ipapi.co/json/");
     const loc = await locRes.json();
     currentCity = loc.city;
   }
-
   async function getWeather(city, useFahrenheit) {
     city = city.replace(/\+/g, "");
     const unit = useFahrenheit ? "u" : "m";
@@ -94,7 +83,6 @@ window.addEventListener('DOMContentLoaded', () => {
     removePlusSignsFromPage();
     applyDarkModeClass();
   }
-
   function removePlusSignsFromPage() {
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
     while (walker.nextNode()) {
@@ -102,20 +90,17 @@ window.addEventListener('DOMContentLoaded', () => {
       node.nodeValue = node.nodeValue.replace(/\+/g, "");
     }
   }
-
   document.getElementById("toggle")?.addEventListener("click", () => {
     isFahrenheit = !isFahrenheit;
     document.getElementById("toggle").innerText = isFahrenheit ? "°C" : "°F";
     getWeather(currentCity, isFahrenheit);
   });
-
   async function initWeather() {
     await getLocation();
     getWeather(currentCity, isFahrenheit);
     removePlusSignsFromPage();
     applyDarkModeClass();
   }
-
   const savedTitle = localStorage.getItem('pageTitle');
   if (savedTitle) document.title = savedTitle;
   const savedFavicon = localStorage.getItem('customFavicon');
@@ -123,7 +108,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const favicon = document.getElementById('dynamic-favicon');
     if (favicon) favicon.href = savedFavicon;
   }
-
   initWeather();
-  setPopup2Color(); // Initial call in case .popup2 already exists
+  setPopup2Color();
 });
