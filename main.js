@@ -34,6 +34,11 @@ function converter() { window.open("https://spotidownloader.com/en"); }
 function puter() { window.open("https://puter.com"); }
 function thumbnail() { window.open("https://tagmp3.net/"); }
 function ITU() { window.open("https://postimage.org/"); }
+function setPopup2Color(isDark) {
+  document.querySelectorAll('.popup2').forEach(el => {
+    el.style.color = isDark ? 'white' : 'black';
+  });
+}
 window.addEventListener('DOMContentLoaded', () => {
   let isFahrenheit = true;
   let currentCity = "";
