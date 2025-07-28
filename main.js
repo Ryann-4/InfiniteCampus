@@ -57,6 +57,7 @@ window.addEventListener('DOMContentLoaded', () => {
       document.body.classList.remove("w");
       if (toggle) toggle.classList.remove("w");
       if (weather) weather.classList.remove("w");
+      setPopup2Color(isDark);
     }
   }
   const observer = new MutationObserver(setPopup2Color);
