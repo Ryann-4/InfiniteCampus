@@ -8,7 +8,9 @@ window.addEventListener('DOMContentLoaded', () => {
     const globalText        = document.getElementById('global-text');
     const gradLeftInput     = document.getElementById('gradientLeft');
     const gradRightInput    = document.getElementById('gradientRight');
+    const testElements      = document.querySelectorAll('.test'); // NEW
     const RGB_VIDEO_URL     = "https://codehs.com/uploads/9ea5f20a2d618622de3030832cde8ef6";
+    
     const isDarkColor = hex => {
         if (!hex || hex.length !== 7 || !hex.startsWith('#')) return false;
         const r = parseInt(hex.slice(1, 3), 16);
@@ -16,6 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const b = parseInt(hex.slice(5, 7), 16);
         return (r * 299 + g * 587 + b * 114) / 1000 < 128;
     };
+
     function insertRGBVideoBackground(target) {
         const existing = target?.querySelector('.rgb-video-bg');
         if (existing) existing.remove();
@@ -39,13 +42,16 @@ window.addEventListener('DOMContentLoaded', () => {
         target.style.position = 'fixed';
         target.prepend(video);
     }
+
     function clearRGBVideo(target) {
         const vid = target?.querySelector('.rgb-video-bg');
         if (vid) vid.remove();
     }
+
     function applyTheme(colOrLeft, gradientSetting = null) {
         let bg = colOrLeft;
         let isDark = isDarkColor(colOrLeft);
+
         if (gradientSetting === 'custom') {
             const l = localStorage.getItem('gradientLeft')  || '#ffffff';
             const r = localStorage.getItem('gradientRight') || '#000000';
@@ -87,7 +93,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 bg = 'linear-gradient(to bottom, black,grey,white,black,black,black,black,black,black,black,black,black,white, grey,black)';
                 isDark = true;
             } else if (gradientSetting === 'gsaber') {
-                bg = 'linear-gradient(to bottom, transparent, #004000, #008000, #00BF00, #00FF00,#80FF00,#C0FF00,#E0FF00,white,white,white,white,white,white,white,white,white,white,white,white,white,white,white,white,#E0FF00,#C0FF00,#80FF00,#00FF00,#008F00,#008000,#004000,transparent)';
+                bg = 'linear-gradient(to bottom, transparent, #004000, #008000, #00BF00, #00FF00,#80FF00,#C0FF00,#E0FF00,white,white,white,white,white,white,white,white,white,white,white,white,white,white,white,#E0FF00,#C0FF00,#80FF00,#00FF00,#008F00,#008000,#004000,transparent)';
                 isDark = false;
             } else if (gradientSetting === 'rsaber') {
                 bg = 'linear-gradient(to bottom,transparent,#330000,#660000,#990000,#CC0000,red,red,#FF3333,white,white,white,white,white,white,white,white,white,white,white,white,white,white,#FF3333,red,red,#CC0000,#990000,#660000,#330000,transparent)';
@@ -117,9 +123,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 isDark = false;
             }
         }
+
         const textColor = isDark ? 'white' : '';
         localStorage.setItem('globalDarkTheme', isDark);
         localStorage.setItem('globalTextColor', textColor);
+
+        // Apply background and styles to header/footer
         [header, footer].forEach(bar => {
             if (!bar) return;
             bar.style.background = bg;
@@ -145,19 +154,29 @@ window.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
+
+        // Apply header background to .test elements  --- NEW
+        if (header && testElements.length > 0) {
+            const headerBg = window.getComputedStyle(header).background;
+            testElements.forEach(el => el.style.background = headerBg);
+        }
+
         textOnlyFooter && (textOnlyFooter.style.color = textColor || '');
         globalText && (globalText.style.color = textColor || '');
         if (colorInput) {
             colorInput.style.backgroundColor = colOrLeft;
             colorInput.style.color = textColor;
             if (parseFloat(getComputedStyle(colorInput).borderWidth) > 0)
-            colorInput.style.borderColor = textColor;
+                colorInput.style.borderColor = textColor;
         }
     }
+
+    // Existing storage/theme initialization code...
     const storedTheme = localStorage.getItem('useGradient');
     const storedFlat  = localStorage.getItem('headerColor');
     const storedLeft  = localStorage.getItem('gradientLeft');
     const storedRight = localStorage.getItem('gradientRight');
+
     if (storedTheme && storedTheme !== 'custom') {
         if (themeSelector) themeSelector.value = storedTheme;
         applyTheme('#000000', storedTheme);
@@ -171,12 +190,14 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
         applyTheme('#8cbe37');
     }
+
     colorInput?.addEventListener('input', () => {
         localStorage.setItem('headerColor', colorInput.value);
         ['gradientLeft', 'gradientRight', 'useGradient'].forEach(k => localStorage.removeItem(k));
         if (themeSelector) themeSelector.value = '';
         applyTheme(colorInput.value);
     });
+
     [gradLeftInput, gradRightInput].forEach(inp => inp?.addEventListener('input', () => {
         if (themeSelector?.value) return;
         const l = gradLeftInput?.value || '#ffffff';
@@ -187,20 +208,22 @@ window.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('headerColor');
         applyTheme(l, 'custom');
     }));
-themeSelector?.addEventListener('change', () => {
-    const sel = themeSelector.value;
-    if (!sel) {
-        const l = localStorage.getItem('gradientLeft');
-        const r = localStorage.getItem('gradientRight');
-        if (l && r) applyTheme(l, 'custom');
-        else if (colorInput?.value) applyTheme(colorInput.value);
-        return;
-    }
-    ['gradientLeft', 'gradientRight', 'headerColor'].forEach(k => localStorage.removeItem(k));
-    localStorage.setItem('useGradient', sel);
-    applyTheme('#000000', sel);
-    location.reload();
-});
+
+    themeSelector?.addEventListener('change', () => {
+        const sel = themeSelector.value;
+        if (!sel) {
+            const l = localStorage.getItem('gradientLeft');
+            const r = localStorage.getItem('gradientRight');
+            if (l && r) applyTheme(l, 'custom');
+            else if (colorInput?.value) applyTheme(colorInput.value);
+            return;
+        }
+        ['gradientLeft', 'gradientRight', 'headerColor'].forEach(k => localStorage.removeItem(k));
+        localStorage.setItem('useGradient', sel);
+        applyTheme('#000000', sel);
+        location.reload();
+    });
+
     resetBtn?.addEventListener('click', () => {
         ['headerColor', 'useGradient', 'gradientLeft', 'gradientRight', 'globalTextColor', 'globalDarkTheme']
         .forEach(k => localStorage.removeItem(k));

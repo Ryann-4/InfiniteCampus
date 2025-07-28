@@ -9,6 +9,9 @@ window.addEventListener('DOMContentLoaded', () => {
       <div class="text">
         <p class="txt">Settings</p>
         <br>
+        <a class="test">
+        test
+        </a>
         <a class="button" href="InfiniteTitles">Tab Cloaking</a>
         <br><br><br>
         <a class="button" href="InfiniteColors">Change Header/Footer Color</a>
