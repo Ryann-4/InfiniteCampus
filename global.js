@@ -8,9 +8,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const globalText        = document.getElementById('global-text');
     const gradLeftInput     = document.getElementById('gradientLeft');
     const gradRightInput    = document.getElementById('gradientRight');
-    const testElements      = document.querySelectorAll('.test'); // NEW
+    const testElements      = document.querySelectorAll('.test');
     const RGB_VIDEO_URL     = "https://codehs.com/uploads/9ea5f20a2d618622de3030832cde8ef6";
-    
     const isDarkColor = hex => {
         if (!hex || hex.length !== 7 || !hex.startsWith('#')) return false;
         const r = parseInt(hex.slice(1, 3), 16);
@@ -18,7 +17,6 @@ window.addEventListener('DOMContentLoaded', () => {
         const b = parseInt(hex.slice(5, 7), 16);
         return (r * 299 + g * 587 + b * 114) / 1000 < 128;
     };
-
     function insertRGBVideoBackground(target) {
         const existing = target?.querySelector('.rgb-video-bg');
         if (existing) existing.remove();
@@ -42,16 +40,13 @@ window.addEventListener('DOMContentLoaded', () => {
         target.style.position = 'fixed';
         target.prepend(video);
     }
-
     function clearRGBVideo(target) {
         const vid = target?.querySelector('.rgb-video-bg');
         if (vid) vid.remove();
     }
-
     function applyTheme(colOrLeft, gradientSetting = null) {
         let bg = colOrLeft;
         let isDark = isDarkColor(colOrLeft);
-
         if (gradientSetting === 'custom') {
             const l = localStorage.getItem('gradientLeft')  || '#ffffff';
             const r = localStorage.getItem('gradientRight') || '#000000';
@@ -123,12 +118,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 isDark = false;
             }
         }
-
         const textColor = isDark ? 'white' : '';
         localStorage.setItem('globalDarkTheme', isDark);
         localStorage.setItem('globalTextColor', textColor);
-
-        // Apply background and styles to header/footer
         [header, footer].forEach(bar => {
             if (!bar) return;
             bar.style.background = bg;
@@ -154,13 +146,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
-
-        // Apply header background to .test elements  --- NEW
         if (header && testElements.length > 0) {
             const headerBg = window.getComputedStyle(header).background;
             testElements.forEach(el => el.style.background = headerBg);
         }
-
         textOnlyFooter && (textOnlyFooter.style.color = textColor || '');
         globalText && (globalText.style.color = textColor || '');
         if (colorInput) {
@@ -170,13 +159,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 colorInput.style.borderColor = textColor;
         }
     }
-
-    // Existing storage/theme initialization code...
     const storedTheme = localStorage.getItem('useGradient');
     const storedFlat  = localStorage.getItem('headerColor');
     const storedLeft  = localStorage.getItem('gradientLeft');
     const storedRight = localStorage.getItem('gradientRight');
-
     if (storedTheme && storedTheme !== 'custom') {
         if (themeSelector) themeSelector.value = storedTheme;
         applyTheme('#000000', storedTheme);
@@ -190,14 +176,12 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
         applyTheme('#8cbe37');
     }
-
     colorInput?.addEventListener('input', () => {
         localStorage.setItem('headerColor', colorInput.value);
         ['gradientLeft', 'gradientRight', 'useGradient'].forEach(k => localStorage.removeItem(k));
         if (themeSelector) themeSelector.value = '';
         applyTheme(colorInput.value);
     });
-
     [gradLeftInput, gradRightInput].forEach(inp => inp?.addEventListener('input', () => {
         if (themeSelector?.value) return;
         const l = gradLeftInput?.value || '#ffffff';
@@ -208,7 +192,6 @@ window.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('headerColor');
         applyTheme(l, 'custom');
     }));
-
     themeSelector?.addEventListener('change', () => {
         const sel = themeSelector.value;
         if (!sel) {
@@ -223,7 +206,6 @@ window.addEventListener('DOMContentLoaded', () => {
         applyTheme('#000000', sel);
         location.reload();
     });
-
     resetBtn?.addEventListener('click', () => {
         ['headerColor', 'useGradient', 'gradientLeft', 'gradientRight', 'globalTextColor', 'globalDarkTheme']
         .forEach(k => localStorage.removeItem(k));
