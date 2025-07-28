@@ -41,14 +41,17 @@ window.addEventListener('DOMContentLoaded', () => {
     const isDark = localStorage.getItem("globalDarkTheme") === "true";
     const toggle = document.getElementById("toggle");
     const weather = document.getElementById("weather");
+    const poppups = document.getElementById("ppupcolor")
     if (isDark) {
       document.body.classList.add("w");
       if (toggle) toggle.classList.add("w");
       if (weather) weather.classList.add("w");
+      if (poppups) poppups.classList.add("w");
     } else {
       document.body.classList.remove("w");
       if (toggle) toggle.classList.remove("w");
       if (weather) weather.classList.remove("w");
+      if (poppups) poppups.classList.remove("w");
     }
   }
   async function getLocation() {
