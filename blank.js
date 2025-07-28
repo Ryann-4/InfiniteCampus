@@ -1,8 +1,8 @@
 function showPopup() {
-    document.getElementById("popups").style.display = "block";
+    document.getElementById("popup").style.display = "block";
 }
 function closePopup() {
-    document.getElementById("popups").style.display = "none";
+    document.getElementById("popup").style.display = "none";
 }
 function openGame() {
     var win = window.open();
@@ -26,5 +26,5 @@ function closeAndRedirect() {
 }
 function keepOpenAndRedirect() {
     openGame();
-    document.getElementById("popups").style.display = "none";
+    document.getElementById("popup").style.display = "none";
 }
