@@ -421,8 +421,8 @@ location {
     color: lightgrey !important; 
 }
 .w button { 
-    color: lightgrey; 
-    border-color: lightgrey; 
+    color: lightgrey !important; 
+    border-color: lightgrey !important; 
 }
 .dropdown {
     background-color:black;
