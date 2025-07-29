@@ -17,7 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 <br><br><br>
                 <a class="button" href="InfiniteBypassers">Open In About:Blank</a>
                 <br><br><br>
-                <a class="button" onclick="ClearData()">Clear Data</a>
+                <a class="button" onclick="localStorage.clear(); location.reload();">Clear Data</a>
             </div>
             <div class="bar test">
                 <center>
@@ -37,10 +37,6 @@ window.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(wrapper);
     const button = document.getElementById('trigger');
     const popup = document.getElementById('popup');
-    function ClearData() {
-        localStorage.clear(); 
-        location.reload();
-    }
     if (button && popup) {
         button.addEventListener('click', (e) => {
             e.stopPropagation();
