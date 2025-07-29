@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 <br><br><br>
                 <a class="button" onclick="localStorage.clear(); location.reload();">Clear Data</a>
             </div>
-            <div class="bar test rgb-video-bg">
+            <div class="bar test rgb-element">
                 <center>
                     <a class="bar headerbtn" href="InfiniteContacts" style="height:auto; width:auto; background:none; margin-top:-15px; margin-left:-50px; font-size:15px; color:inherit;">
                         Contact Me
