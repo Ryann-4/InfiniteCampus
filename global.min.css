@@ -571,6 +571,25 @@ location {
 .darkbuttons:hover {
     filter:invert(1);
 }
+@keyframes rgbAnimation {
+  0% {
+    background-color: red;
+  }
+  33% {
+    background-color: green;
+  }
+  66% {
+    background-color: blue;
+  }
+  100% {
+    background-color: red;
+  }
+}
+.rgb-element {
+  width: 200px;
+  height: 200px;
+  animation: rgbAnimation 3s infinite linear;
+}
 /*end other*/
 /* end Global */
 /*# sourceMappingURL=global.min.css.map */

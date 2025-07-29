@@ -116,6 +116,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 if (footer) insertRGBVideoBackground(footer);
                 bg = 'white';
                 isDark = false;
+                document.querySelectorAll('.rgb-element').forEach(div => {
+                    div.style.display = 'block'
+                });
             }
         }
         const textColor = isDark ? 'white' : '';
