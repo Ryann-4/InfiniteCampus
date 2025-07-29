@@ -120,7 +120,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 bg = 'transparent';
                 isDark = false;
                 document.querySelectorAll('.rgb-element').forEach(div => {
-                    div.style.animation = 'rgbAnimation';
+                    div.style.animation = 'rgbAnimation 15s infinite linear';
                 });
             }
         }
