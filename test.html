@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Alert</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .custom-alert {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .alert-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 300px;
+      width: 80%;
+    }
+    .alert-buttons {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-around;
+    }
+    .alert-buttons button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .ok-btn {
+      background-color: #007BFF;
+      color: #fff;
+    }
+    .no-btn {
+      background-color: #6c757d;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <button onclick="showCustomAlert()">Show Alert</button>
+
+  <script>
+    function showCustomAlert() {
+      // Create overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'custom-alert';
+
+      // Create alert box
+      overlay.innerHTML = `
+        <div class="alert-box">
+          <p>This Will Reset The Theme, And Log You Out Of Any Other Things On The Site</p>
+          <div class="alert-buttons">
+            <button class="ok-btn">OK</button>
+            <button class="no-btn">No</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      // Add event listeners
+      overlay.querySelector('.ok-btn').addEventListener('click', () => {
+        localStorage.clear();
+        location.reload();
+      });
+
+      overlay.querySelector('.no-btn').addEventListener('click', () => {
+        document.body.removeChild(overlay);
+      });
+    }
+  </script>
+
+</body>
+</html>
