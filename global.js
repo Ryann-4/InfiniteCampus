@@ -45,6 +45,9 @@ window.addEventListener('DOMContentLoaded', () => {
         if (vid) vid.remove();
     }
     function applyTheme(colOrLeft, gradientSetting = null) {
+            document.querySelectorAll('.rgb-element').forEach(div => {
+            div.style.display = 'none';
+        });
         let bg = colOrLeft;
         let isDark = isDarkColor(colOrLeft);
         if (gradientSetting === 'custom') {
@@ -117,7 +120,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 bg = 'white';
                 isDark = false;
                 document.querySelectorAll('.rgb-element').forEach(div => {
-                    div.style.display = 'block'
+                    div.style.display = 'block';
                 });
             }
         }
