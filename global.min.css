@@ -568,6 +568,9 @@ location {
     font-size:130%;
     margin-bottom:-13px;
 }
+.darkbuttons:hover {
+    filter:invert(1);
+}
 /*end other*/
 /* end Global */
 /*# sourceMappingURL=global.min.css.map */
