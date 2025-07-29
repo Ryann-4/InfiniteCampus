@@ -114,7 +114,7 @@ window.addEventListener('DOMContentLoaded', () => {
             } else if (gradientSetting === 'rgb') {
                 if (header) insertRGBVideoBackground(header);
                 if (footer) insertRGBVideoBackground(footer);
-                bg = 'transparent';
+                bg = 'white';
                 isDark = false;
             }
         }
