@@ -28,7 +28,7 @@ window.addEventListener('DOMContentLoaded', () => {
             </div>
         </div>
         <div class="settings-button test" id="trigger">
-            <img src="https://codehs.com/uploads/fdacfa996601fc09d8da4d63fd2ca986" alt="Icon">
+            <img class="settings" src="https://codehs.com/uploads/fdacfa996601fc09d8da4d63fd2ca986" alt="Icon">
         </div>
         <center>
     `;
