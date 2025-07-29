@@ -9,7 +9,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const gradLeftInput     = document.getElementById('gradientLeft');
     const gradRightInput    = document.getElementById('gradientRight');
     const testElements      = document.querySelectorAll('.test');
-    const Settings          = document.querySelectorAll('.settings-button');
     const RGB_VIDEO_URL     = "https://codehs.com/uploads/9ea5f20a2d618622de3030832cde8ef6";
     const isDarkColor = hex => {
         if (!hex || hex.length !== 7 || !hex.startsWith('#')) return false;
@@ -122,7 +121,6 @@ window.addEventListener('DOMContentLoaded', () => {
         const textColor = isDark ? 'white' : '';
         localStorage.setItem('globalDarkTheme', isDark);
         localStorage.setItem('globalTextColor', textColor);
-        Settings.style.filter = isDark ? 'invert(0)' : '';
         [header, footer].forEach(bar => {
             if (!bar) return;
             bar.style.background = bg;
@@ -147,6 +145,9 @@ window.addEventListener('DOMContentLoaded', () => {
                     el.style.color = '';
                 });
             }
+            document.querySelectorAll('.settings-button').forEach(img => {
+                img.style.filter = isDark ? 'invert(0)' : 'invert(1)';
+            });
         });
         if (header && testElements.length > 0) {
             const headerBg = window.getComputedStyle(header).background;
