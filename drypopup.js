@@ -11,7 +11,7 @@ window.addEventListener('DOMContentLoaded', () => {
         <br>
         <a class="button" href="InfiniteTitles">Tab Cloaking</a>
         <br><br><br>
-        <a class="button" href="InfiniteColors">Change Header/Footer Color</a>
+        <a class="button test" href="InfiniteColors">Change Site Theme</a>
         <br><br><br>
         <a class="button" href="InfinitePolls">Take A Quick Survey</a>
         <br><br><br>
