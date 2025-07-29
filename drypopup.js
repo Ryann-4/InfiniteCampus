@@ -13,7 +13,7 @@ window.addEventListener('DOMContentLoaded', () => {
         <br><br><br>
         <a class="button test" href="InfiniteColors">Change Site Theme</a>
         <br><br><br>
-        <a class="button" href="InfinitePolls">Take A Quick Survey</a>
+        <a class="button poll" href="InfinitePolls">Take A Quick Survey</a>
         <br><br><br>
         <a class="button" href="InfiniteBypassers">Open In About:Blank</a>
       </div>

@@ -82,14 +82,11 @@ html {
 .poll {
     text-decoration:none; 
     font-weight:bold; 
-    position:fixed;
     color:yellow; 
     background-color:red; 
-    border-radius:15px; 
-    padding:20px; 
     transition: all 0.3s ease;
     opacity: 0.5;
-    border:2px solid yellow;
+    border:1px solid yellow;
 }
 .poll:hover {
     color:red;
