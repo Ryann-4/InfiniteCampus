@@ -66,10 +66,17 @@ window.addEventListener('DOMContentLoaded', () => {
   });
   observer.observe(document.body, { childList: true, subtree: true });
   async function getLocation() {
+  try {
     const locRes = await fetch("https://ipapi.co/json/");
+    if (!locRes.ok) throw new Error("Weather Unavailible");
     const loc = await locRes.json();
     currentCity = loc.city;
+  } catch (error) {
+    const weatherEl = document.getElementById("weather");
+    if (weatherEl) weatherEl.innerText = "Weather Unavailable";
+    currentCity = "";
   }
+}
   async function getWeather(city, useFahrenheit) {
     city = city.replace(/\+/g, "");
     const unit = useFahrenheit ? "u" : "m";
