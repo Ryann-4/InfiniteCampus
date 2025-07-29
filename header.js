@@ -51,9 +51,56 @@ const headerHTML = `
         <a class="headerbtn" style="right:710; top:14" href="InfiniteAbouts">
             About
         </a>
-        <a class="headerbtn" style="right:650; top:14" href="InfiniteApps">
+        <div id="appsToggle" class="dropdown-toggle headerbtn" style="right:650; top:14; position:absolute;">
             Apps
-        </a>
+        </div>
+        <div style="right:650; top:50px;" class="dropdown" id="appsDropdown">
+            <button style="font-weight:bold;" onclick="location.href='InfiniteNettle1'">
+                NettleWeb (1)
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteNettle2'">
+                NettleWeb (2)
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteMinecrafters'">
+                Minecraft
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteProxies'">
+                Proxies List
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteTubers'">
+                How To Unblock Youtube
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteBrowsers'">
+                Browsers
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfinitePlayers'">
+                20 File MP3 Player
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfinitePlacers'">
+                R/Place
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteCounters'">
+                Time Until Calculator
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteShreks'">
+                Watch The Shrek Movie
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteColors'">
+                Change Site Theme
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteTitles'">
+                Change Site Title
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteLocators'">
+                Get Doxxed
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteBlanks'">
+                Open Any Site In About:Blank
+            </button>
+            <button style="font-weight:bold;" onclick="location.href='InfiniteAwesomes'">
+                Cool URLs For Chrome
+            </button>
+        </div>
         <div id="chatToggle" class="dropdown-toggle headerbtn" style="right:595; top:14; position:absolute;">
             Chat
         </div>
@@ -124,31 +171,46 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerWrapper = document.createElement("div");
     headerWrapper.innerHTML = headerHTML;
     document.body.insertBefore(headerWrapper, document.body.firstChild);
+    const appsToggle = document.getElementById('appsToggle');
+    const appsDropdown = document.getElementById('appsDropdown');
     const chatToggle = document.getElementById('chatToggle');
     const chatDropdown = document.getElementById('chatDropdown');
     const downloadToggle = document.getElementById('downloadToggle');
     const downloadDropdown = document.getElementById('downloadDropdown');
     const helpToggle = document.getElementById('helpToggle');
     const helpDropdown = document.getElementById('helpDropdown');
+    appsToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        appsDropdown.style.display = appsDropdown.style.display === 'flex' ? 'none' : 'flex';
+        chatDropdown.style.display = 'none';
+        downloadDropdown.style.display = 'none';
+        helpDropdown.style.display = 'none';
+    });
     chatToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         chatDropdown.style.display = chatDropdown.style.display === 'flex' ? 'none' : 'flex';
+        appsDropdown.style.display = 'none';
         downloadDropdown.style.display = 'none';
         helpDropdown.style.display = 'none';
     });
     downloadToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         downloadDropdown.style.display = downloadDropdown.style.display === 'flex' ? 'none' : 'flex';
+        appsDropdown.style.display = 'none';
         chatDropdown.style.display = 'none';
         helpDropdown.style.display = 'none';
     });
     helpToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         helpDropdown.style.display = helpDropdown.style.display === 'flex' ? 'none' : 'flex';
+        appsDropdown.style.display = 'none';
         downloadDropdown.style.display = 'none';
         chatDropdown.style.display = 'none';
     });
     document.addEventListener('click', (e) => {
+        if (!appsDropdown.contains(e.target) && !appsToggle.contains(e.target)) {
+            appsDropdown.style.display = 'none';
+        }
         if (!chatDropdown.contains(e.target) && !chatToggle.contains(e.target)) {
             chatDropdown.style.display = 'none';
         }
