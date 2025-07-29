@@ -105,6 +105,9 @@ window.addEventListener('DOMContentLoaded', () => {
             } else if (gradientSetting === 'trans') {
                 bg = 'linear-gradient(to bottom,black,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,transparent,black)';
                 isDark = true;
+                document.querySelectorAll('.darkbuttons').forEach(a => {
+                    a.style.filter = 'none';
+                });
             } else if (gradientSetting === 'drk') {
                 bg = 'linear-gradient(to right, black, black)';
                 isDark = true;
