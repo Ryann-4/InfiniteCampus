@@ -151,6 +151,10 @@ window.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.settings-button').forEach(div => {
                 div.style.border = isDark ? '1px solid white' : '1px solid black';
             });
+            document.querySelectorAll('.darkbuttons').forEach(a => {
+                a.style.border = isDark ? '1px solid white' : '1px solid black';
+                a.style.color = isDark ? 'white' : 'black';
+            });
         });
         if (header && testElements.length > 0) {
             const headerBg = window.getComputedStyle(header).background;
