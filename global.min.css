@@ -588,7 +588,7 @@ location {
 .rgb-element {
   width: 200px;
   height: 200px;
-  animation: rgbAnimation 3s infinite linear;
+  animation: rgbAnimation 15s infinite linear;
 }
 /*end other*/
 /* end Global */

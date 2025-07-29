@@ -1,7 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
     const popupHTML = `
         <div class="popup2" id="popup">
-            <div class="bar test">
+            <div class="bar test rgb-element">
                 <div style="text-align:center; font-size:25px; margin-top:-10px;" id="clocks">
                     --:--:-- --
                 </div>
@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 <br><br><br>
                 <a class="button" onclick="localStorage.clear(); location.reload();">Clear Data</a>
             </div>
-            <div class="bar test">
+            <div class="bar test rgb-element">
                 <center>
                     <a class="bar headerbtn" href="InfiniteContacts" style="height:auto; width:auto; background:none; margin-top:-15px; margin-left:-50px; font-size:15px; color:inherit;">
                         Contact Me
@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 </center>
             </div>
         </div>
-        <div class="settings-button test" id="trigger">
+        <div class="settings-button test rgb-element" id="trigger">
             <img class="settings" src="https://codehs.com/uploads/fdacfa996601fc09d8da4d63fd2ca986" alt="Icon">
         </div>
         <center>

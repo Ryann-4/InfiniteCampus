@@ -46,7 +46,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     function applyTheme(colOrLeft, gradientSetting = null) {
             document.querySelectorAll('.rgb-element').forEach(div => {
-            div.style.display = 'none';
+            div.style.animation = 'none !important';
         });
         let bg = colOrLeft;
         let isDark = isDarkColor(colOrLeft);
@@ -117,10 +117,10 @@ window.addEventListener('DOMContentLoaded', () => {
             } else if (gradientSetting === 'rgb') {
                 if (header) insertRGBVideoBackground(header);
                 if (footer) insertRGBVideoBackground(footer);
-                bg = 'white';
+                bg = 'transparent';
                 isDark = false;
                 document.querySelectorAll('.rgb-element').forEach(div => {
-                    div.style.display = 'block';
+                    div.style.animation = 'rgbAnimation';
                 });
             }
         }
