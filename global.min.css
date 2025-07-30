@@ -276,7 +276,8 @@ input, button {
 }
 .logo {
     height:55px; 
-    margin-top:-5.5vh;
+    top:0;
+    margin-top:2.5px;
     vertical-align:bottom; 
     position:fixed; 
 }
