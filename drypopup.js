@@ -17,6 +17,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 <br><br><br>
                 <a class="button" href="InfiniteBypassers">Open In About:Blank</a>
                 <br><br><br>
+                <a class="button" href="InfiniteFeatures.html">Suggest A Feature</a>
+                <br><br><br>
                 <a class="button" onclick="localStorage.clear(); location.reload();">Clear Data</a>
             </div>
             <div class="bar test rgb-element">
