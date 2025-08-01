@@ -149,10 +149,10 @@ window.addEventListener('DOMContentLoaded', () => {
         const darkElement = document.querySelector('.darkbuttons');
         const lightElements = document.querySelectorAll('.lightbuttons');
         if (!darkElement || lightElements.length === 0) return;
-        const darkBg = getComputedStyle(darkElement).backgroundColor;
+        const darkBg = getComputedStyle(darkElement).color;
         const invertedColor = invertColor(darkBg);
         lightElements.forEach(el => {
-            el.style.backgroundColor = invertedColor;
+            el.style.color = invertedColor;
         });
     }
 
