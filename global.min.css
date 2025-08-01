@@ -69,7 +69,7 @@ html {
     transition: all 0.3s ease;
 }
 .button:hover {
-    color:black;
+    color:black !important;
     background-color:lightgrey;
     border:1px solid black;
 }
