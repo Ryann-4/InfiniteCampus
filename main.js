@@ -35,23 +35,19 @@ function converter() { window.open("https://spotidownloader.com/en"); }
 function puter() { window.open("https://puter.com"); }
 function thumbnail() { window.open("https://tagmp3.net/"); }
 function ITU() { window.open("https://postimage.org/"); }
-
 window.addEventListener('DOMContentLoaded', () => {
     let isFahrenheit = true;
     let currentCity = "";
-
     function setPopup2Color(isDark) {
         document.querySelectorAll('.popup2').forEach(el => {
             el.style.color = isDark ? 'white' : 'black';
         });
     }
-
     function applyDarkModeClass() {
         const isDark = localStorage.getItem("globalDarkTheme") === "true";
         const toggle = document.getElementById("toggle");
         const weather = document.getElementById("weather");
         const poppups = document.getElementById("ppupcolor");
-
         if (isDark) {
             document.body.classList.add("w");
             if (toggle) toggle.classList.add("w");
@@ -65,13 +61,11 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         setPopup2Color(isDark);
     }
-
     const observer = new MutationObserver(() => {
         const isDark = localStorage.getItem("globalDarkTheme") === "true";
         setPopup2Color(isDark);
     });
     observer.observe(document.body, { childList: true, subtree: true });
-
     async function getLocation() {
         try {
             const locRes = await fetch("https://ipapi.co/json/");
@@ -84,7 +78,6 @@ window.addEventListener('DOMContentLoaded', () => {
             currentCity = "";
         }
     }
-
     async function getWeather(city, useFahrenheit) {
         city = city.replace(/\+/g, "");
         const unit = useFahrenheit ? "u" : "m";
@@ -102,7 +95,6 @@ window.addEventListener('DOMContentLoaded', () => {
         removePlusSignsFromPage();
         applyDarkModeClass();
     }
-
     function removePlusSignsFromPage() {
         const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
         while (walker.nextNode()) {
@@ -110,32 +102,25 @@ window.addEventListener('DOMContentLoaded', () => {
             node.nodeValue = node.nodeValue.replace(/\+/g, "");
         }
     }
-
     document.getElementById("toggle")?.addEventListener("click", () => {
         isFahrenheit = !isFahrenheit;
         document.getElementById("toggle").innerText = isFahrenheit ? "°C" : "°F";
         getWeather(currentCity, isFahrenheit);
     });
-
     async function initWeather() {
         await getLocation();
         getWeather(currentCity, isFahrenheit);
         removePlusSignsFromPage();
         applyDarkModeClass();
     }
-
     const savedTitle = localStorage.getItem('pageTitle');
     if (savedTitle) document.title = savedTitle;
-
     const savedFavicon = localStorage.getItem('customFavicon');
     if (savedFavicon) {
         const favicon = document.getElementById('dynamic-favicon');
         if (favicon) favicon.href = savedFavicon;
     }
-
     initWeather();
-
-    // ---- Invert darkbuttons background and apply to lightbuttons ----
     function invertColor(rgb) {
         const match = rgb.match(/\d+/g);
         if (!match || match.length < 3) return '#000';
@@ -144,7 +129,6 @@ window.addEventListener('DOMContentLoaded', () => {
         const b = 255 - parseInt(match[2]);
         return `rgb(${r}, ${g}, ${b})`;
     }
-
     function applyInvertedColors() {
         const darkElement = document.querySelector('.darkbuttons');
         const lightElements = document.querySelectorAll('.lightbuttons');
@@ -155,6 +139,5 @@ window.addEventListener('DOMContentLoaded', () => {
             el.style.color = invertedColor;
         });
     }
-
     applyInvertedColors();
 });
