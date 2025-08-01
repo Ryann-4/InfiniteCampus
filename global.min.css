@@ -89,7 +89,7 @@ html {
     border:1px solid yellow;
 }
 .poll:hover {
-    color:red;
+    color:red !important;
     background-color:yellow;
     border:2px solid red;
     opacity:0.5;
@@ -112,7 +112,7 @@ html {
 }
 .gamesbutton:hover {
     background-color: #fff;
-    color: #000;
+    color: #000 !important;
     box-shadow: 0 0 15px rgba(255, 255, 255, 1),
                 0 0 30px rgba(255, 255, 255, 0.8); 
 }
@@ -570,7 +570,7 @@ location {
     margin-bottom:-13px;
 }
 .darkbuttons:hover {
-    filter:invert(1);
+    filter:invert(1) !important;
 }
 @keyframes rgbAnimation {
   0% {
