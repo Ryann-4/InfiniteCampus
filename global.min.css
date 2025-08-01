@@ -52,6 +52,9 @@ a {
     vertical-align: baseline;
     background: rgba(0,0,0,0)
 }
+a.button {
+    cursor:pointer;
+}
 html {
     height: 100%;
     font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
