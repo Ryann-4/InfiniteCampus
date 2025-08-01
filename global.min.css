@@ -73,6 +73,20 @@ html {
     background-color:lightgrey;
     border:1px solid black;
 }
+.button2{
+    background-color:black;
+    color:lightgrey;
+    font-size: 70%;
+    padding:9px;
+    border-radius:8px;
+    border:1px solid lightgrey;
+    text-decoration:none;
+    transition: all 0.3s ease;
+}
+.button2:hover {
+    background-color:lightgrey;
+    border:1px solid black;
+}
 .cfbtn {
     border-radius:10px;
     border:1px solid black;
