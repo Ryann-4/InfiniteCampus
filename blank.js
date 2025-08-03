@@ -1,9 +1,3 @@
-function showPopup() {
-    document.getElementById("popup").style.display = "block";
-}
-function closePopup() {
-    document.getElementById("popup").style.display = "none";
-}
 function openGame() {
     var win = window.open();
     var url = "https://ryann-4.github.io/InfiniteCampus";
@@ -21,11 +15,23 @@ function openGame() {
         alert("Err#1 Popup Blocked");
     }
 }
-function closeAndRedirect() {
-    openGame();
-    window.close();
+function create() {
+    var url = document.getElementById('input').value;
+    var win = window.open();
+    win.document.body.style.margin = '0';
+    win.document.body.style.height = '100vh';
+    var iframe = win.document.createElement('iframe');
+    iframe.style.border = 'none';
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.margin = '0';
+    iframe.src = url;
+    win.document.body.appendChild(iframe);
 }
-function keepOpenAndRedirect() {
-    openGame();
-    document.getElementById("popup").style.display = "none";
-}
+window.onload = function() {
+    document.getElementById('input').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            create();
+        }
+    });
+};

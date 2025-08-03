@@ -41,26 +41,23 @@
                 Open In About:Blank
             </p>
             <br>
-            <button class="button" onclick="showPopup()">
+            <button class="button" onclick="openGame()">
                 Open
             </button>
-        </center>
-        <div id="popup" class="popup">
-            <button class="buttonx" style="margin-left:590px; margin-bottom:-1px" onclick="closePopup()">
-                X
-            </button>
-            <p>
-                Do You Want To Attempt To Close This Site And Open In About:Blank?
-                <br> 
-                Or, Keep This Site Open And Open In About:Blank?
+            <br>
+            <p class="r">
+                Or Open A Custom Url In About:Blank
             </p>
-            <button class="close-btn" onclick="closeAndRedirect()">
-                Close Site
+            <br>
+            <input class="button" type="text" placeholder="Enter Url Here" id='input' autofocus>
+            <br>
+            <br>
+            <button class="button" onclick='create()'>
+                Open Custom URL
             </button>
-            <button class="keep-open-btn" onclick="keepOpenAndRedirect()">
-                Keep Open
-            </button>
-        </div>
+            <br>
+            <br>
+        </center>
         <script src="frame.js">
         </script>
     </body>
