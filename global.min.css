@@ -1,4 +1,3 @@
-/* Global */
 @import"https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css";@import"https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,400italic,500italic";span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark {
     margin: 0;
     padding: 3px;
@@ -8,7 +7,6 @@
     vertical-align: baseline;
     background: rgba(0,0,0,0)
 }
-/*body*/
 body::-webkit-scrollbar {
     display: none;
 }
@@ -59,8 +57,104 @@ html {
     height: 100%;
     font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
 }
-/* end body */
-/* buttons */
+#gamesContainer {
+    text-align:center;
+}
+#toggle {
+    color:black;
+    background-color:transparent;
+    border:1px solid black;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+#toggle:hover {
+    color:lightgrey;
+    border:1px solid lightgrey;
+}
+#fileInput {
+    display: none;
+}
+#filenameDisplay {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: none;
+}
+#playlist {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    text-align: left;
+}
+#playlist li {
+    padding: 5px 10px;
+    border-bottom: 1px solid #444;
+    cursor: pointer;
+}
+#playlist li.active {
+    background-color: transparent;
+    font-weight: bold;
+}
+#playlist li.playlist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#playlist li .duration {
+    margin-left: auto;
+    color: lime;
+    font-size: 0.9em;
+}
+#weather {
+    font-size:85%;
+    font-weight:bold;
+    font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
+}
+#weather-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+#weather, #toggle {
+    opacity: 0;
+    pointer-events: none;
+}
+#weather.show, #toggle.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+#coverBackground {
+    width: 250px;
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    margin: 20px auto;
+}
+#captionsToggle {
+    border: 2px solid white;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+#clock {
+    font-size: 30px;
+    color: lightgrey;
+    transition: all 0.4s ease;
+    font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
+}
+#chat { 
+    max-width: 600px; 
+    margin: auto; 
+}
+#loginArea { 
+    margin-bottom: 20px; 
+    width:200px;
+}
 .button{
     background-color:black;
     color:lightgrey;
@@ -90,174 +184,6 @@ html {
     background-color:lightgrey;
     border:1px solid black;
 }
-.cfbtn {
-    border-radius:10px;
-    border:1px solid black;
-    color:black;
-    
-}
-.poll {
-    text-decoration:none; 
-    font-weight:bold; 
-    color:yellow; 
-    background-color:red; 
-    transition: all 0.3s ease;
-    opacity: 0.5;
-    border:1px solid yellow;
-}
-.poll:hover {
-    color:red !important;
-    background-color:yellow;
-    border:2px solid red;
-    opacity:0.5;
-}
-.gamesbutton {
-    margin-top: 25px;
-    margin-bottom:10px;
-    padding: 10px 20px;
-    background-color: #000;
-    color: #fff;
-    border: 2px solid #fff;
-    margin-right:5px;
-    margin-left: 5px;
-    border-radius: 25px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    text-align:center;
-}
-.gamesbutton:hover {
-    background-color: #fff;
-    color: #000 !important;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 1),
-                0 0 30px rgba(255, 255, 255, 0.8); 
-}
-#gamesContainer {
-    text-align:center;
-}
-/*end buttons*/
-/* other buttons */
-.popup {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: transparent;
-    padding: 3px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    border:1px solid;
-    z-index: 1000;
-    text-align: center;
-    color:white;
-}
-.popup button {
-    margin: 10px;
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    color:white;
-}
-.close-btn {
-    background-color: red;
-    color: white;
-}
-.close-btn:hover {
-    background-color: white;
-    color: red;
-}
-.buttonx {
-    background-color: transparent;
-    color: white;
-}
-.buttonx:hover {
-    background-color: white;
-    color: black;
-}
-.keep-open-btn {
-    background-color: green;
-    color: white;
-}
-.keep-open-btn:hover {
-    background-color: white;
-    color: green;
-}
-input, button { 
-    padding: 10px; 
-    font-size: 16px; 
-}
-.controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-.controls button {
-    background: none;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    color: white;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-.controls button:hover {
-    background: #333;
-}
-.progress {
-    flex-grow: 1;
-    height: 5px;
-    background: darkgrey;
-    border-radius: 3px;
-    margin: 0 10px;
-    position: relative;
-    cursor: pointer;
-}
-.progress-bar {
-    background: lime;
-    height: 100%;
-    width: 0%;
-    border-radius: 3px;
-}
-.time {
-    font-size: 12px;
-    white-space: nowrap;
-    color:lime;
-}
-.custom-file-upload {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: black;
-    color: lightgrey;
-    border: 2px solid lightgrey;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 20px;
-}
-.custom-file-upload:hover {
-    background-color: lightgrey;
-    color: black;
-    border-color: black;
-}
-.media-container {
-    max-width: 600px;
-    margin: auto;
-}
-.player {
-    background: transparent;
-    border-radius: 20px;
-    padding: 15px;
-    display: none;
-    overflow: hidden;
-}
-/*end other buttons*/
-/* header stuff */
 .headerbtn{
     color:black;
     border:0px; 
@@ -298,8 +224,85 @@ input, button {
     vertical-align:bottom; 
     position:fixed; 
 }
-/*end header stuff*/
-/* text stuff */
+.darkbuttons:hover {
+    filter:invert(1) !important;
+}
+.cfbtn {
+    border-radius:10px;
+    border:1px solid black;
+    color:black;
+}
+.poll {
+    text-decoration:none; 
+    font-weight:bold; 
+    color:yellow; 
+    background-color:red; 
+    transition: all 0.3s ease;
+    opacity: 0.5;
+    border:1px solid yellow;
+}
+.poll:hover {
+    color:red !important;
+    background-color:yellow;
+    border:2px solid red;
+    opacity:0.5;
+}
+.gamesbutton {
+    margin-top: 25px;
+    margin-bottom:10px;
+    padding: 10px 20px;
+    background-color: #000;
+    color: #fff;
+    border: 2px solid #fff;
+    margin-right:5px;
+    margin-left: 5px;
+    border-radius: 25px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    text-align:center;
+}
+.gamesbutton:hover {
+    background-color: #fff;
+    color: #000 !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 1),
+                0 0 30px rgba(255, 255, 255, 0.8); 
+}
+input, button { 
+    padding: 10px; 
+    font-size: 16px; 
+}
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: black;
+    color: lightgrey;
+    border: 2px solid lightgrey;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+.custom-file-upload:hover {
+    background-color: lightgrey;
+    color: black;
+    border-color: black;
+}
+.delete-btn {
+    display:none;
+    background: crimson;
+    color: white;
+    border: 1px solid white;
+    padding: 6px 12px;
+    border-radius: 3px;
+    transition: background 0.2s, color 0.2s;
+}
+.delete-btn:hover {
+    background: white;
+    color: red;
+    border: 1px solid red;
+}
 .btntxt {
     color:yellow;
     font-size:150%;
@@ -329,111 +332,22 @@ input, button {
     -1px 1px 0 #fff,
     1px 1px 0 #fff;
 }
-#fileInput {
-    display: none;
+.ajt {
+    color: rgb(144, 144, 144)
 }
-#filenameDisplay {
-    margin-top: 10px;
-    text-align: center;
-    font-weight: bold;
-    white-space: nowrap;
-    text-overflow: none;
+.tptxt {
+    color:rgb(0, 224, 14);
+    font-size:200%;
 }
-#playlist {
-    list-style: none;
-    padding: 0;
-    margin-top: 10px;
-    text-align: left;
+.mtxt {
+    color:rgb(0, 160, 160);
+    font-style: italic;
 }
-#playlist li {
-    padding: 5px 10px;
-    border-bottom: 1px solid #444;
-    cursor: pointer;
+.g {
+    color:green;
 }
-#playlist li.active {
-    background-color: transparent;
-    font-weight: bold;
-}
-#playlist li.playlist-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-#playlist li .duration {
-    margin-left: auto;
-    color: lime;
-    font-size: 0.9em;
-}
-.playlist-item.drag-over {
-    background-color: #cccccc88;
-}
-.playlist-item.dragging {
-    opacity: 0.5;
-}
-/* end text stuff */
-/*other*/
-audio {
-    width: 100%;
-    display: block;
-    border-radius: 10px;
-}
-/* weather shit */
-.weather {
-    height:10vh;
-    width:30vw;
-}
-#weather {
-    font-size:85%;
-    font-weight:bold;
-    font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
-}
-location {
-    margin-bottom: 1rem;
-}
-#weather-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-#toggle {
-    color:black;
-    background-color:transparent;
-    border:1px solid black;
-    font-size: 0.75rem;
-    padding: 0.2rem 0.4rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-#toggle:hover {
-    color:lightgrey;
-    border:1px solid lightgrey;
-}
-#weather, #toggle {
-    opacity: 0;
-    pointer-events: none;
-}
-#weather.show, #toggle.show {
-    opacity: 1;
-    pointer-events: auto;
-}
-/*end weather shit*/
-.time-section {
-    margin-top: 1em;
-    font-size: 2em;
-    color:white;
-}
-.pollresults {
-    border: 5px solid black;
-    border-radius: 20px;
-    padding: 0px;
-}
-.pair {
-    margin-bottom: 10px;
-}
-@keyframes rgbShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+.m {
+    color:magenta;
 }
 .w { 
     color: lightgrey !important; 
@@ -441,6 +355,43 @@ location {
 .w button { 
     color: lightgrey !important; 
     border-color: lightgrey !important; 
+}
+.note .txt {
+    flex: 1;
+    font-size: large;
+    margin-right: 10px;
+}
+.message { 
+    padding: 10px; 
+    border: 1px solid white; 
+    border-radius: 10px; 
+    margin: 10px 0;
+    color:white;
+    text-align:left;
+    width:25vw;
+    background-color:black
+}
+.meta { 
+    font-size: 12px; 
+    color: white; 
+}
+.admin { 
+    color: goldenrod; 
+    font-weight: bold; 
+}
+.status {
+    margin-top: 15px;
+    font-size: 14px;
+}
+.weather {
+    height:10vh;
+    width:30vw;
+}
+location {
+    margin-bottom: 1rem;
+}
+.pair {
+    margin-bottom: 10px;
 }
 .dropdown {
     background-color:black;
@@ -451,21 +402,6 @@ location {
     border:1px solid white;
     text-decoration:none;
 }
-#coverBackground {
-    width: 250px;
-    height: 250px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: 12px;
-    margin: 20px auto;
-}
-#clock {
-    font-size: 30px;
-    color: lightgrey;
-    transition: all 0.4s ease;
-    font-family: "Roboto","aktiv grotesk","Helvetica Neue","Helvetica",arial,sans-serif;
-    }
 .settings-button {
     position: fixed;
     bottom: 30px;
@@ -544,36 +480,6 @@ location {
     word-wrap: break-word;
     white-space: pre-wrap;
 }
-.note .txt {
-    flex: 1;
-    font-size: large;
-    margin-right: 10px;
-}
-.delete-btn {
-    display:none;
-    background: crimson;
-    color: white;
-    border: 1px solid white;
-    padding: 6px 12px;
-    border-radius: 3px;
-    transition: background 0.2s, color 0.2s;
-}
-.delete-btn:hover {
-    background: white;
-    color: red;
-    border: 1px solid red;
-}
-.ajt {
-    color: rgb(144, 144, 144)
-}
-.tptxt {
-    color:rgb(0, 224, 14);
-    font-size:200%;
-}
-.mtxt {
-    color:rgb(0, 160, 160);
-    font-style: italic;
-}
 .update-container {
     background: transparent;
     padding: 20px;
@@ -586,24 +492,6 @@ location {
     font-size:130%;
     margin-bottom:-13px;
 }
-.darkbuttons:hover {
-    filter:invert(1) !important;
-}
-@keyframes rgbAnimation {
-  0% {
-    background-color: red;
-  }
-  33% {
-    background-color: green;
-  }
-  66% {
-    background-color: blue;
-  }
-  100% {
-    background-color: red;
-  }
-}
-/* shrek stuff*/
 .shrekcontrols.hidden {
     opacity: 0;
     pointer-events: none;
@@ -645,16 +533,85 @@ location {
     background: #0f0;
     width: 0%;
 }
-#captionsToggle {
-    border: 2px solid white;
-    font-weight: bold;
-    padding: 4px 8px;
-    border-radius: 4px;
-}
 .shrektime {
     font-size: 14px;
     min-width: 120px;
 }
-/*end other*/
-/* end Global */
-/*# sourceMappingURL=global.min.css.map */
+.time-section {
+    margin-top: 1em;
+    font-size: 2em;
+    color:white;
+}
+audio {
+    width: 100%;
+    display: block;
+    border-radius: 10px;
+}
+.playlist-item.drag-over {
+    background-color: #cccccc88;
+}
+.playlist-item.dragging {
+    opacity: 0.5;
+}
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.controls button {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.controls button:hover {
+    background: #333;
+}
+.progress {
+    flex-grow: 1;
+    height: 5px;
+    background: darkgrey;
+    border-radius: 3px;
+    margin: 0 10px;
+    position: relative;
+    cursor: pointer;
+}
+.progress-bar {
+    background: lime;
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+}
+.time {
+    font-size: 12px;
+    white-space: nowrap;
+    color:lime;
+}
+.media-container {
+    max-width: 600px;
+    margin: auto;
+}
+.player {
+    background: transparent;
+    border-radius: 20px;
+    padding: 15px;
+    display: none;
+    overflow: hidden;
+}
+@keyframes rgbAnimation {
+  0% { background-color: red; }
+  33% { background-color: green; }
+  66% { background-color: blue; }
+  100% { background-color: red; }
+}
+@keyframes rgbShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
