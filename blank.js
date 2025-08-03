@@ -13,6 +13,7 @@ function openGame() {
         iframe.style.height = "100vh";
         iframe.style.border = "none";
         iframe.src = url;
+        win.document.title = 'Infinite Campus';
         win.document.body.style.margin = "0"; 
         win.document.body.style.overflow = "hidden"; 
         win.document.body.appendChild(iframe);
