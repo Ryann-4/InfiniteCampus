@@ -113,10 +113,10 @@ const headerHTML = `
         </a>
     </header>
 </strong>
-<footer id="site-footer" style="bottom:-4; text-align:left">
+<footer id="site-footer" style="z-index:9; bottom:-4; text-align:left">
     <p>Totally Made By Noah White And Not A Different Person.</p>
 </footer>
-<footer id="text-only-footer" style="background-color:transparent; text-align:right; bottom:-4">
+<footer id="text-only-footer" style="z-index:10; background-color:transparent; text-align:right; bottom:-4">
   <p>Pissing Off Your Teachers Since 2024</p>
 </footer>
 `;
