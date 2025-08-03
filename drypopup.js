@@ -11,6 +11,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <a class="button" href="InfiniteTitles">Tab Cloaking</a>
                 <br><br><br>
+                <input class="button" type="text" id="titleInput" placeholder="Enter New Title">
+                <br><br><br>
+                <button id="setTitleBtn" class="button">Set Title</button>
+                <br>
+                <br>
+                <br>
                 <a class="button2 test darkbuttons rgb-element" href="InfiniteColors">Change Site Theme</a>
                 <br><br><br>
                 <a class="button poll" href="InfinitePolls">Take A Quick Survey</a>
