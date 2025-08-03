@@ -7,19 +7,43 @@ window.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
             <div class="text">
-                <p class="txt">Settings</p>
+                <p class="txt">
+                    Settings
+                </p>
                 <br>
-                <a class="button" href="InfiniteTitles">Tab Cloaking</a>
-                <br><br><br>
-                <a class="button2 test darkbuttons rgb-element" href="InfiniteColors">Change Site Theme</a>
-                <br><br><br>
-                <a class="button poll" href="InfinitePolls">Take A Quick Survey</a>
-                <br><br><br>
-                <a class="button" href="InfiniteBypassers">Open In About:Blank</a>
-                <br><br><br>
-                <a class="button" href="InfiniteFeatures">Suggest A Feature</a>
-                <br><br><br>
-                <a class="button" onclick="localStorage.clear(); location.reload();">Clear Data</a>
+                <a class="button" href="InfiniteTitles">
+                    Tab Cloaking
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button2 test darkbuttons rgb-element" href="InfiniteColors">
+                    Change Site Theme
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button poll" href="InfinitePolls">
+                    Take A Quick Survey
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button" href="InfiniteBypassers">
+                    Open In About:Blank
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button" href="InfiniteFeatures">
+                    Suggest A Feature
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button" onclick="localStorage.clear(); location.reload();">
+                    Clear Data
+                </a>
             </div>
             <div class="bar test rgb-element">
                 <center>
