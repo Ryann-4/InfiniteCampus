@@ -605,8 +605,7 @@ audio {
     overflow: hidden;
 }
 .disabled {
-    pointer-events: none;
-    cursor: not-allowed;
+    cursor: not-allowed !important;
 }
 @keyframes rgbAnimation {
   0% { background-color: red; }
