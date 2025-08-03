@@ -23,7 +23,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <br>
                 <br>
-                <a class="button poll" href="InfinitePolls">
+                <a class="button poll" href="InfinitePolls" disabled>
                     Take A Quick Survey
                 </a>
                 <br>
