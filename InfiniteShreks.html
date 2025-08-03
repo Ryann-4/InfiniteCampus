@@ -27,50 +27,10 @@
         <script src="global.js">
         </script>
         <style>
-            .shrekcontrols.hidden {
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity 0.5s ease;
-            }
-            .shrekcontrols {
-                transition: opacity 0.5s ease;
-            }
-            .shrekplayer {
-                width: 100vw;
-                position: relative;
-            }
             video {
                 width: 100%;
                 height: 100vh;
                 background: black;
-            }
-            .shrekcontrols {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                background: rgba(0, 0, 0, 0.6);
-                padding: 10px;
-                position: absolute;
-                bottom: 0;
-                width: 100%;
-                box-sizing: border-box;
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-            .shrekprogress {
-                flex: 1;
-                height: 6px;
-                background: #444;
-                border-radius: 999px;
-                cursor: pointer;
-                position: relative;
-                margin: 0 10px;
-                overflow: hidden;
-            }
-            .shrek-filled {
-                height: 100%;
-                background: #0f0;
-                width: 0%;
             }
             button {
                 background: none;
@@ -78,12 +38,6 @@
                 color: white;
                 cursor: pointer;
                 font-size: 16px;
-            }
-            #captionsToggle {
-                border: 2px solid white;
-                font-weight: bold;
-                padding: 4px 8px;
-                border-radius: 4px;
             }
             input[type=range] {
                 width: 60px;
@@ -108,10 +62,6 @@
                 border: none;
                 border-radius: 50%;
             }
-            .shrektime {
-                font-size: 14px;
-                min-width: 120px;
-            }
             ::cue {
                 font-size: 1.2em;
             }
@@ -121,7 +71,7 @@
         <br>
         <br>
         <br>
-        <div style="z-index:-1;" class="shrekplayer">
+        <div class="shrekplayer">
             <video style="height:90vh; width:100vw;" id="video" preload="metadata">
                 <source src="https://codehs.com/uploads/449e4f5106c5691fbc739ce9679fb2c3" type="video/webm">
                 <track id="captionTrack" src="subtitles.vtt" kind="subtitles" srclang="en" label="English" default="">

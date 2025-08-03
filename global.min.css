@@ -603,6 +603,59 @@ location {
     background-color: red;
   }
 }
+/* shrek stuff*/
+.shrekcontrols.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+.shrekcontrols {
+    transition: opacity 0.5s ease;
+}
+.shrekplayer {
+    width: 100vw;
+    position: relative;
+    z-index:1; 
+    margin-top:4vh;
+}
+.shrekcontrols {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.shrekprogress {
+    flex: 1;
+    height: 6px;
+    background: #444;
+    border-radius: 999px;
+    cursor: pointer;
+    position: relative;
+    margin: 0 10px;
+    overflow: hidden;
+}
+.shrek-filled {
+    height: 100%;
+    background: #0f0;
+    width: 0%;
+}
+#captionsToggle {
+    border: 2px solid white;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+.shrektime {
+    font-size: 14px;
+    min-width: 120px;
+}
 /*end other*/
 /* end Global */
 /*# sourceMappingURL=global.min.css.map */
