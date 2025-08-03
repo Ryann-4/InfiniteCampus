@@ -47,8 +47,12 @@ function handleVolume() {
 function toggleFullscreen() {
     if (!document.fullscreenElement) {
         video.parentElement.requestFullscreen();
+        video.style.height = '100vh';
+        video.style.width = '100vw';
     } else {
         document.exitFullscreen();
+        video.style.height = '90vh';
+        video.style.width = '100vw';
     }
 }
 function toggleCaptions() {
