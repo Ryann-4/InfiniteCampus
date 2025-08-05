@@ -21,41 +21,70 @@ async function fetchMessages() {
             loadingEl.style.display = 'none';
         }
         data.reverse().forEach(msg => {
-            if (channelSet.has(msg.id)) return;
-            channelSet.add(msg.id);
-            const li = document.createElement('li');
-            const avatarUrl = msg.author.avatar
-                ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
-                : `https://cdn.discordapp.com/embed/avatars/0.png`;
-            const timestamp = new Date(msg.timestamp).toLocaleString();
-            const imageRegex = /(https?:\/\/[^\s]+?\.(png|jpe?g|gif|webp)(\?[^\s]*)?)/gi;
-            let formattedContent = msg.content.replace(imageRegex, (url) => {
-                return `<br><img class="message-img" src="${url}" alt="image">`;
-            });
-            if (msg.attachments && msg.attachments.length > 0) {
-                msg.attachments.forEach(attachment => {
-                    const url = attachment.url;
-                    const type = attachment.content_type || '';
-                    if (type.startsWith('image/') || /\.(png|jpe?g|gif|webp)$/i.test(attachment.filename)) {
-                        formattedContent += `<br><img class="message-img" src="${url}" alt="attachment">`;
-                    } else if (type.startsWith('video/') || /\.(mp4|mov|webm|ogg)$/i.test(attachment.filename)) {
-                        formattedContent += `<br><video controls class="message-video" src="${url}"></video>`;
-                    } else if (type.startsWith('audio/') || /\.(mp3|wav|ogg)$/i.test(attachment.filename)) {
-                        formattedContent += `<br><audio controls class="message-audio" src="${url}"></audio>`;
-                    } else {
-                        formattedContent += `<br><a href="${url}" target="_blank" class="message-file">${attachment.filename}</a>`;
-                    }
+    if (channelSet.has(msg.id)) return;
+    channelSet.add(msg.id);
+    const li = document.createElement('li');
+    const avatarUrl = msg.author.avatar
+        ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
+        : `https://cdn.discordapp.com/embed/avatars/0.png`;
+    const timestamp = new Date(msg.timestamp).toLocaleString();
+    const imageRegex = /(https?:\/\/[^\s]+?\.(png|jpe?g|gif|webp)(\?[^\s]*)?)/gi;
+    
+    let formattedContent = msg.content.replace(imageRegex, (url) => {
+        return `<br><img class="message-img" src="${url}" alt="image">`;
+    });
+
+    // ✅ Convert embeds to plain text
+    if (msg.embeds && msg.embeds.length > 0) {
+        msg.embeds.forEach(embed => {
+            let embedText = "\n--- Embed ---\n";
+
+            if (embed.title) embedText += `Title: ${embed.title}\n`;
+            if (embed.description) embedText += `Description: ${embed.description}\n`;
+
+            if (embed.fields && embed.fields.length > 0) {
+                embed.fields.forEach(field => {
+                    embedText += `${field.name}: ${field.value}\n`;
                 });
             }
-            li.innerHTML = `
-                <img src="${avatarUrl}" class="avatar">
-                <div class="content">
-                    <strong>${msg.author.username}</strong>
-                    <div>${formattedContent}</div>
-                    <div class="timestamp">${timestamp}</div>
-                </div>`;
-            list.prepend(li);
+
+            if (embed.author && embed.author.name) {
+                embedText += `Author: ${embed.author.name}\n`;
+            }
+
+            if (embed.footer && embed.footer.text) {
+                embedText += `Footer: ${embed.footer.text}\n`;
+            }
+
+            formattedContent += `<pre>${embedText}</pre>`;
         });
+    }
+
+    if (msg.attachments && msg.attachments.length > 0) {
+        msg.attachments.forEach(attachment => {
+            const url = attachment.url;
+            const type = attachment.content_type || '';
+            if (type.startsWith('image/') || /\.(png|jpe?g|gif|webp)$/i.test(attachment.filename)) {
+                formattedContent += `<br><img class="message-img" src="${url}" alt="attachment">`;
+            } else if (type.startsWith('video/') || /\.(mp4|mov|webm|ogg)$/i.test(attachment.filename)) {
+                formattedContent += `<br><video controls class="message-video" src="${url}"></video>`;
+            } else if (type.startsWith('audio/') || /\.(mp3|wav|ogg)$/i.test(attachment.filename)) {
+                formattedContent += `<br><audio controls class="message-audio" src="${url}"></audio>`;
+            } else {
+                formattedContent += `<br><a href="${url}" target="_blank" class="message-file">${attachment.filename}</a>`;
+            }
+        });
+    }
+
+    li.innerHTML = `
+        <img src="${avatarUrl}" class="avatar">
+        <div class="content">
+            <strong>${msg.author.username}</strong>
+            <div>${formattedContent}</div>
+            <div class="timestamp">${timestamp}</div>
+        </div>`;
+    list.prepend(li);
+});
     } catch (err) {
         console.error('ERR#10 Error Fetching Messages:', err);
         loadingEl.textContent = 'ERR#12 Failed To Load Messages.';
