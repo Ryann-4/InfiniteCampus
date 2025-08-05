@@ -29,37 +29,28 @@ async function fetchMessages() {
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
     const timestamp = new Date(msg.timestamp).toLocaleString();
     const imageRegex = /(https?:\/\/[^\s]+?\.(png|jpe?g|gif|webp)(\?[^\s]*)?)/gi;
-    
     let formattedContent = msg.content.replace(imageRegex, (url) => {
         return `<br><img class="message-img" src="${url}" alt="image">`;
     });
-
-    // ✅ Convert embeds to plain text
     if (msg.embeds && msg.embeds.length > 0) {
         msg.embeds.forEach(embed => {
             let embedText = "\n--- Embed ---\n";
-
             if (embed.title) embedText += `Title: ${embed.title}\n`;
             if (embed.description) embedText += `Description: ${embed.description}\n`;
-
             if (embed.fields && embed.fields.length > 0) {
                 embed.fields.forEach(field => {
                     embedText += `${field.name}: ${field.value}\n`;
                 });
             }
-
             if (embed.author && embed.author.name) {
                 embedText += `Author: ${embed.author.name}\n`;
             }
-
             if (embed.footer && embed.footer.text) {
                 embedText += `Footer: ${embed.footer.text}\n`;
             }
-
             formattedContent += `<pre>${embedText}</pre>`;
         });
     }
-
     if (msg.attachments && msg.attachments.length > 0) {
         msg.attachments.forEach(attachment => {
             const url = attachment.url;
@@ -75,7 +66,6 @@ async function fetchMessages() {
             }
         });
     }
-
     li.innerHTML = `
         <img src="${avatarUrl}" class="avatar">
         <div class="content">
