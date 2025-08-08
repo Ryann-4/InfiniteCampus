@@ -1,0 +1,136 @@
+<html lang="en">
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.css">
+        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+        <meta property="og:title" content="Infinite Campus">
+        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+        <meta name="theme-color" content="#8cbe37">
+        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+        <script src="main.js">
+        </script>
+        <script src="drypopup.js">
+        </script>
+        <script src="theme.js">
+        </script>
+  <style>
+    #toolbar {
+      margin: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    #canvas {
+      border: 2px solid #ccc;
+      background-color: white;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    label {
+      font-size: 14px;
+    }
+
+    button {
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <label>Color:
+      <input type="color" id="colorPicker" value="#000000">
+    </label>
+    <label>Brush Size:
+      <input type="range" id="brushSize" min="1" max="50" value="5">
+    </label>
+    <button id="eraser">Eraser</button>
+    <button id="clear">Clear</button>
+  </div>
+
+  <canvas id="canvas" width="1000" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const colorPicker = document.getElementById("colorPicker");
+    const brushSize = document.getElementById("brushSize");
+    const eraserBtn = document.getElementById("eraser");
+    const clearBtn = document.getElementById("clear");
+
+    let drawing = false;
+    let isErasing = false;
+
+    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mouseout", stopDrawing);
+    canvas.addEventListener("mousemove", draw);
+
+    canvas.addEventListener("touchstart", e => startDrawing(e.touches[0]));
+    canvas.addEventListener("touchend", stopDrawing);
+    canvas.addEventListener("touchcancel", stopDrawing);
+    canvas.addEventListener("touchmove", e => {
+      e.preventDefault();
+      draw(e.touches[0]);
+    });
+
+    function startDrawing(e) {
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(getX(e), getY(e));
+    }
+
+    function stopDrawing() {
+      drawing = false;
+      ctx.beginPath();
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+
+      ctx.lineWidth = brushSize.value;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = isErasing ? "#ffffff" : colorPicker.value;
+
+      ctx.lineTo(getX(e), getY(e));
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(getX(e), getY(e));
+    }
+
+    function getX(e) {
+      return e.clientX - canvas.getBoundingClientRect().left;
+    }
+
+    function getY(e) {
+      return e.clientY - canvas.getBoundingClientRect().top;
+    }
+
+    eraserBtn.addEventListener("click", () => {
+      isErasing = !isErasing;
+      eraserBtn.textContent = isErasing ? "Drawing Mode" : "Eraser";
+    });
+
+    clearBtn.addEventListener("click", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+  </script>
+  <script src="frame.js">
+  </script>
+</body>
+</html>
