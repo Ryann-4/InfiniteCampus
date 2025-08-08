@@ -74,6 +74,12 @@
             const clearBtn = document.getElementById("clear");
             let drawing = false;
             let isErasing = false;
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight * 0.8;
+            }
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
             canvas.addEventListener("mousedown", startDrawing);
             canvas.addEventListener("mouseup", stopDrawing);
             canvas.addEventListener("mouseout", stopDrawing);
