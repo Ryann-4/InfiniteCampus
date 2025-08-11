@@ -30,5 +30,5 @@ document.getElementById('copyBtn').addEventListener('click', function() {
     }
     navigator.clipboard.writeText(output)
     .then(() => alert("Copied to clipboard!"))
-    .catch(() => alert("Failed to copy."));
+    .catch(() => alert("ERR#14 Failed to copy."));
 });

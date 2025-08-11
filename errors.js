@@ -12,6 +12,7 @@ setMessage(10, "Failed To Fetch Messages");
 setMessage(11, "Failed To Send Message");
 setMessage(12, "Failed To Load Messages");
 setMessage(13, "Failed To Fetch Prescence Count");
+setMessage(14, "Failed To Copy To Clipboard");
 function setMessage(num, message) {
     numberMessageMap[num] = message;
 }
