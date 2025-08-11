@@ -37,10 +37,11 @@
             <h2 class="tptxt">
                 Data URL Generator
             </h2>
-            <label class="button" for="typeSelect">
+            <label class="txt" for="typeSelect">
                 Data URL Type:
             </label>
-            <select id="typeSelect">
+            <br>
+            <select class="button" id="typeSelect">
                 <option value="image" selected>
                     Data Image
                 </option>
@@ -48,10 +49,12 @@
                     Data Text
                 </option>
             </select>
-            <label class="button" for="presetSelect">
+            <br>
+            <label class="txt" for="presetSelect">
                 Preset URLs (Optional)
             </label>
-            <select id="presetSelect">
+            <br>
+            <select class="button" id="presetSelect">
                 <option value="">
                     None
                 </option>
@@ -62,17 +65,22 @@
                     Nettleweb
                 </option>
             </select>
-            <label class="button" for="urlInput">
+            <br>
+            <label class="txt" for="urlInput">
                 Enter Custom URL
             </label>
-            <input type="text" id="urlInput" placeholder="Enter Custom URL Here" />
+            <br>
+            <input class="button" type="text" id="urlInput" placeholder="Enter Custom URL Here" />
+            <br>
             <button class="button" id="generateBtn">
                 Generate
             </button>
-            <label class="button" for="output">
+            <br>
+            <label class="txt" for="output">
                 URL:
             </label>
-            <textarea id="output" readonly placeholder="Generated Data URL Will Appear Here">
+            <br>
+            <textarea style="height:20vh; width:100vw;" id="output" readonly placeholder="Generated Data URL Will Appear Here">
             </textarea>
             <button class="button" id="copyBtn">
                 Copy To Clipboard
@@ -83,9 +91,9 @@
                 return [...str].map(c => {
                     const code = c.charCodeAt(0);
                     if (
-                        (code >= 65 && code <= 90) || // A-Z
-                        (code >= 97 && code <= 122) || // a-z
-                        (code >= 48 && code <= 57) || // 0-9
+                        (code >= 65 && code <= 90) ||
+                        (code >= 97 && code <= 122) ||
+                        (code >= 48 && code <= 57) ||
                         c === '-' || c === '_' || c === '.' || c === '~'
                     ) {
                         return c;
