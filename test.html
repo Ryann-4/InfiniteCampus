@@ -1,80 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Open Websites with iframe in about:blank</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      max-width: 400px;
-      margin: auto;
-    }
-    input {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-bottom: 1.5rem;
-    }
-  </style>
-</head>
-<body>
-  <button id="openInfiniteCampus">Open InfiniteCampus</button>
-
-  <label for="customUrl">Enter custom URL:</label>
-  <input type="text" id="customUrl" placeholder="https://example.com" />
-
-  <button id="openCustomUrl">Open Custom URL</button>
-
-  <script>
-    function openGame(url, title = 'Website') {
-      var win = window.open();
-      if (win) {
-        var iframe = win.document.createElement('iframe');
-        iframe.style.width = "100vw";
-        iframe.style.height = "100vh";
-        iframe.style.border = "none";
-        iframe.src = url;
-        win.document.title = title;
-        win.document.body.style.margin = "0"; 
-        win.document.body.style.overflow = "hidden"; 
-        win.document.body.appendChild(iframe);
-      } else {
-        alert("Err#1 Popup Blocked");
-      }
-    }
-
-    document.getElementById('openInfiniteCampus').addEventListener('click', () => {
-      openGame('https://infinitecampus.xyz', 'Infinite Campus');
-    });
-
-    document.getElementById('openCustomUrl').addEventListener('click', () => {
-      let url = document.getElementById('customUrl').value.trim();
-
-      if (!url) {
-        alert('Please enter a URL.');
-        return;
-      }
-
-      // Add protocol if missing
-      if (!/^https?:\/\//i.test(url)) {
-        url = 'https://' + url;
-      }
-
-      try {
-        new URL(url); // validate URL
-        openGame(url, url);
-      } catch {
-        alert('Invalid URL. Please enter a valid URL.');
-      }
-    });
-  </script>
-</body>
+<html>
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.css">
+        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+        <meta property="og:title" content="Infinite Campus">
+        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+        <meta name="theme-color" content="#8cbe37">
+        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+        <script src="main.js">
+        </script>
+        <script src="drypopup.js">
+        </script>
+        <!--
+        <script src="blank.js">
+        </script>
+    -->
+        <script src="theme.js">
+        </script>
+    </head>
+    <body>
+        <center>
+            <br>
+            <br>
+            <br>
+            <br>
+            <p class="tptxt">
+                Open Pages In About:Blank
+            </p>
+            <br>
+            <br>
+            <br>
+            <button class="button" id="openInfiniteCampus">
+                Open This Site
+            </button>
+            <br>
+            <br>
+            <label class="txt" for="customUrl">
+                Enter Custom URL:
+            </label>
+            <br>
+            <input class="button" type="text" id="customUrl" placeholder="Enter A URL Here" />
+            <br>
+            <br>
+            <button class="button" id="openCustomUrl">
+                Open Custom URL
+            </button>
+        </center>
+        <script>
+            function openGame(url) {
+                var win = window.open();
+                if (win) {
+                    var iframe = win.document.createElement('iframe');
+                    iframe.style.width = "100vw";
+                    iframe.style.height = "100vh";
+                    iframe.style.border = "none";
+                    iframe.src = url;
+                    win.document.title = "Infinite Campus";
+                    win.document.body.style.margin = "0"; 
+                    win.document.body.style.overflow = "hidden"; 
+                    win.document.body.appendChild(iframe);
+                } else {
+                    alert("Err#1 Popup Blocked");
+                }
+            }
+            document.getElementById('openInfiniteCampus').addEventListener('click', () => {
+                openGame('https://infinitecampus.xyz', 'Infinite Campus');
+            });
+            document.getElementById('openCustomUrl').addEventListener('click', () => {
+                let url = document.getElementById('customUrl').value.trim();
+                if (!url) {
+                    alert('Please Enter A URL.');
+                    return;
+                }
+                if (!/^https?:\/\//i.test(url)) {
+                    url = 'https://' + url;
+                }
+                try {
+                    new URL(url);
+                    openGame(url, url);
+                } catch {
+                    alert('Invalid URL. Please Enter A Valid URL.');
+                }
+            });
+        </script>
+        <script src="frame.js">
+        </script>
+    </body>
 </html>
