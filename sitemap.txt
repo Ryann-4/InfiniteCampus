@@ -1,7 +1,6 @@
 https://www.infinitecampus.xyz/404
 https://www.infinitecampus.xyz/index
 https://www.infinitecampus.xyz/InfiniteAbouts
-https://www.infinitecampus.xyz/InfiniteAdminCats
 https://www.infinitecampus.xyz/InfiniteAdminUpdaters
 https://www.infinitecampus.xyz/InfiniteApps
 https://www.infinitecampus.xyz/InfiniteArchives
