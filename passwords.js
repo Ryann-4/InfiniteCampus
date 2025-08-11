@@ -1,29 +1,45 @@
-function base64Decode(str) {
+function unlock(str) {
     try {
         return atob(str);
     } catch {
         return '';
     }
 }
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("loginBtn").addEventListener("click", checkCredentials);
-    document.getElementById("username").addEventListener("keypress", handleKeyPress);
-    document.getElementById("password").addEventListener("keypress", handleKeyPress);
-});
-function checkCredentials() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const message = document.getElementById("message");
-    const RU = base64Decode(l);
-    if (username === j && password === k) {
-        window.location.href = RU;
-    } else {
-        message.textContent = "Err#4 Username And/Or Password Is Incorrect";
-        message.style.color = "red";
-        document.getElementById("username").value = "";
-        document.getElementById("password").value = "";
+function unlockTwice(str) {
+    try {
+        return atob(atob(str));
+    } catch {
+        return "";
     }
 }
-function handleKeyPress(event) {
-    if (event.key === "Enter") checkCredentials();
+document.addEventListener("DOMContentLoaded", function () {
+    const loggedIn = localStorage.getItem("chat_logged_in");
+    if (loggedIn === "hacker41" || loggedIn === "nitrix") {
+        window.location.href = unlock(l);
+        return;
+    }
+    document.getElementById("loginBtn").addEventListener("click", runAuth);
+    document.getElementById("username").addEventListener("keypress", handleEnter);
+    document.getElementById("password").addEventListener("keypress", handleEnter);
+});
+function runAuth() {
+    const enteredUser = document.getElementById("username").value.trim();
+    const enteredPass = document.getElementById("password").value.trim();
+    const msgBox = document.getElementById("message");
+    const redirectURL = unlock(l);
+    for (let cred of s) {
+        if (unlockTwice(cred.usr) === enteredUser &&
+            unlockTwice(cred.psw) === enteredPass) {
+            localStorage.setItem("chat_logged_in", unlockTwice(cred.KY));
+            window.location.href = redirectURL;
+            return;
+        }
+    }
+    msgBox.textContent = "Err#4 Username And/Or Password Is Incorrect";
+    msgBox.style.color = "red";
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+}
+function handleEnter(event) {
+    if (event.key === "Enter") runAuth();
 }
