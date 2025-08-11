@@ -1,153 +1,173 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Data URL Generator</title>
-<script src="main.js">
-</script>
-<style>
-  body { font-family: sans-serif; padding: 20px; }
-  select, input, button { padding: 5px; margin: 5px 0; width: 100%; max-width: 400px; }
-  textarea { width: 100%; max-width: 600px; height: 150px; margin-top: 10px; font-family: monospace; }
-  label { font-weight: bold; display: block; margin-top: 15px; }
-</style>
-</head>
-<body>
-
-<h2>Data URL Generator</h2>
-
-<label for="typeSelect">Select Data URL Type:</label>
-<select id="typeSelect">
-  <option value="image" selected>Data Image (SVG Base64)</option>
-  <option value="text">Data Text (ASCII Encoded HTML)</option>
-</select>
-
-<label for="presetSelect">Select a preset URL:</label>
-<select id="presetSelect">
-  <option value="">-- None --</option>
-  <option value="https://www.infinitecampus.xyz">InfiniteCampus</option>
-  <option value="https://example.com">Example</option>
-</select>
-
-<label for="urlInput">Or enter a custom URL:</label>
-<input type="text" id="urlInput" placeholder="Enter custom URL here" />
-
-<button id="generateBtn">Generate Data URL</button>
-
-<label for="output">Generated Data URL:</label>
-<textarea id="output" readonly placeholder="Your generated data URL will appear here..."></textarea>
-
-<button id="copyBtn">Copy to Clipboard</button>
-
-<script>
-  // Your global 'r' variable must be defined outside this code
-
-  // Hardcoded base64-encoded HTML iframe template:
-  const base64HtmlTemplate = "PGh0bWwgbGFuZz0iZW4iPgo8aGVhZD4KPG1ldGEgY2hhcnNldD0iVVRGLTgiPgo8bWV0YSBuYW1lPSJ2aWV3cG9ydCIgY29udGVudD0id2lkdGg9ZGV2aWNlLXdpZHRoLCBpbml0aWFsLXNjYWxlPTEuMCI+Cjx0aXRsZT5Hb29nbGU8L3RpdGxlPgo8c3R5bGU+CmJvZHk6Oi13ZWJraXQtc2Nyb2xsYmFyIHsgZGlzcGxheTogbm9uZTsgfQpib2R5IHsgbWFyZ2luOjBweDsgfQo8L3N0eWxlPgo8L2hlYWQ+Cjxib2R5Pgo8aWZyYW1lIHN0eWxlPSJoZWlnaHQ6MTAwdmg7IHdpZHRoOjEwMHZ3OyIgc3JjPSJQVVRfVVJMX0hFUkUiPjwvaWZyYW1lPgo8L2JvZHk+CjwvaHRtbD4=";
-
-  // ASCII encode function
-  function asciiEncode(str) {
-    return [...str].map(c => {
-      const code = c.charCodeAt(0);
-      if (
-        (code >= 65 && code <= 90) || // A-Z
-        (code >= 97 && code <= 122) || // a-z
-        (code >= 48 && code <= 57) || // 0-9
-        c === '-' || c === '_' || c === '.' || c === '~'
-      ) {
-        return c;
-      }
-      if (code === 10) return '%0A';
-      if (code === 13) return '';
-      if (code === 9) return '%09';
-      if (code === 32) return '%20';
-      return '%' + code.toString(16).toUpperCase().padStart(2, '0');
-    }).join('');
-  }
-
-  // Decode base64 utility
-  function base64Decode(str) {
-    return decodeURIComponent(escape(window.atob(str)));
-  }
-
-  // Generate Data Image URL (SVG Base64)
-  function generateBase64(url) {
-    if (!url) {
-      alert("Please enter a URL.");
-      return '';
-    }
-    if (!/^https?:\/\//i.test(url)) {
-      url = "https://" + url;
-    }
-    let template = base64Decode(r);
-    template = template.replace('${url}', url);
-    const base64 = btoa(unescape(encodeURIComponent(template)));
-    return `data:image/svg+xml;base64,${base64}`;
-  }
-
-  // Generate Data Text URL (ASCII encoded HTML)
-  function generateAsciiEncodedHtml(url) {
-    if (!url) {
-      alert("Please enter a URL.");
-      return '';
-    }
-    if (!/^https?:\/\//i.test(url)) {
-      url = "https://" + url;
-    }
-    let htmlCode = base64Decode(base64HtmlTemplate);
-    htmlCode = htmlCode.replace("PUT_URL_HERE", url);
-    const encoded = asciiEncode(htmlCode);
-    return 'data:text/html;charset=utf-8,' + encoded;
-  }
-
-  function generateDataUrl() {
-    let urlInput = document.getElementById('urlInput').value.trim();
-    const preset = document.getElementById('presetSelect').value;
-    const type = document.getElementById('typeSelect').value;
-
-    if (!urlInput && preset) urlInput = preset;
-
-    if (!urlInput) {
-      alert("Please select or enter a URL.");
-      return;
-    }
-
-    let result = '';
-    if (type === 'image') {
-      result = generateBase64(urlInput);
-    } else {
-      result = generateAsciiEncodedHtml(urlInput);
-    }
-
-    document.getElementById('output').value = result;
-  }
-
-  document.getElementById('presetSelect').addEventListener('change', () => {
-    const presetVal = document.getElementById('presetSelect').value;
-    if (presetVal) {
-      document.getElementById('urlInput').value = presetVal;
-    }
-  });
-
-  document.getElementById('generateBtn').addEventListener('click', generateDataUrl);
-  document.getElementById('urlInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      generateDataUrl();
-    }
-  });
-  document.getElementById('copyBtn').addEventListener('click', () => {
-    const output = document.getElementById('output').value;
-    if (!output) {
-      alert("Nothing to copy. Generate a Data URL first.");
-      return;
-    }
-    navigator.clipboard.writeText(output)
-      .then(() => alert("Copied to clipboard!"))
-      .catch(() => alert("ERR#14 Failed to copy."));
-  });
-</script>
-
-</body>
+<html>
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.css">
+        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+        <meta property="og:title" content="Infinite Campus">
+        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+        <meta name="theme-color" content="#8cbe37">
+        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+        <script src="main.js">
+        </script>
+        <script src="drypopup.js">
+        </script>
+        <script src="theme.js">
+        </script>
+    </head>
+    <body>
+        <center>
+            <br>
+            <br>
+            <br>
+            <br>
+            <h2 class="tptxt">
+                Data URL Generator
+            </h2>
+            <label class="button" for="typeSelect">
+                Data URL Type:
+            </label>
+            <select id="typeSelect">
+                <option value="image" selected>
+                    Data Image
+                </option>
+                <option value="text">
+                    Data Text
+                </option>
+            </select>
+            <label class="button" for="presetSelect">
+                Preset URLs (Optional)
+            </label>
+            <select id="presetSelect">
+                <option value="">
+                    None
+                </option>
+                <option value="https://www.infinitecampus.xyz">
+                    This Site
+                </option>
+                <option value="https://nettleweb.com">
+                    Nettleweb
+                </option>
+            </select>
+            <label class="button" for="urlInput">
+                Enter Custom URL
+            </label>
+            <input type="text" id="urlInput" placeholder="Enter Custom URL Here" />
+            <button class="button" id="generateBtn">
+                Generate
+            </button>
+            <label class="button" for="output">
+                URL:
+            </label>
+            <textarea id="output" readonly placeholder="Generated Data URL Will Appear Here">
+            </textarea>
+            <button class="button" id="copyBtn">
+                Copy To Clipboard
+            </button>
+        </center>
+        <script>
+            function asciiEncode(str) {
+                return [...str].map(c => {
+                    const code = c.charCodeAt(0);
+                    if (
+                        (code >= 65 && code <= 90) || // A-Z
+                        (code >= 97 && code <= 122) || // a-z
+                        (code >= 48 && code <= 57) || // 0-9
+                        c === '-' || c === '_' || c === '.' || c === '~'
+                    ) {
+                        return c;
+                    }
+                    if (code === 10) return '%0A';
+                    if (code === 13) return '';
+                    if (code === 9) return '%09';
+                    if (code === 32) return '%20';
+                    return '%' + code.toString(16).toUpperCase().padStart(2, '0');
+                }).join('');
+            }
+            function base64Decode(str) {
+                return decodeURIComponent(escape(window.atob(str)));
+            }
+            function generateBase64(url) {
+                if (!url) {
+                    alert("Please enter a URL.");
+                    return '';
+                }
+                if (!/^https?:\/\//i.test(url)) {
+                    url = "https://" + url;
+                }
+                let template = base64Decode(r);
+                template = template.replace('${url}', url);
+                const base64 = btoa(unescape(encodeURIComponent(template)));
+                return `data:image/svg+xml;base64,${base64}`;
+            }
+            function generateAsciiEncodedHtml(url) {
+                if (!url) {
+                    alert("Please enter a URL.");
+                    return '';
+                }
+                if (!/^https?:\/\//i.test(url)) {
+                    url = "https://" + url;
+                }
+                let htmlCode = base64Decode(t);
+                htmlCode = htmlCode.replace("PUT_URL_HERE", url);
+                const encoded = asciiEncode(htmlCode);
+                return 'data:text/html;charset=utf-8,' + encoded;
+            }
+            function generateDataUrl() {
+                let urlInput = document.getElementById('urlInput').value.trim();
+                const preset = document.getElementById('presetSelect').value;
+                const type = document.getElementById('typeSelect').value;
+                if (!urlInput && preset) urlInput = preset;
+                if (!urlInput) {
+                    alert("Please select or enter a URL.");
+                    return;
+                }
+                let result = '';
+                if (type === 'image') {
+                    result = generateBase64(urlInput);
+                } else {
+                    result = generateAsciiEncodedHtml(urlInput);
+                }
+                document.getElementById('output').value = result;
+            }
+            document.getElementById('presetSelect').addEventListener('change', () => {
+                const presetVal = document.getElementById('presetSelect').value;
+                if (presetVal) {
+                    document.getElementById('urlInput').value = presetVal;
+                }
+            });
+            document.getElementById('generateBtn').addEventListener('click', generateDataUrl);
+            document.getElementById('urlInput').addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    generateDataUrl();
+                }
+            });
+            document.getElementById('copyBtn').addEventListener('click', () => {
+                const output = document.getElementById('output').value;
+                if (!output) {
+                    alert("Nothing to copy. Generate a Data URL first.");
+                    return;
+                }
+                navigator.clipboard.writeText(output)
+                .then(() => alert("Copied to clipboard!"))
+                .catch(() => alert("ERR#14 Failed to copy."));
+            });
+        </script>
+        <script src="frame.js">
+        </script>
+    </body>
 </html>
