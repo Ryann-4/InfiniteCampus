@@ -1,31 +1,84 @@
-function decodeBase64(base64Str) {
-    return decodeURIComponent(escape(window.atob(base64Str)));
+function asciiEncode(str) {
+    return [...str].map(c => {
+        const code = c.charCodeAt(0);
+        if (
+            (code >= 65 && code <= 90) ||
+            (code >= 97 && code <= 122) ||
+            (code >= 48 && code <= 57) ||
+            c === '-' || c === '_' || c === '.' || c === '~'
+        ) {
+            return c;
+        }
+        if (code === 10) return '%0A';
+        if (code === 13) return '';
+        if (code === 9) return '%09';
+        if (code === 32) return '%20';
+        return '%' + code.toString(16).toUpperCase().padStart(2, '0');
+    }).join('');
 }
-function generateBase64() {
-    let url = document.getElementById('urlInput').value.trim();
+function base64Decode(str) {
+    return decodeURIComponent(escape(window.atob(str)));
+}
+function generateBase64(url) {
     if (!url) {
-        alert("Please enter a URL.");
-        return;
+        alert("Please Enter A URL.");
+        return '';
     }
     if (!/^https?:\/\//i.test(url)) {
         url = "https://" + url;
     }
-    let template = decodeBase64(r);
+    let template = base64Decode(r);
     template = template.replace('${url}', url);
     const base64 = btoa(unescape(encodeURIComponent(template)));
-    const dataUri = `data:image/svg+xml;base64,${base64}`;
-    document.getElementById('output').value = dataUri;
+    return `data:image/svg+xml;base64,${base64}`;
 }
-document.getElementById('urlInput').addEventListener('keypress', function(event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        generateBase64();
+function generateAsciiEncodedHtml(url) {
+    if (!url) {
+        alert("Please Enter A URL.");
+        return '';
+    }
+    if (!/^https?:\/\//i.test(url)) {
+        url = "https://" + url;
+    }
+    let htmlCode = base64Decode(t);
+    htmlCode = htmlCode.replace("PUT_URL_HERE", url);
+    const encoded = asciiEncode(htmlCode);
+    return 'data:text/html;charset=utf-8,' + encoded;
+}
+function generateDataUrl() {
+    let urlInput = document.getElementById('urlInput').value.trim();
+    const preset = document.getElementById('presetSelect').value;
+    const type = document.getElementById('typeSelect').value;
+    if (!urlInput && preset) urlInput = preset;
+    if (!urlInput) {
+        alert("Please Select Or Enter A URL.");
+        return;
+    }
+    let result = '';
+    if (type === 'image') {
+        result = generateBase64(urlInput);
+    } else {
+        result = generateAsciiEncodedHtml(urlInput);
+    }
+    document.getElementById('output').value = result;
+}
+document.getElementById('presetSelect').addEventListener('change', () => {
+    const presetVal = document.getElementById('presetSelect').value;
+    if (presetVal) {
+        document.getElementById('urlInput').value = presetVal;
     }
 });
-document.getElementById('copyBtn').addEventListener('click', function() {
+document.getElementById('generateBtn').addEventListener('click', generateDataUrl);
+document.getElementById('urlInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        generateDataUrl();
+    }
+});
+document.getElementById('copyBtn').addEventListener('click', () => {
     const output = document.getElementById('output').value;
     if (!output) {
-        alert("Nothing to copy. Generate a Base64 string first.");
+        alert("Nothing To Copy. Generate A URL First.");
         return;
     }
     navigator.clipboard.writeText(output)

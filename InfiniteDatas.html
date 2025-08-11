@@ -34,62 +34,76 @@
             <br>
             <br>
             <br>
-            <p class="tptxt">
+            <h2 class="tptxt">
                 Data URL Generator
+            </h2>
+            <br>
+            <br>
+            <label class="txt" for="typeSelect">
+                Data URL Type:
+            </label>
+            <br>
+            <br>
+            <select class="button" id="typeSelect">
+                <option value="image" selected>
+                    Data Image
+                </option>
+                <option value="text">
+                    Data Text
+                </option>
+            </select>
+            <br>
+            <br>
+            <label class="txt" for="presetSelect">
+                Preset URLs (Optional)
+            </label>
+            <br>
+            <br>
+            <select class="button" id="presetSelect">
+                <option value="">
+                    None
+                </option>
+                <option value="https://www.infinitecampus.xyz">
+                    This Site
+                </option>
+                <option value="https://nettleweb.com">
+                    Nettleweb
+                </option>
+            </select>
+            <br>
+            <br>
+            <label class="txt" for="urlInput">
+                Enter Custom URL
+            </label>
+            <br>
+            <br>
+            <input class="button" type="text" id="urlInput" placeholder="Enter Custom URL Here" />
+            <br>
+            <br>
+            <button class="button" id="generateBtn">
+                Generate
+            </button>
+            <br>
+            <label class="txt" for="output">
+                URL:
+            </label>
+            <br>
+            <textarea style="height:20vh; width:100vw;" id="output" readonly placeholder="Generated Data URL Will Appear Here">
+            </textarea>
+            <button class="button" id="copyBtn">
+                Copy To Clipboard
+            </button>
+            <br>
+            <br>
+            <p class="agt">
+                Also Join The 
+                <a href="https://discord.gg/4d9hJSVXca" class="discord">
+                    Discord
+                </a>
             </p>
-            <br>
-            <br>
-            <div id="controls">
-                <input class="button" type="text" id="urlInput" placeholder="Enter a URL" />
-                <br>
-                <button class="button" onclick="generateBase64()">
-                    Generate Data URL
-                </button>
-                <br>
-                <textarea id="output" readonly style="height:20vh; width:50vh;"></textarea>
-                <br>
-                <button class="button" id="copyBtn">
-                    Copy to Clipboard
-                </button>
-                <br>
-            </div>
-            <script>
-                function decodeBase64(base64Str) {
-    return decodeURIComponent(escape(window.atob(base64Str)));
-}
-function generateBase64() {
-    let url = document.getElementById('urlInput').value.trim();
-    if (!url) {
-        alert("Please enter a URL.");
-        return;
-    }
-    if (!/^https?:\/\//i.test(url)) {
-        url = "https://" + url;
-    }
-    let template = decodeBase64(r);
-    template = template.replace('${url}', url);
-    const base64 = btoa(unescape(encodeURIComponent(template)));
-    const dataUri = `data:image/svg+xml;base64,${base64}`;
-    document.getElementById('output').value = dataUri;
-}
-document.getElementById('urlInput').addEventListener('keypress', function(event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        generateBase64();
-    }
-});
-document.getElementById('copyBtn').addEventListener('click', function() {
-    const output = document.getElementById('output').value;
-    if (!output) {
-        alert("Nothing to copy. Generate a Base64 string first.");
-        return;
-    }
-    navigator.clipboard.writeText(output)
-    .then(() => alert("Copied to clipboard!"))
-    .catch(() => alert("ERR#14 Failed to copy."));
-});
-            </script>
         </center>
+        <script src="data.js">
+        </script>
         <script src="frame.js">
         </script>
     </body>
