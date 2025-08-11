@@ -1,65 +1,56 @@
-<!DOCTYPE html>
 <html>
-<head>
-    <title>URL to Base64 SVG</title>
-    <meta charset="UTF-8">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        #controls {
-            padding: 10px;
-            background: #eee;
-        }
-        input {
-            width: 300px;
-            padding: 5px;
-        }
-        button {
-            padding: 5px 10px;
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-            margin-top: 10px;
-            font-family: monospace;
-        }
-    </style>
-</head>
-<body>
-    <div id="controls">
-        <input type="text" id="urlInput" placeholder="Enter a URL" />
-        <button onclick="generateBase64()">Generate Base64 SVG</button>
-        <textarea id="output" readonly></textarea>
-    </div>
-    <script>
-        function generateBase64() {
-            let url = document.getElementById('urlInput').value.trim();
-            if (!url) {
-                alert("Please enter a URL.");
-                return;
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.css">
+        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+        <meta property="og:title" content="Infinite Campus">
+        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+        <meta name="theme-color" content="#8cbe37">
+        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+        <script src="main.js">
+        </script>
+        <script src="drypopup.js">
+        </script>
+        <script src="theme.js">
+        </script>
+        <style>
+            #controls {
+                padding: 10px;
+                background: #eee;
             }
-            // If it doesn't start with http:// or https://, add https://
-            if (!/^https?:\/\//i.test(url)) {
-                url = "https://" + url;
-            }
-            // Build the SVG code with the entered URL
-            const svgCode = `<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" style="width:100vw !important; height:100vh !important;">
-    <title>Google</title>
-    <foreignObject x="0" y="0" style="width:100vw !important; height:100vh !important;">
-        <embed xmlns="http://www.w3.org/1999/xhtml" src="${url}" type="text/plain" style="height:100vh !important; width:100vw !important;" />
-    </foreignObject>
-</svg>`;
-            // Encode in Base64
-            const base64 = btoa(unescape(encodeURIComponent(svgCode)));
-            // Prefix with data URI scheme
-            const dataUri = `data:image/svg+xml;base64,${base64}`;
-            // Show Base64 in textarea
-            document.getElementById('output').value = dataUri;
-        }
-    </script>
-</body>
+        </style>
+    </head>
+    <body>
+        <center>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div id="controls">
+                <input class="button" type="text" id="urlInput" placeholder="Enter a URL" />
+                <button class="button" onclick="generateBase64()">
+                    Generate Data URL
+                </button>
+                <textarea id="output" readonly></textarea>
+            </div>
+            <script src="data.js">
+            </script>
+        </center>
+        <script src="frame.js">
+        </script>
+    </body>
 </html>
