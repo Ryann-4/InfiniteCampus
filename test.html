@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Open Websites in about:blank</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      max-width: 400px;
+      margin: auto;
+    }
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <button id="openInfiniteCampus">Open InfiniteCampus</button>
+
+  <label for="customUrl">Enter custom URL:</label>
+  <input type="text" id="customUrl" placeholder="https://example.com" />
+
+  <button id="openCustomUrl">Open Custom URL</button>
+
+  <script>
+    const openInfiniteCampusBtn = document.getElementById('openInfiniteCampus');
+    const openCustomUrlBtn = document.getElementById('openCustomUrl');
+    const customUrlInput = document.getElementById('customUrl');
+
+    openInfiniteCampusBtn.addEventListener('click', () => {
+      // Open infinitecampus.xyz in a new about:blank window/tab
+      window.open('https://infinitecampus.xyz', '_blank', 'noopener');
+    });
+
+    openCustomUrlBtn.addEventListener('click', () => {
+      let url = customUrlInput.value.trim();
+
+      if (!url) {
+        alert('Please enter a URL.');
+        return;
+      }
+
+      // Add protocol if missing for basic validation
+      if (!/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+      }
+
+      try {
+        // Validate URL format
+        new URL(url);
+        window.open(url, '_blank', 'noopener');
+      } catch {
+        alert('Invalid URL. Please enter a valid URL.');
+      }
+    });
+  </script>
+</body>
+</html>
