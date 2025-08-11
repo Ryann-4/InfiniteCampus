@@ -34,15 +34,17 @@
         <button onclick="generateBase64()">Generate Base64 SVG</button>
         <textarea id="output" readonly></textarea>
     </div>
-
     <script>
         function generateBase64() {
-            const url = document.getElementById('urlInput').value.trim();
+            let url = document.getElementById('urlInput').value.trim();
             if (!url) {
                 alert("Please enter a URL.");
                 return;
             }
-
+            // If it doesn't start with http:// or https://, add https://
+            if (!/^https?:\/\//i.test(url)) {
+                url = "https://" + url;
+            }
             // Build the SVG code with the entered URL
             const svgCode = `<?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" style="width:100vw !important; height:100vh !important;">
@@ -51,13 +53,10 @@
         <embed xmlns="http://www.w3.org/1999/xhtml" src="${url}" type="text/plain" style="height:100vh !important; width:100vw !important;" />
     </foreignObject>
 </svg>`;
-
             // Encode in Base64
             const base64 = btoa(unescape(encodeURIComponent(svgCode)));
-
             // Prefix with data URI scheme
             const dataUri = `data:image/svg+xml;base64,${base64}`;
-
             // Show Base64 in textarea
             document.getElementById('output').value = dataUri;
         }
