@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Open Websites in about:blank</title>
+  <title>Open Websites with iframe in about:blank</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -34,32 +34,43 @@
   <button id="openCustomUrl">Open Custom URL</button>
 
   <script>
-    const openInfiniteCampusBtn = document.getElementById('openInfiniteCampus');
-    const openCustomUrlBtn = document.getElementById('openCustomUrl');
-    const customUrlInput = document.getElementById('customUrl');
+    function openGame(url, title = 'Website') {
+      var win = window.open();
+      if (win) {
+        var iframe = win.document.createElement('iframe');
+        iframe.style.width = "100vw";
+        iframe.style.height = "100vh";
+        iframe.style.border = "none";
+        iframe.src = url;
+        win.document.title = title;
+        win.document.body.style.margin = "0"; 
+        win.document.body.style.overflow = "hidden"; 
+        win.document.body.appendChild(iframe);
+      } else {
+        alert("Err#1 Popup Blocked");
+      }
+    }
 
-    openInfiniteCampusBtn.addEventListener('click', () => {
-      // Open infinitecampus.xyz in a new about:blank window/tab
-      window.open('https://infinitecampus.xyz', '_blank', 'noopener');
+    document.getElementById('openInfiniteCampus').addEventListener('click', () => {
+      openGame('https://infinitecampus.xyz', 'Infinite Campus');
     });
 
-    openCustomUrlBtn.addEventListener('click', () => {
-      let url = customUrlInput.value.trim();
+    document.getElementById('openCustomUrl').addEventListener('click', () => {
+      let url = document.getElementById('customUrl').value.trim();
 
       if (!url) {
         alert('Please enter a URL.');
         return;
       }
 
-      // Add protocol if missing for basic validation
+      // Add protocol if missing
       if (!/^https?:\/\//i.test(url)) {
         url = 'https://' + url;
       }
 
       try {
-        // Validate URL format
-        new URL(url);
-        window.open(url, '_blank', 'noopener');
+        new URL(url); // validate URL
+        openGame(url, url);
       } catch {
         alert('Invalid URL. Please enter a valid URL.');
       }
