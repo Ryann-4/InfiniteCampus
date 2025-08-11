@@ -1,4 +1,4 @@
-import { r } from 'main.js';
+import { r } from './main.js';
 function decodeBase64(base64Str) {
     return decodeURIComponent(escape(window.atob(base64Str)));
 }
