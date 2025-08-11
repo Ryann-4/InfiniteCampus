@@ -1,3 +1,7 @@
+import { r } from 'main.js';
+function decodeBase64(base64Str) {
+    return decodeURIComponent(escape(window.atob(base64Str)));
+}
 function generateBase64() {
     let url = document.getElementById('urlInput').value.trim();
     if (!url) {
@@ -7,8 +11,9 @@ function generateBase64() {
     if (!/^https?:\/\//i.test(url)) {
         url = "https://" + url;
     }
-    const r = `<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" style="width:100vw !important; height:100vh !important;"><title>Google</title><foreignObject x="0" y="0" style="width:100vw !important; height:100vh !important;"><embed xmlns="http://www.w3.org/1999/xhtml" src="${url}" type="text/plain" style="height:100vh !important; width:100vw !important;" /></foreignObject></svg>`;
-    const base64 = btoa(unescape(encodeURIComponent(r)));
+    let template = decodeBase64(r);
+    template = template.replace('${url}', url);
+    const base64 = btoa(unescape(encodeURIComponent(template)));
     const dataUri = `data:image/svg+xml;base64,${base64}`;
     document.getElementById('output').value = dataUri;
 }
