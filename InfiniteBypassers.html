@@ -36,29 +36,27 @@
             <br>
             <br>
             <br>
-            <br>
-            <p style="color:lime">
-                Click The Button Below To
-                <br>
-                Open In About:Blank
+            <p class="tptxt">
+                Open Pages In About:Blank
             </p>
             <br>
-            <button class="button" onclick="openGame()">
-                Open
+            <br>
+            <br>
+            <button class="button" id="openInfiniteCampus">
+                Open This Site
             </button>
             <br>
-            <p style="color:lime;">
-                Or Open A Custom Url In About:Blank
-            </p>
             <br>
-            <input class="button" type="text" placeholder="Enter Url Here" id='input' autofocus>
+            <label class="txt" for="customUrl">
+                Enter Custom URL:
+            </label>
+            <br>
+            <input class="button" type="text" id="customUrl" placeholder="Enter A URL Here" />
             <br>
             <br>
-            <button class="button" onclick='create()'>
+            <button class="button" id="openCustomUrl">
                 Open Custom URL
             </button>
-            <br>
-            <br>
         </center>
         <script src="frame.js">
         </script>
