@@ -27,12 +27,6 @@
         </script>
         <script src="theme.js">
         </script>
-        <style>
-            #controls {
-                padding: 10px;
-                background: #eee;
-            }
-        </style>
     </head>
     <body>
         <center>
@@ -42,10 +36,17 @@
             <br>
             <div id="controls">
                 <input class="button" type="text" id="urlInput" placeholder="Enter a URL" />
+                <br>
                 <button class="button" onclick="generateBase64()">
                     Generate Data URL
                 </button>
+                <br>
                 <textarea id="output" readonly></textarea>
+                <br>
+                <button class="button" id="copyBtn">
+                    Copy to Clipboard
+                </button>
+                <br>
             </div>
             <script src="data.js">
             </script>

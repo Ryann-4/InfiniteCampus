@@ -24,3 +24,13 @@ document.getElementById('urlInput').addEventListener('keypress', function(event)
         generateBase64();
     }
 });
+document.getElementById('copyBtn').addEventListener('click', function() {
+    const output = document.getElementById('output').value;
+    if (!output) {
+        alert("Nothing to copy. Generate a Base64 string first.");
+        return;
+    }
+    navigator.clipboard.writeText(output)
+    .then(() => alert("Copied to clipboard!"))
+    .catch(() => alert("Failed to copy."));
+});
