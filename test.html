@@ -1,58 +1,181 @@
-<!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>URL Checker with CORS Detection</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin-top: 50px;
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.css">
+        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+        <meta property="og:title" content="Infinite Campus">
+        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+        <meta name="theme-color" content="#8cbe37">
+        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+        <script src="main.js">
+        </script>
+        <script src="drypopup.js">
+        </script>
+        <script src="theme.js">
+        </script>
+    </head>
+    <body>
+        <center>
+            <br>
+            <br>
+            <br>
+            <br>
+            <p class="tptxt">
+                Open Pages In About:Blank
+            </p>
+            <br>
+            <br>
+            <br>
+            <button class="button" id="openInfiniteCampus">
+                Open This Site
+            </button>
+            <br>
+            <br>
+            <label class="txt" for="customUrl">
+                Enter Custom URL:
+            </label>
+            <br>
+            <input class="button" type="text" id="customUrl" placeholder="Enter A URL Here" />
+            <br>
+            <br>
+            <button class="button" id="openCustomUrl">
+                Open Custom URL
+            </button>
+            <br>
+            <br>
+        </center>
+        <script src="frame.js">
+        </script>
+        <script>
+  function openGame(url) {
+    var win = window.open();
+    if (win) {
+      var iframe = win.document.createElement('iframe');
+      iframe.style.width = "100vw";
+      iframe.style.height = "100vh";
+      iframe.style.border = "none";
+      iframe.src = url;
+      win.document.title = "Infinite Campus";
+      win.document.body.style.margin = "0"; 
+      win.document.body.style.overflow = "hidden"; 
+      win.document.body.appendChild(iframe);
+    } else {
+      alert("Err#1 Popup Blocked");
     }
-    input, button {
-        padding: 8px;
-        font-size: 16px;
-    }
-    #result {
-        margin-top: 20px;
-        font-weight: bold;
-    }
-</style>
-</head>
-<body>
+  }
 
-<h2>Website URL Checker</h2>
-<input type="text" id="urlInput" placeholder="Enter website URL (https://...)" size="40">
-<button onclick="checkURL()">Check</button>
-<p id="result"></p>
-<script>
-async function checkURL() {
-    let url = document.getElementById("urlInput").value.trim();
-    const resultEl = document.getElementById("result");
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        url = "https://" + url;
+  // Normalize URL (adds https://www. if needed)
+  function normalizeUrl(url) {
+    url = url.trim();
+    if (/^https?:\/\/www\./i.test(url)) {
+      return url;
     }
-    resultEl.textContent = "Checking...";
+    url = url.replace(/^https?:\/\//i, '');
+    return 'https://www.' + url;
+  }
+
+  async function checkURLStatus(url) {
+    url = normalizeUrl(url);
     try {
-        const response = await fetch(url, { method: 'HEAD' });
-        if (response.ok) {
-            resultEl.textContent = "✅ Website exists and allows CORS.";
-        } else {
-            resultEl.textContent = `⚠️ Website responded with status ${response.status}, but CORS is allowed.`;
-        }
+      const response = await fetch(url, { method: 'HEAD' });
+      if (response.ok) {
+        return { status: "cors-ok" };
+      } else {
+        return { status: "cors-ok-but-error", code: response.status };
+      }
     } catch (error) {
-        if (error.name === "TypeError") {
-            try {
-                await fetch(url, { method: 'HEAD', mode: 'no-cors' });
-                resultEl.textContent = "🌐 Website appears to exist but does NOT allow CORS.";
-            } catch (e2) {
-                resultEl.textContent = "❌ Website could not be reached at all.";
-            }
-        } else {
-            resultEl.textContent = "❌ Website check failed: " + error.message;
+      if (error.name === "TypeError") {
+        try {
+          await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+          return { status: "cors-blocked" };
+        } catch {
+          return { status: "not-exist" };
         }
+      }
+      return { status: "not-exist" };
     }
-}
+  }
+
+  document.getElementById('openCustomUrl').addEventListener('click', async () => {
+    let url = document.getElementById('customUrl').value.trim();
+    if (!url) {
+      alert('Please Enter A URL.');
+      return;
+    }
+    try {
+      url = new URL(url).href; // try parse URL to validate
+    } catch {
+      // If invalid, try normalize & parse
+      try {
+        url = normalizeUrl(url);
+        url = new URL(url).href;
+      } catch {
+        alert('Invalid URL. Please Enter A Valid URL.');
+        return;
+      }
+    }
+
+    // Remove any previous warning UI
+    const existingWarning = document.getElementById('corsWarning');
+    if (existingWarning) existingWarning.remove();
+
+    // Check the URL status
+    const check = await checkURLStatus(url);
+
+    if (check.status === "cors-ok" || check.status === "cors-ok-but-error") {
+      // Open immediately
+      openGame(url);
+    } else if (check.status === "cors-blocked") {
+      // Show warning message + OK button
+      const container = document.createElement('div');
+      container.id = 'corsWarning';
+      container.style.marginTop = '15px';
+      container.style.textAlign = 'center';
+
+      const warningText = document.createElement('p');
+      warningText.style.color = 'red';
+      warningText.textContent = 'Website Does Not Have CORS Enabled About:Blank May Not Work';
+
+      const okButton = document.createElement('button');
+      okButton.textContent = 'OK';
+      okButton.style.marginTop = '8px';
+      okButton.style.padding = '8px 16px';
+      okButton.style.cursor = 'pointer';
+
+      okButton.addEventListener('click', () => {
+        openGame(url);
+        container.remove(); // remove warning after opening
+      });
+
+      container.appendChild(warningText);
+      container.appendChild(okButton);
+
+      // Insert warning container below the Open button
+      const openBtn = document.getElementById('openCustomUrl');
+      openBtn.insertAdjacentElement('afterend', container);
+    } else {
+      alert('Website Does Not Exist');
+    }
+  });
+
+  document.getElementById('openInfiniteCampus').addEventListener('click', () => {
+    openGame('https://infinitecampus.xyz');
+  });
 </script>
-</body>
+
+    </body>
 </html>
