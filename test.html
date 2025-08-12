@@ -77,8 +77,6 @@
       alert("Err#1 Popup Blocked");
     }
   }
-
-  // Normalize URL (adds https://www. if needed)
   function normalizeUrl(url) {
     url = url.trim();
     if (/^https?:\/\/www\./i.test(url)) {
@@ -87,7 +85,6 @@
     url = url.replace(/^https?:\/\//i, '');
     return 'https://www.' + url;
   }
-
   async function checkURLStatus(url) {
     url = normalizeUrl(url);
     try {
@@ -109,7 +106,6 @@
       return { status: "not-exist" };
     }
   }
-
   document.getElementById('openCustomUrl').addEventListener('click', async () => {
     let url = document.getElementById('customUrl').value.trim();
     if (!url) {
@@ -117,9 +113,8 @@
       return;
     }
     try {
-      url = new URL(url).href; // try parse URL to validate
+      url = new URL(url).href;
     } catch {
-      // If invalid, try normalize & parse
       try {
         url = normalizeUrl(url);
         url = new URL(url).href;
@@ -128,54 +123,37 @@
         return;
       }
     }
-
-    // Remove any previous warning UI
     const existingWarning = document.getElementById('corsWarning');
     if (existingWarning) existingWarning.remove();
-
-    // Check the URL status
     const check = await checkURLStatus(url);
-
     if (check.status === "cors-ok" || check.status === "cors-ok-but-error") {
-      // Open immediately
       openGame(url);
     } else if (check.status === "cors-blocked") {
-      // Show warning message + OK button
       const container = document.createElement('div');
       container.id = 'corsWarning';
       container.style.marginTop = '15px';
       container.style.textAlign = 'center';
-
       const warningText = document.createElement('p');
       warningText.style.color = 'red';
       warningText.textContent = 'Website Does Not Have CORS Enabled About:Blank May Not Work';
-
       const okButton = document.createElement('button');
       okButton.textContent = 'OK';
-      okButton.style.marginTop = '8px';
-      okButton.style.padding = '8px 16px';
-      okButton.style.cursor = 'pointer';
-
+      okButton.classList.add('button');
       okButton.addEventListener('click', () => {
         openGame(url);
-        container.remove(); // remove warning after opening
+        container.remove();
       });
-
       container.appendChild(warningText);
       container.appendChild(okButton);
-
-      // Insert warning container below the Open button
       const openBtn = document.getElementById('openCustomUrl');
       openBtn.insertAdjacentElement('afterend', container);
     } else {
       alert('Website Does Not Exist');
     }
   });
-
   document.getElementById('openInfiniteCampus').addEventListener('click', () => {
     openGame('https://infinitecampus.xyz');
   });
 </script>
-
     </body>
 </html>

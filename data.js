@@ -100,7 +100,7 @@ async function generateDataUrl() {
         }
     }
     else if (check.status === "not-exist") {
-        statusEl.textContent = "Website Does Not Exist";
+        statusEl.textContent = "ERR#15 Website Does Not Exist";
         document.getElementById('output').value = '';
     }
 }
