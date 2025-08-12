@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
 import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
+
 const firebaseConfig = {
     apiKey: "Google_Api_Key",
     authDomain: "notes-27f22.firebaseapp.com",
@@ -14,24 +15,36 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getDatabase(app);
+
 const noteInput = document.getElementById('noteInput');
 const saveBtn = document.getElementById('saveBtn');
 const notesContainer = document.getElementById('notesContainer');
+
 function saveNote() {
+    if (!noteInput) return; // extra safety
     const text = noteInput.value.trim();
     if (text) {
         push(ref(db, 'notes'), { text });
         noteInput.value = '';
     }
 }
-saveBtn.addEventListener('click', saveNote);
-noteInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        saveNote();
-    }
-});
+
+// Only add event listeners if those elements exist
+if (saveBtn) {
+    saveBtn.addEventListener('click', saveNote);
+}
+if (noteInput) {
+    noteInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveNote();
+        }
+    });
+}
+
+// Always listen for changes and display notes
 onValue(ref(db, 'notes'), (snapshot) => {
+    if (!notesContainer) return; // safety if container not present
     notesContainer.innerHTML = '';
     snapshot.forEach((child) => {
         const note = child.val();
@@ -44,6 +57,8 @@ onValue(ref(db, 'notes'), (snapshot) => {
         `;
         notesContainer.appendChild(div);
     });
+
+    // Add delete functionality only if delete buttons exist
     document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', () => {
             const key = button.getAttribute('data-key');
