@@ -42,11 +42,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 </a>
                 <br>
                 <br>
-                <br>
                 <a class="button poll disabled">
                     Take A Quick Survey
                 </a>
-                <br>
                 <br>
                 <br>
                 <a class="button" href="InfiniteBypassers">
@@ -54,17 +52,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 </a>
                 <br>
                 <br>
-                <br>
                 <a class="button" href="InfiniteFeatures">
                     Suggest A Feature
                 </a>
                 <br>
                 <br>
-                <br>
                 <a class="button" onclick="localStorage.clear(); location.reload();">
                     Clear Data
                 </a>
-                <br>
                 <br>
                 <br>
                 <a class="discord" href="https://discord.gg/4d9hJSVXca">
