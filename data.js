@@ -88,14 +88,16 @@ async function generateDataUrl() {
         let result = '';
         if (type === 'image') {
             result = generateBase64(urlInput);
-            if (check.status === "cors-blocked") {
-                statusEl.textContent = "Website Does Not Allow CORS So Link May Not Work"
-            }
         } else {
             result = generateAsciiEncodedHtml(urlInput);
         }
-        document.getElementById('output').value = result;
-        statusEl.textContent = "Success";
+        if (check.status === "cors-blocked") {
+                document.getElementById('output').value = result;
+                statusEl.textContent = "Website Does Not Allow CORS So Link May Not Work"
+        } else {
+            document.getElementById('output').value = result;
+            statusEl.textContent = "Success";
+        }
     }
     else if (check.status === "not-exist") {
         statusEl.textContent = "Website Does Not Exist";
