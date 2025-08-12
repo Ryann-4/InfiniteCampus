@@ -13,17 +13,16 @@ window.addEventListener('DOMContentLoaded', () => {
                 <p class="txt">
                     Settings
                 </p>
-
-                <!-- Better Weather Toggle -->
                 <label class="switch">
-                  <input type="checkbox" id="betterWeatherToggle" ${betterWeatherState ? 'checked' : ''}>
-                  <span class="slider"></span>
+                    <input type="checkbox" id="betterWeatherToggle" ${betterWeatherState ? 'checked' : ''}>
+                    <span class="slider">
+                    </span>
                 </label>
-                <p style="font-size:12px; margin-top:5px;">Use Browser Location for Weather</p>
-                <br><br>
-
-                <input class="button" type="text" id="titleInput" placeholder="Enter page title" value="${savedTitle}"/>
+                <p style="font-size:12px; margin-top:5px;">
+                    Enable More Accurate Weather?
+                </p>
                 <br>
+                <input class="button" type="text" id="titleInput" placeholder="Enter page title" value="${savedTitle}"/>
                 <button class="button" id="saveTitleBtn">
                     Save Title
                 </button>
@@ -36,7 +35,6 @@ window.addEventListener('DOMContentLoaded', () => {
                     Choose Favicon Image
                 </label>
                 <input style="display:none;" type="file" id="faviconInput" accept="image/*" />
-                <br>
                 <button class="button" id="setFaviconBtn">
                     Set Favicon
                 </button>
@@ -92,8 +90,6 @@ window.addEventListener('DOMContentLoaded', () => {
         </div>
         <center>
     `;
-
-    // Toggle switch styles
     const styleEl = document.createElement('style');
     styleEl.textContent = `
     .switch {
@@ -115,24 +111,22 @@ window.addEventListener('DOMContentLoaded', () => {
       position: absolute;
       content: "";
       height: 18px; width: 18px;
-      left: 3px; bottom: 3px;
+      left: 5px; bottom: 5px;
       background-color: white;
       transition: .4s;
       border-radius: 50%;
     }
     input:checked + .slider {
-      background-color: #2196F3;
+      background-color: lime;
     }
     input:checked + .slider:before {
       transform: translateX(26px);
     }
     `;
     document.head.appendChild(styleEl);
-
     const wrapper = document.createElement('div');
     wrapper.innerHTML = popupHTML;
     document.body.appendChild(wrapper);
-
     const betterWeatherToggle = document.getElementById('betterWeatherToggle');
     betterWeatherToggle.addEventListener('change', function () {
         localStorage.setItem('betterWeather', this.checked ? 'true' : 'false');
@@ -174,7 +168,7 @@ window.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('pageTitle', newTitle);
             setTitle(newTitle);
         } else {
-            alert('Please enter a valid title before saving.');
+            alert('Please Enter A Valid Title Before Saving.');
         }
     });
     resetTitleBtn.addEventListener('click', () => {
@@ -202,7 +196,7 @@ window.addEventListener('DOMContentLoaded', () => {
     setFaviconBtn.addEventListener('click', () => {
         const file = faviconInput.files[0];
         if (!file) {
-            alert('Please select an image file first.');
+            alert('Please Select An Image File First.');
             return;
         }
         const reader = new FileReader();
