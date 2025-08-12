@@ -1,5 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
     const savedTitle = localStorage.getItem('pageTitle') || '';
+    const savedFavicon = localStorage.getItem('customFavicon') || '';
 
     const popupHTML = `
         <div class="popup2" id="popup">
@@ -13,50 +14,46 @@ window.addEventListener('DOMContentLoaded', () => {
                     Settings
                 </p>
                 <br>
-                <!-- New Title Input -->
-                <input type="text" id="titleInput" placeholder="Enter page title" value="${savedTitle}" style="width: 90%; padding: 5px; font-size: 16px;"/>
+                <!-- Title input and buttons -->
+                <input class="button" type="text" id="titleInput" placeholder="Enter page title" value="${savedTitle}"/>
                 <br><br>
-                <button id="saveTitleBtn" style="width: 90%; padding: 7px; font-size: 16px;">Save Title</button>
+                <button class="button" id="saveTitleBtn">Save Title</button>
                 <br><br>
-                <button id="resetTitleBtn" style="width: 90%; padding: 7px; font-size: 16px;">Reset Title</button>
+                <button class="button" id="resetTitleBtn">Reset Title</button>
+                <br><br>
+
+                <!-- Favicon upload and buttons -->
+                <input class="button" type="file" id="faviconInput" accept="image/*" />
+                <br><br>
+                <button class="button" id="setFaviconBtn">Set Favicon</button>
+                <br><br>
+                <button class="button" id="resetFaviconBtn">Reset Favicon</button>
                 <br><br>
 
                 <a class="button" href="InfiniteTitles">
                     Tab Cloaking
                 </a>
-                <br>
-                <br>
-                <br>
+                <br><br><br>
                 <a class="button2 test darkbuttons rgb-element" href="InfiniteColors">
                     Change Site Theme
                 </a>
-                <br>
-                <br>
-                <br>
+                <br><br><br>
                 <a class="button poll disabled">
                     Take A Quick Survey
                 </a>
-                <br>
-                <br>
-                <br>
+                <br><br><br>
                 <a class="button" href="InfiniteBypassers">
                     Open In About:Blank
                 </a>
-                <br>
-                <br>
-                <br>
+                <br><br><br>
                 <a class="button" href="InfiniteFeatures">
                     Suggest A Feature
                 </a>
-                <br>
-                <br>
-                <br>
+                <br><br><br>
                 <a class="button" onclick="localStorage.clear(); location.reload();">
                     Clear Data
                 </a>
-                <br>
-                <br>
-                <br>
+                <br><br><br>
                 <a class="discord" href="https://discord.gg/4d9hJSVXca">
                     Join The Discord
                 </a>
@@ -74,6 +71,7 @@ window.addEventListener('DOMContentLoaded', () => {
         </div>
         <center>
     `;
+
     const wrapper = document.createElement('div');
     wrapper.innerHTML = popupHTML;
     document.body.appendChild(wrapper);
@@ -104,7 +102,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Title save/reset logic
+    // Title controls
     const titleInput = document.getElementById('titleInput');
     const saveTitleBtn = document.getElementById('saveTitleBtn');
     const resetTitleBtn = document.getElementById('resetTitleBtn');
@@ -131,11 +129,57 @@ window.addEventListener('DOMContentLoaded', () => {
     resetTitleBtn.addEventListener('click', () => {
         localStorage.removeItem('pageTitle');
         titleInput.value = '';
-        setTitle('Infinite Campus');
+        setTitle('Default Title');
         alert('Page title reset to default.');
     });
 
-    // Existing clock update function and interval
+    // Favicon controls
+    const faviconInput = document.getElementById('faviconInput');
+    const setFaviconBtn = document.getElementById('setFaviconBtn');
+    const resetFaviconBtn = document.getElementById('resetFaviconBtn');
+
+    const originalFaviconLink = document.querySelector("link[rel~='icon']");
+    const originalFaviconUrl = originalFaviconLink ? originalFaviconLink.href : '/favicon.ico';
+
+    function updateFavicon(url) {
+        let link = document.querySelector("link[rel~='icon']");
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.head.appendChild(link);
+        }
+        link.href = url;
+    }
+
+    if (savedFavicon) {
+        updateFavicon(savedFavicon);
+    }
+
+    setFaviconBtn.addEventListener('click', () => {
+        const file = faviconInput.files[0];
+        if (!file) {
+            alert('Please select an image file first.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const dataUrl = e.target.result;
+            localStorage.setItem('customFavicon', dataUrl);
+            updateFavicon(dataUrl);
+            alert('Favicon set!');
+        };
+        reader.readAsDataURL(file);
+    });
+
+    resetFaviconBtn.addEventListener('click', () => {
+        localStorage.removeItem('customFavicon');
+        faviconInput.value = '';
+        updateFavicon(originalFaviconUrl);
+        alert('Favicon reset to original.');
+    });
+
+    // Clock update function and interval (unchanged)
     function updateTime() {
         const now = new Date();
         let hours = now.getHours();
