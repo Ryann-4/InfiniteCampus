@@ -74,17 +74,44 @@ window.addEventListener('DOMContentLoaded', () => {
     });
     observer.observe(document.body, { childList: true, subtree: true });
     async function getLocation() {
-        try {
-            const locRes = await fetch("https://ipapi.co/json/");
-            if (!locRes.ok) throw new Error("Weather Unavailable");
-            const loc = await locRes.json();
-            currentCity = loc.city;
-        } catch (error) {
-            const weatherEl = document.getElementById("weather");
-            if (weatherEl) weatherEl.innerText = "Weather Unavailable";
-            currentCity = "";
+    try {
+        if (localStorage.getItem("betterWeather") === "true") {
+            return new Promise((resolve) => {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    try {
+                        const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                        const revData = await revRes.json();
+                        currentCity = revData.address.city || revData.address.town || revData.address.village || "";
+                        resolve();
+                    } catch (err) {
+                        console.error("Reverse geocode failed", err);
+                        currentCity = "";
+                        resolve();
+                    }
+                }, async (err) => {
+                    console.warn("Geolocation failed, fallback to IP", err);
+                    await fallbackToIP();
+                    resolve();
+                });
+            });
+        } else {
+            await fallbackToIP();
         }
+    } catch (error) {
+        const weatherEl = document.getElementById("weather");
+        if (weatherEl) weatherEl.innerText = "Weather Unavailable";
+        currentCity = "";
     }
+}
+
+async function fallbackToIP() {
+    const locRes = await fetch("https://ipapi.co/json/");
+    if (!locRes.ok) throw new Error("Weather Unavailable");
+    const loc = await locRes.json();
+    currentCity = loc.city;
+}
     async function getWeather(city, useFahrenheit) {
         city = city.replace(/\+/g, "");
         const unit = useFahrenheit ? "u" : "m";
