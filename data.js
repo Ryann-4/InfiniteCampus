@@ -27,7 +27,7 @@ function generateBase64(url) {
     if (!/^https?:\/\//i.test(url)) {
         url = "https://" + url;
     }
-    let template = base64Decode(r);
+    let template = base64Decode(j);
     template = template.replace('${url}', url);
     const base64 = btoa(unescape(encodeURIComponent(template)));
     return `data:image/svg+xml;base64,${base64}`;
@@ -40,7 +40,7 @@ function generateAsciiEncodedHtml(url) {
     if (!/^https?:\/\//i.test(url)) {
         url = "https://" + url;
     }
-    let htmlCode = base64Decode(t);
+    let htmlCode = base64Decode(k);
     htmlCode = htmlCode.replace("PUT_URL_HERE", url);
     const encoded = asciiEncode(htmlCode);
     return 'data:text/html;charset=utf-8,' + encoded;

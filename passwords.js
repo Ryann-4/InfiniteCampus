@@ -27,7 +27,7 @@ function runAuth() {
     const enteredPass = document.getElementById("password").value.trim();
     const msgBox = document.getElementById("message");
     const redirectURL = unlock(l);
-    for (let cred of s) {
+    for (let cred of r) {
         if (unlockTwice(cred.usr) === enteredUser &&
             unlockTwice(cred.psw) === enteredPass) {
             localStorage.setItem("chat_logged_in", unlockTwice(cred.KY));
