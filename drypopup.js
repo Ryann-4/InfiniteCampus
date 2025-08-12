@@ -1,4 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
+    const savedTitle = localStorage.getItem('pageTitle') || '';
+
     const popupHTML = `
         <div class="popup2" id="popup">
             <div class="bar test rgb-element">
@@ -11,6 +13,14 @@ window.addEventListener('DOMContentLoaded', () => {
                     Settings
                 </p>
                 <br>
+                <!-- New Title Input -->
+                <input type="text" id="titleInput" placeholder="Enter page title" value="${savedTitle}" style="width: 90%; padding: 5px; font-size: 16px;"/>
+                <br><br>
+                <button id="saveTitleBtn" style="width: 90%; padding: 7px; font-size: 16px;">Save Title</button>
+                <br><br>
+                <button id="resetTitleBtn" style="width: 90%; padding: 7px; font-size: 16px;">Reset Title</button>
+                <br><br>
+
                 <a class="button" href="InfiniteTitles">
                     Tab Cloaking
                 </a>
@@ -67,8 +77,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = popupHTML;
     document.body.appendChild(wrapper);
+
     const button = document.getElementById('trigger');
     const popup = document.getElementById('popup');
+
     if (button && popup) {
         button.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -76,12 +88,14 @@ window.addEventListener('DOMContentLoaded', () => {
             popup.classList.toggle('shows');
             button.classList.toggle('actives', !isOpen);
         });
+
         document.addEventListener('click', (e) => {
             if (!popup.contains(e.target) && !button.contains(e.target)) {
                 popup.classList.remove('shows');
                 button.classList.remove('actives');
             }
         });
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 popup.classList.remove('shows');
@@ -89,6 +103,39 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Title save/reset logic
+    const titleInput = document.getElementById('titleInput');
+    const saveTitleBtn = document.getElementById('saveTitleBtn');
+    const resetTitleBtn = document.getElementById('resetTitleBtn');
+
+    function setTitle(newTitle) {
+        document.title = newTitle || 'Default Title';
+    }
+
+    if (savedTitle) {
+        setTitle(savedTitle);
+    }
+
+    saveTitleBtn.addEventListener('click', () => {
+        const newTitle = titleInput.value.trim();
+        if (newTitle.length > 0) {
+            localStorage.setItem('pageTitle', newTitle);
+            setTitle(newTitle);
+            alert('Page title saved!');
+        } else {
+            alert('Please enter a valid title before saving.');
+        }
+    });
+
+    resetTitleBtn.addEventListener('click', () => {
+        localStorage.removeItem('pageTitle');
+        titleInput.value = '';
+        setTitle('Infinite Campus');
+        alert('Page title reset to default.');
+    });
+
+    // Existing clock update function and interval
     function updateTime() {
         const now = new Date();
         let hours = now.getHours();
