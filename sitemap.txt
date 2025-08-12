@@ -40,7 +40,6 @@ https://www.infinitecampus.xyz/InfiniteSecretPages
 https://www.infinitecampus.xyz/InfiniteSecrets
 https://www.infinitecampus.xyz/InfiniteShreks
 https://www.infinitecampus.xyz/InfiniteTalkers
-https://www.infinitecampus.xyz/InfiniteTitles
 https://www.infinitecampus.xyz/InfiniteTubers
 https://www.infinitecampus.xyz/InfiniteUpdaters
 
@@ -68,7 +67,6 @@ https://www.infinitecampus.xyz/online.js
 https://www.infinitecampus.xyz/passwords.js
 https://www.infinitecampus.xyz/suggest.js
 https://www.infinitecampus.xyz/theme.js
-https://www.infinitecampus.xyz/title.js
 https://www.infinitecampus.xyz/updates.js
 
 other files
