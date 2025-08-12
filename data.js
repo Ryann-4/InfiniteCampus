@@ -1,147 +1,127 @@
-// Normalize URL: add https://www. if missing
-  function normalizeUrl(url) {
+function normalizeUrl(url) {
     url = url.trim();
     if (/^https?:\/\/www\./i.test(url)) {
-      return url;
+        return url;
     }
     url = url.replace(/^https?:\/\//i, '');
     return 'https://www.' + url;
-  }
-
-  async function checkURLStatus(url) {
+}
+async function checkURLStatus(url) {
     const statusEl = document.getElementById('status');
-    statusEl.textContent = "🔍 Verifying domain...";
-
+    statusEl.textContent = "Verifying...";
     url = normalizeUrl(url);
-
     try {
-      // First, try normal CORS fetch
-      const response = await fetch(url, { method: 'HEAD' });
-      if (response.ok) {
-        return { status: "cors-ok" };
-      } else {
-        return { status: "cors-ok-but-error", code: response.status };
-      }
-    } catch (error) {
-      if (error.name === "TypeError") {
-        // Try with no-cors mode
-        try {
-          await fetch(url, { method: 'HEAD', mode: 'no-cors' });
-          return { status: "cors-blocked" };
-        } catch {
-          return { status: "not-exist" };
+        const response = await fetch(url, { method: 'HEAD' });
+        if (response.ok) {
+            return { status: "cors-ok" };
+        } else {
+            return { status: "cors-ok-but-error", code: response.status };
         }
-      }
-      return { status: "not-exist" };
+    } catch (error) {
+        if (error.name === "TypeError") {
+            try {
+                await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+                return { status: "cors-blocked" };
+            } catch {
+                return { status: "not-exist" };
+            }
+        }
+        return { status: "not-exist" };
     }
-  }
-
-  function asciiEncode(str) {
+}
+function asciiEncode(str) {
     return [...str].map(c => {
-      const code = c.charCodeAt(0);
-      if (
-        (code >= 65 && code <= 90) ||
-        (code >= 97 && code <= 122) ||
-        (code >= 48 && code <= 57) ||
-        c === '-' || c === '_' || c === '.' || c === '~'
-      ) {
-        return c;
-      }
-      if (code === 10) return '%0A';
-      if (code === 13) return '';
-      if (code === 9) return '%09';
-      if (code === 32) return '%20';
-      return '%' + code.toString(16).toUpperCase().padStart(2, '0');
+        const code = c.charCodeAt(0);
+        if (
+            (code >= 65 && code <= 90) ||
+            (code >= 97 && code <= 122) ||
+            (code >= 48 && code <= 57) ||
+            c === '-' || c === '_' || c === '.' || c === '~'
+        ) {
+            return c;
+        }
+        if (code === 10) return '%0A';
+        if (code === 13) return '';
+        if (code === 9) return '%09';
+        if (code === 32) return '%20';
+        return '%' + code.toString(16).toUpperCase().padStart(2, '0');
     }).join('');
-  }
-
-  function base64Decode(str) {
+}
+function base64Decode(str) {
     return decodeURIComponent(escape(window.atob(str)));
-  }
-
-  function generateBase64(url) {
+}
+function generateBase64(url) {
     if (!url) {
-      alert("Please Enter A URL.");
-      return '';
+        alert("Please Enter A URL.");
+        return '';
     }
     url = normalizeUrl(url);
     let template = base64Decode(j);
     template = template.replace('${url}', url);
     const base64 = btoa(unescape(encodeURIComponent(template)));
     return `data:image/svg+xml;base64,${base64}`;
-  }
-
-  function generateAsciiEncodedHtml(url) {
+}
+function generateAsciiEncodedHtml(url) {
     if (!url) {
-      alert("Please Enter A URL.");
-      return '';
+        alert("Please Enter A URL.");
+        return '';
     }
     url = normalizeUrl(url);
     let htmlCode = base64Decode(k);
     htmlCode = htmlCode.replace("PUT_URL_HERE", url);
     const encoded = asciiEncode(htmlCode);
     return 'data:text/html;charset=utf-8,' + encoded;
-  }
-
-  async function generateDataUrl() {
+}
+async function generateDataUrl() {
     let urlInput = document.getElementById('urlInput').value.trim();
     const preset = document.getElementById('presetSelect').value;
     const type = document.getElementById('typeSelect').value;
     const statusEl = document.getElementById('status');
-
     if (!urlInput && preset) urlInput = preset;
     if (!urlInput) {
-      alert("Please Select Or Enter A URL.");
-      return;
+        alert("Please Select Or Enter A URL.");
+        return;
     }
-
     const check = await checkURLStatus(urlInput);
-
-    if (check.status === "cors-ok" || check.status === "cors-ok-but-error") {
-      statusEl.textContent = "⚙️ Generating URL...";
-      let result = '';
-      if (type === 'image') {
-        result = generateBase64(urlInput);
-      } else {
-        result = generateAsciiEncodedHtml(urlInput);
-      }
-      document.getElementById('output').value = result;
-      statusEl.textContent = "✅ Success!";
+    if (check.status === "cors-ok" || check.status === "cors-ok-but-error" || check.status === "cors-blocked") {
+        statusEl.textContent = "Generating...";
+        let result = '';
+        if (type === 'image') {
+            result = generateBase64(urlInput);
+            if (check.status === "cors-blocked") {
+                statusEl.textContent = "Website Does Not Allow CORS So Link May Not Work"
+            }
+        } else {
+            result = generateAsciiEncodedHtml(urlInput);
+        }
+        document.getElementById('output').value = result;
+        statusEl.textContent = "Success";
     }
     else if (check.status === "not-exist") {
-      statusEl.textContent = "❌ Website Does Not Exist";
-      document.getElementById('output').value = '';
+        statusEl.textContent = "Website Does Not Exist";
+        document.getElementById('output').value = '';
     }
-    else if (check.status === "cors-blocked") {
-      statusEl.textContent = "🚫 Website Does Not Allow CORS So Link Will Not Work";
-      document.getElementById('output').value = '';
-    }
-  }
-
-  // Event listeners
-  document.getElementById('presetSelect').addEventListener('change', () => {
+}
+document.getElementById('presetSelect').addEventListener('change', () => {
     const presetVal = document.getElementById('presetSelect').value;
     if (presetVal) {
-      document.getElementById('urlInput').value = presetVal;
+        document.getElementById('urlInput').value = presetVal;
     }
-  });
-
-  document.getElementById('generateBtn').addEventListener('click', generateDataUrl);
-
-  document.getElementById('urlInput').addEventListener('keydown', e => {
+});
+document.getElementById('generateBtn').addEventListener('click', generateDataUrl);
+document.getElementById('urlInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-      e.preventDefault();
-      generateDataUrl();
+        e.preventDefault();
+        generateDataUrl();
     }
-  });
-
-  document.getElementById('copyBtn').addEventListener('click', () => {
+});
+document.getElementById('copyBtn').addEventListener('click', () => {
     const output = document.getElementById('output').value;
     if (!output) {
-      alert("Nothing To Copy. Generate A URL First.");
-      return;
+        alert("Nothing To Copy. Generate A URL First.");
+        return;
     }
     navigator.clipboard.writeText(output)
-      .then(() => alert("Copied to clipboard!"))
-      .catch(() => alert("ERR#14 Failed to copy."));
-  });
+    .then(() => alert("Copied to clipboard!"))
+    .catch(() => alert("ERR#14 Failed to copy."));
+});
