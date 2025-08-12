@@ -40,5 +40,18 @@ input:checked + .slider:before {
   <input type="checkbox" id="betterWeatherToggle">
   <span class="slider"></span>
 </label>
+<script>
+    document.getElementById("betterWeatherToggle").addEventListener("change", function() {
+    localStorage.setItem("betterWeather", this.checked ? "true" : "false");
+    initWeather(); // re-fetch with new setting
+});
+
+// On page load, set toggle state
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleEl = document.getElementById("betterWeatherToggle");
+    toggleEl.checked = localStorage.getItem("betterWeather") === "true";
+});
+
+</script>
 </body>
 </html>
