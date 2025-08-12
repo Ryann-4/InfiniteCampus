@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>URL Checker</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 50px;
+    }
+    input, button {
+        padding: 8px;
+        font-size: 16px;
+    }
+    #result {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+<h2>Website URL Checker</h2>
+<input type="text" id="urlInput" placeholder="Enter website URL (https://...)" size="40">
+<button onclick="checkURL()">Check</button>
+<p id="result"></p>
+<script>
+async function checkURL() {
+    let url = document.getElementById("urlInput").value.trim();
+    const resultEl = document.getElementById("result");
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        url = "https://" + url;
+    }
+    resultEl.textContent = "Checking...";
+    try {
+        const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+        resultEl.textContent = "✅ This website appears to exist!";
+    } catch (error) {
+        resultEl.textContent = "❌ This website could not be reached.";
+    }
+}
+</script>
+</body>
+</html>
