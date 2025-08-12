@@ -1,3 +1,17 @@
+function showMessage(text, isError = true) {
+    const existing = document.getElementById('corsWarning');
+    if (existing) existing.remove();
+    const container = document.createElement('div');
+    container.id = 'corsWarning';
+    container.style.marginTop = '15px';
+    container.style.textAlign = 'center';
+    const msg = document.createElement('p');
+    msg.textContent = text;
+    msg.style.color = isError ? 'red' : 'green';
+    container.appendChild(msg);
+    const btn = document.getElementById('openCustomUrl');
+    btn.insertAdjacentElement('afterend', container);
+}
 function openGame(url) {
     var win = window.open();
     if (win) {
@@ -11,7 +25,7 @@ function openGame(url) {
         win.document.body.style.overflow = "hidden"; 
         win.document.body.appendChild(iframe);
     } else {
-        alert("Err#1 Popup Blocked");
+        showMessage("Err#1 Popup Blocked");
     }
 }
 function normalizeUrl(url) {
@@ -46,7 +60,7 @@ async function checkURLStatus(url) {
 document.getElementById('openCustomUrl').addEventListener('click', async () => {
     let url = document.getElementById('customUrl').value.trim();
     if (!url) {
-        alert('Please Enter A URL.');
+        showMessage('Please Enter A URL.');
         return;
     }
     try {
@@ -56,7 +70,7 @@ document.getElementById('openCustomUrl').addEventListener('click', async () => {
             url = normalizeUrl(url);
             url = new URL(url).href;
         } catch {
-            alert('Invalid URL. Please Enter A Valid URL.');
+            showMessage('Invalid URL. Please Enter A Valid URL.');
             return;
         }
     }
@@ -76,6 +90,9 @@ document.getElementById('openCustomUrl').addEventListener('click', async () => {
         const okButton = document.createElement('button');
         okButton.textContent = 'OK';
         okButton.classList.add('button');
+        okButton.style.marginTop = '8px';
+        okButton.style.padding = '8px 16px';
+        okButton.style.cursor = 'pointer';
         okButton.addEventListener('click', () => {
             openGame(url);
             container.remove();
@@ -85,7 +102,7 @@ document.getElementById('openCustomUrl').addEventListener('click', async () => {
         const openBtn = document.getElementById('openCustomUrl');
         openBtn.insertAdjacentElement('afterend', container);
     } else {
-        alert('ERR#15 Website Does Not Exist');
+        showMessage('ERR#15 Website Does Not Exist');
     }
 });
 document.getElementById('openInfiniteCampus').addEventListener('click', () => {
