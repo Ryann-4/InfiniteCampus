@@ -1,7 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
     const savedTitle = localStorage.getItem('pageTitle') || '';
     const savedFavicon = localStorage.getItem('customFavicon') || '';
-
     const popupHTML = `
         <div class="popup2" id="popup">
             <div class="bar test rgb-element">
@@ -14,46 +13,59 @@ window.addEventListener('DOMContentLoaded', () => {
                     Settings
                 </p>
                 <br>
-                <!-- Title input and buttons -->
                 <input class="button" type="text" id="titleInput" placeholder="Enter page title" value="${savedTitle}"/>
-                <br><br>
-                <button class="button" id="saveTitleBtn">Save Title</button>
-                <br><br>
-                <button class="button" id="resetTitleBtn">Reset Title</button>
-                <br><br>
-
-                <!-- Favicon upload and buttons -->
-                <input class="button" type="file" id="faviconInput" accept="image/*" />
-                <br><br>
-                <button class="button" id="setFaviconBtn">Set Favicon</button>
-                <br><br>
-                <button class="button" id="resetFaviconBtn">Reset Favicon</button>
-                <br><br>
-
-                <a class="button" href="InfiniteTitles">
-                    Tab Cloaking
-                </a>
-                <br><br><br>
+                <br>
+                <button class="button" id="saveTitleBtn">
+                    Save Title
+                </button>
+                <button class="button" id="resetTitleBtn">
+                    Reset Title
+                </button>
+                <br>
+                <br>
+                <label for="faviconInput" class="custom-file-upload">
+                    Choose Favicon Image
+                </label>
+                <input style="display:none;" type="file" id="faviconInput" accept="image/*" />
+                <br>
+                <button class="button" id="setFaviconBtn">
+                    Set Favicon
+                </button>
+                <button class="button" id="resetFaviconBtn">
+                    Reset Favicon
+                </button>
+                <br>
+                <br>
                 <a class="button2 test darkbuttons rgb-element" href="InfiniteColors">
                     Change Site Theme
                 </a>
-                <br><br><br>
+                <br>
+                <br>
+                <br>
                 <a class="button poll disabled">
                     Take A Quick Survey
                 </a>
-                <br><br><br>
+                <br>
+                <br>
+                <br>
                 <a class="button" href="InfiniteBypassers">
                     Open In About:Blank
                 </a>
-                <br><br><br>
+                <br>
+                <br>
+                <br>
                 <a class="button" href="InfiniteFeatures">
                     Suggest A Feature
                 </a>
-                <br><br><br>
+                <br>
+                <br>
+                <br>
                 <a class="button" onclick="localStorage.clear(); location.reload();">
                     Clear Data
                 </a>
-                <br><br><br>
+                <br>
+                <br>
+                <br>
                 <a class="discord" href="https://discord.gg/4d9hJSVXca">
                     Join The Discord
                 </a>
@@ -71,14 +83,11 @@ window.addEventListener('DOMContentLoaded', () => {
         </div>
         <center>
     `;
-
     const wrapper = document.createElement('div');
     wrapper.innerHTML = popupHTML;
     document.body.appendChild(wrapper);
-
     const button = document.getElementById('trigger');
     const popup = document.getElementById('popup');
-
     if (button && popup) {
         button.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -86,14 +95,12 @@ window.addEventListener('DOMContentLoaded', () => {
             popup.classList.toggle('shows');
             button.classList.toggle('actives', !isOpen);
         });
-
         document.addEventListener('click', (e) => {
             if (!popup.contains(e.target) && !button.contains(e.target)) {
                 popup.classList.remove('shows');
                 button.classList.remove('actives');
             }
         });
-
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 popup.classList.remove('shows');
@@ -101,46 +108,34 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // Title controls
     const titleInput = document.getElementById('titleInput');
     const saveTitleBtn = document.getElementById('saveTitleBtn');
     const resetTitleBtn = document.getElementById('resetTitleBtn');
-
     function setTitle(newTitle) {
-        document.title = newTitle || 'Default Title';
+        document.title = newTitle || 'Infinite Campus';
     }
-
     if (savedTitle) {
         setTitle(savedTitle);
     }
-
     saveTitleBtn.addEventListener('click', () => {
         const newTitle = titleInput.value.trim();
         if (newTitle.length > 0) {
             localStorage.setItem('pageTitle', newTitle);
             setTitle(newTitle);
-            alert('Page title saved!');
         } else {
             alert('Please enter a valid title before saving.');
         }
     });
-
     resetTitleBtn.addEventListener('click', () => {
         localStorage.removeItem('pageTitle');
         titleInput.value = '';
-        setTitle('Default Title');
-        alert('Page title reset to default.');
+        setTitle('Infinite Campus');
     });
-
-    // Favicon controls
     const faviconInput = document.getElementById('faviconInput');
     const setFaviconBtn = document.getElementById('setFaviconBtn');
     const resetFaviconBtn = document.getElementById('resetFaviconBtn');
-
     const originalFaviconLink = document.querySelector("link[rel~='icon']");
     const originalFaviconUrl = originalFaviconLink ? originalFaviconLink.href : '/favicon.ico';
-
     function updateFavicon(url) {
         let link = document.querySelector("link[rel~='icon']");
         if (!link) {
@@ -150,36 +145,28 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         link.href = url;
     }
-
     if (savedFavicon) {
         updateFavicon(savedFavicon);
     }
-
     setFaviconBtn.addEventListener('click', () => {
         const file = faviconInput.files[0];
         if (!file) {
             alert('Please select an image file first.');
             return;
         }
-
         const reader = new FileReader();
         reader.onload = function(e) {
             const dataUrl = e.target.result;
             localStorage.setItem('customFavicon', dataUrl);
             updateFavicon(dataUrl);
-            alert('Favicon set!');
         };
         reader.readAsDataURL(file);
     });
-
     resetFaviconBtn.addEventListener('click', () => {
         localStorage.removeItem('customFavicon');
         faviconInput.value = '';
         updateFavicon(originalFaviconUrl);
-        alert('Favicon reset to original.');
     });
-
-    // Clock update function and interval (unchanged)
     function updateTime() {
         const now = new Date();
         let hours = now.getHours();
