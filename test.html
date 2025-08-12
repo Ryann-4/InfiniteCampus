@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Get City and State</title>
+</head>
+<body>
+    <h1>Your Location</h1>
+    <p id="status">Getting location...</p>
+
+    <script>
+        function getLocation() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                document.getElementById("status").textContent = "Geolocation not supported in this browser.";
+            }
+        }
+        function success(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+                .then(response => response.json())
+                .then(data => {
+                    const city = data.address.city || data.address.town || data.address.village || "Unknown city";
+                    const state = data.address.state || "Unknown state";
+                    document.getElementById("status").textContent = `${city}, ${state}`;
+                })
+                .catch(() => {
+                    document.getElementById("status").textContent = "Unable to retrieve city/state.";
+                });
+        }
+        function error(err) {
+            document.getElementById("status").textContent = `Error: ${err.message}`;
+        }
+        getLocation();
+    </script>
+</body>
+</html>
