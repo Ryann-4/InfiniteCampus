@@ -23,6 +23,7 @@ let CW, CU, CP;
     window.UN = DB32(c);
     window.PN = DB32(d);
 })();
+window.CHTAPI = (t);
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import {
     getDatabase,
@@ -35,7 +36,7 @@ import {
     remove
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 const firebaseConfig = {
-    apiKey: "Chat_Api_Key",
+    apiKey: window.CHTAPI,
     authDomain: "website-chat-617b3.firebaseapp.com",
     databaseURL: "https://website-chat-617b3-default-rtdb.firebaseio.com",
     projectId: "website-chat-617b3",

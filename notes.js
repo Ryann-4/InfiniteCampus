@@ -1,9 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
 import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
-
+window.NTAPI = (u);
 const firebaseConfig = {
-    apiKey: "Google_Api_Key",
+    apiKey: window.NTAPI,
     authDomain: "notes-27f22.firebaseapp.com",
     databaseURL: "https://notes-27f22-default-rtdb.firebaseio.com",
     projectId: "notes-27f22",
@@ -15,21 +15,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getDatabase(app);
-
 const noteInput = document.getElementById('noteInput');
 const saveBtn = document.getElementById('saveBtn');
 const notesContainer = document.getElementById('notesContainer');
-
 function saveNote() {
-    if (!noteInput) return; // extra safety
+    if (!noteInput) return;
     const text = noteInput.value.trim();
     if (text) {
         push(ref(db, 'notes'), { text });
         noteInput.value = '';
     }
 }
-
-// Only add event listeners if those elements exist
 if (saveBtn) {
     saveBtn.addEventListener('click', saveNote);
 }
@@ -41,10 +37,8 @@ if (noteInput) {
         }
     });
 }
-
-// Always listen for changes and display notes
 onValue(ref(db, 'notes'), (snapshot) => {
-    if (!notesContainer) return; // safety if container not present
+    if (!notesContainer) return;
     notesContainer.innerHTML = '';
     snapshot.forEach((child) => {
         const note = child.val();
@@ -57,8 +51,6 @@ onValue(ref(db, 'notes'), (snapshot) => {
         `;
         notesContainer.appendChild(div);
     });
-
-    // Add delete functionality only if delete buttons exist
     document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', () => {
             const key = button.getAttribute('data-key');

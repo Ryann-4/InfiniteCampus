@@ -22,6 +22,9 @@ const r = [
     { usr: "U0dGamEyVnlOREU9", psw: "VTJWd2NtNHhNakV3SVE9PQ==", KY: "YUdGamEyVnlOREU9"},
     { usr: "VG1sMGNtbDQ=", psw: "UkdGa1pIbE9hWFJ5YVhnMk9RPT0=", KY: "Ym1sMGNtbDQ=" }
 ];
+const s = "AIzaSyCQ492BiasyGJyXPQcm-2TFAeWdZybScz0";
+const t = "AIzaSyCW40bRS58QSP6A---j6wCFtd-g8Ta9luA";
+const u = "AIzaSyCtIplvgvwVDF6ke3Mz4Qv3Sny99eh_gCY";
 const key = 5;
 console.log('%cWelcome To The Console, If You Do Not Know What You Are Doing, Close It, If You Do I Would Be Happy To Let You Develop The Website With Me infinitecodehs@gmail.com', 'color: purple; font-size: 24px; font-weight: bold;');
 console.log('%cC', `
