@@ -282,7 +282,6 @@ input, button {
     border-radius: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-bottom: 20px;
 }
 .custom-file-upload:hover {
     background-color: lightgrey;

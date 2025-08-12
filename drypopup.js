@@ -23,10 +23,11 @@ window.addEventListener('DOMContentLoaded', () => {
                 </button>
                 <br>
                 <br>
-                <label for="faviconInput" class="custom-file-upload">
+                <label for="faviconInput" class="button">
                     Choose Favicon Image
                 </label>
                 <input style="display:none;" type="file" id="faviconInput" accept="image/*" />
+                <br>
                 <br>
                 <button class="button" id="setFaviconBtn">
                     Set Favicon
