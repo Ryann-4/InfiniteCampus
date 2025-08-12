@@ -1,66 +1,58 @@
-function asciiEncode(str) {
-    return [...str].map(c => {
-        const code = c.charCodeAt(0);
-        if (
-            (code >= 65 && code <= 90) ||
-            (code >= 97 && code <= 122) ||
-            (code >= 48 && code <= 57) ||
-            c === '-' || c === '_' || c === '.' || c === '~'
-        ) {
-            return c;
+async function checkURLStatus(url) {
+    const statusEl = document.getElementById('status');
+    statusEl.textContent = "Verifying...";
+    if (!/^https?:\/\//i.test(url)) {
+        url = "https://" + url;
+    }
+    try {
+        const response = await fetch(url, { method: 'HEAD' });
+        if (response.ok) {
+            return { status: "cors-ok" };
+        } else {
+            return { status: "cors-ok-but-error", code: response.status };
         }
-        if (code === 10) return '%0A';
-        if (code === 13) return '';
-        if (code === 9) return '%09';
-        if (code === 32) return '%20';
-        return '%' + code.toString(16).toUpperCase().padStart(2, '0');
-    }).join('');
-}
-function base64Decode(str) {
-    return decodeURIComponent(escape(window.atob(str)));
-}
-function generateBase64(url) {
-    if (!url) {
-        alert("Please Enter A URL.");
-        return '';
+    } catch (error) {
+        if (error.name === "TypeError") {
+            try {
+                await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+                return { status: "cors-blocked" };
+            } catch {
+                return { status: "not-exist" };
+            }
+        }
+        return { status: "not-exist" };
     }
-    if (!/^https?:\/\//i.test(url)) {
-        url = "https://" + url;
-    }
-    let template = base64Decode(j);
-    template = template.replace('${url}', url);
-    const base64 = btoa(unescape(encodeURIComponent(template)));
-    return `data:image/svg+xml;base64,${base64}`;
 }
-function generateAsciiEncodedHtml(url) {
-    if (!url) {
-        alert("Please Enter A URL.");
-        return '';
-    }
-    if (!/^https?:\/\//i.test(url)) {
-        url = "https://" + url;
-    }
-    let htmlCode = base64Decode(k);
-    htmlCode = htmlCode.replace("PUT_URL_HERE", url);
-    const encoded = asciiEncode(htmlCode);
-    return 'data:text/html;charset=utf-8,' + encoded;
-}
-function generateDataUrl() {
+async function generateDataUrl() {
     let urlInput = document.getElementById('urlInput').value.trim();
     const preset = document.getElementById('presetSelect').value;
     const type = document.getElementById('typeSelect').value;
+    const statusEl = document.getElementById('status');
     if (!urlInput && preset) urlInput = preset;
     if (!urlInput) {
         alert("Please Select Or Enter A URL.");
         return;
     }
-    let result = '';
-    if (type === 'image') {
-        result = generateBase64(urlInput);
-    } else {
-        result = generateAsciiEncodedHtml(urlInput);
+    const check = await checkURLStatus(urlInput);
+    if (check.status === "cors-ok" || check.status === "cors-ok-but-error") {
+        statusEl.textContent = "Generating URL";
+        let result = '';
+        if (type === 'image') {
+            result = generateBase64(urlInput);
+        } else {
+            result = generateAsciiEncodedHtml(urlInput);
+        }
+        document.getElementById('output').value = result;
+        statusEl.textContent = "Success!";
     }
-    document.getElementById('output').value = result;
+    else if (check.status === "not-exist") {
+        statusEl.textContent = "Website Not Found";
+        document.getElementById('output').value = '';
+    }
+    else if (check.status === "cors-blocked") {
+        statusEl.textContent = "Website Does Not Allow CORS So Link Will Not Work";
+        document.getElementById('output').value = '';
+    }
 }
 document.getElementById('presetSelect').addEventListener('change', () => {
     const presetVal = document.getElementById('presetSelect').value;
@@ -82,6 +74,6 @@ document.getElementById('copyBtn').addEventListener('click', () => {
         return;
     }
     navigator.clipboard.writeText(output)
-    .then(() => alert("Copied to clipboard!"))
-    .catch(() => alert("ERR#14 Failed to copy."));
+        .then(() => alert("Copied To Clipboard"))
+        .catch(() => alert("ERR#14 Failed To Copy"));
 });
