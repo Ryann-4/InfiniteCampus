@@ -1,6 +1,7 @@
 window.addEventListener('DOMContentLoaded', () => {
     const savedTitle = localStorage.getItem('pageTitle') || '';
     const savedFavicon = localStorage.getItem('customFavicon') || '';
+    const betterWeatherState = localStorage.getItem('betterWeather') === 'true';
     const popupHTML = `
         <div class="popup2" id="popup">
             <div class="bar test rgb-element">
@@ -12,7 +13,15 @@ window.addEventListener('DOMContentLoaded', () => {
                 <p class="txt">
                     Settings
                 </p>
-                <br>
+
+                <!-- Better Weather Toggle -->
+                <label class="switch">
+                  <input type="checkbox" id="betterWeatherToggle" ${betterWeatherState ? 'checked' : ''}>
+                  <span class="slider"></span>
+                </label>
+                <p style="font-size:12px; margin-top:5px;">Use Browser Location for Weather</p>
+                <br><br>
+
                 <input class="button" type="text" id="titleInput" placeholder="Enter page title" value="${savedTitle}"/>
                 <br>
                 <button class="button" id="saveTitleBtn">
@@ -28,7 +37,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 </label>
                 <input style="display:none;" type="file" id="faviconInput" accept="image/*" />
                 <br>
-                <br>
                 <button class="button" id="setFaviconBtn">
                     Set Favicon
                 </button>
@@ -42,9 +50,11 @@ window.addEventListener('DOMContentLoaded', () => {
                 </a>
                 <br>
                 <br>
+                <br>
                 <a class="button poll disabled">
                     Take A Quick Survey
                 </a>
+                <br>
                 <br>
                 <br>
                 <a class="button" href="InfiniteBypassers">
@@ -52,14 +62,17 @@ window.addEventListener('DOMContentLoaded', () => {
                 </a>
                 <br>
                 <br>
+                <br>
                 <a class="button" href="InfiniteFeatures">
                     Suggest A Feature
                 </a>
                 <br>
                 <br>
+                <br>
                 <a class="button" onclick="localStorage.clear(); location.reload();">
                     Clear Data
                 </a>
+                <br>
                 <br>
                 <br>
                 <a class="discord" href="https://discord.gg/4d9hJSVXca">
@@ -79,9 +92,51 @@ window.addEventListener('DOMContentLoaded', () => {
         </div>
         <center>
     `;
+
+    // Toggle switch styles
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    .switch input { display: none; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    `;
+    document.head.appendChild(styleEl);
+
     const wrapper = document.createElement('div');
     wrapper.innerHTML = popupHTML;
     document.body.appendChild(wrapper);
+
+    const betterWeatherToggle = document.getElementById('betterWeatherToggle');
+    betterWeatherToggle.addEventListener('change', function () {
+        localStorage.setItem('betterWeather', this.checked ? 'true' : 'false');
+    });
     const button = document.getElementById('trigger');
     const popup = document.getElementById('popup');
     if (button && popup) {
