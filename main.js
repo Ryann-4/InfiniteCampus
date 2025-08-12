@@ -40,11 +40,6 @@ function puter() { window.open("https://puter.com"); }
 function thumbnail() { window.open("https://tagmp3.net/"); }
 function ITU() { window.open("https://postimage.org/"); }
 window.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('a#discordbtn').forEach(function (btn) {
-        btn.style.textDecoration = "none";
-        btn.style.color = "cyan";
-        btn.href = "https://discord.gg/4d9hJSVXca";
-    });
     let isFahrenheit = true;
     let currentCity = "";
     function setPopup2Color(isDark) {

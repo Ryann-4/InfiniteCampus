@@ -47,7 +47,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <br>
                 <br>
-                <a id="discordbtn">
+                <a class="discord" href="https://discord.gg/4d9hJSVXca">
+                    Join The Discord
                 </a>
             </div>
             <div class="bar test rgb-element">
