@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IP Info Alert</title>
+</head>
+<body>
+    <button id="getIpInfo">Get My IP Info</button>
+
+    <script>
+        document.getElementById("getIpInfo").addEventListener("click", function () {
+            fetch("https://ipapi.co/json/")
+                .then(response => response.json())
+                .then(data => {
+                    alert(JSON.stringify(data, null, 2));
+                })
+                .catch(error => {
+                    alert("Error fetching IP info: " + error);
+                });
+        });
+    </script>
+</body>
+</html>
