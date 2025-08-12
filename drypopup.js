@@ -44,6 +44,11 @@ window.addEventListener('DOMContentLoaded', () => {
                 <a class="button" onclick="localStorage.clear(); location.reload();">
                     Clear Data
                 </a>
+                <br>
+                <br>
+                <br>
+                <a id="discordbtn">
+                </a>
             </div>
             <div class="bar test rgb-element">
                 <center>
