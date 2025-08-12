@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>URL Checker</title>
+<title>URL Checker with CORS Detection</title>
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -20,6 +20,7 @@
 </style>
 </head>
 <body>
+
 <h2>Website URL Checker</h2>
 <input type="text" id="urlInput" placeholder="Enter website URL (https://...)" size="40">
 <button onclick="checkURL()">Check</button>
@@ -33,10 +34,23 @@ async function checkURL() {
     }
     resultEl.textContent = "Checking...";
     try {
-        const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
-        resultEl.textContent = "✅ This website appears to exist!";
+        const response = await fetch(url, { method: 'HEAD' });
+        if (response.ok) {
+            resultEl.textContent = "✅ Website exists and allows CORS.";
+        } else {
+            resultEl.textContent = `⚠️ Website responded with status ${response.status}, but CORS is allowed.`;
+        }
     } catch (error) {
-        resultEl.textContent = "❌ This website could not be reached.";
+        if (error.name === "TypeError") {
+            try {
+                await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+                resultEl.textContent = "🌐 Website appears to exist but does NOT allow CORS.";
+            } catch (e2) {
+                resultEl.textContent = "❌ Website could not be reached at all.";
+            }
+        } else {
+            resultEl.textContent = "❌ Website check failed: " + error.message;
+        }
     }
 }
 </script>
