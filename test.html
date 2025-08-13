@@ -1,22 +1,38 @@
-<html lang="en">
+<html>
     <head>
-        <meta charset="utf-8" />
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
         <title>
-            Site Crawler with Categories
+            Infinite Campus
         </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.css">
+        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+        <meta property="og:title" content="Infinite Campus">
+        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+        <meta name="theme-color" content="#8cbe37">
+        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+        <script src="main.js">
+        </script>
+        <script src="drypopup.js">
+        </script>
+        <script src="theme.js">
+        </script>
         <style>
             :root { 
-                --bg:#0b0c10; 
                 --card:#151821; 
                 --ink:#eaeef7; 
                 --muted:#aab2c5; 
                 --accent:#7aa2ff; 
-            }
-            body { 
-                margin:0; 
-                font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; 
-                background:var(--bg); 
-                color:var(--ink); 
             }
             p.hint { 
                 margin:0; 
@@ -59,21 +75,6 @@
                 align-items:center; 
                 font-size:13px; 
                 color:var(--muted); 
-            }
-            button {
-                padding:12px 14px; 
-                border:0; 
-                border-radius:14px; 
-                background:var(--accent); 
-                color:#0a0d18; 
-                font-weight:700; 
-                cursor:pointer;
-                box-shadow:0 8px 24px rgba(122,162,255,.25);
-            }
-            button:disabled { 
-                opacity:.6; 
-                cursor:not-allowed; 
-                box-shadow:none; 
             }
             .status { 
                 margin:14px 0 0; 
@@ -149,55 +150,19 @@
                 align-items:center; 
                 flex-wrap:wrap; 
             }
-            body { 
-                background:#0b0c10; 
-                color:#eaeef7; 
-                font-family:sans-serif; 
-                margin:0; 
-            }
-            main { 
-                padding:10px; 
-            }
-            pre { 
-                background:#0e111a; 
-                color:#cdd7ff; 
-                padding:10px; 
-                overflow:auto; 
-                max-height:400px; 
-            }
-            .pill { 
-                font-size:11px; 
-                padding:3px 6px; 
-                border-radius:999px; 
-                border:1px solid #2a3347; 
-            }
-            .ok { 
-                color:#9effa6; 
-            }
-            .warn { 
-                color:#ffd27a; 
-            }
-            .bad { 
-                color:#ff9e9e; 
-            }
-            h2 { 
-                margin-top:30px; 
-                border-bottom:1px solid #333; 
-                padding-bottom:4px; 
-            }
         </style>
     </head>
     <body>
         <main>
             <label>
                 Start URL: 
-                <input id="startUrl" type="text" style="width:300px">
+                <input class="button" id="startUrl" type="text" style="width:300px">
             </label>
             <label>
                 Max Pages: 
-                <input id="maxPages" type="number" value="100">
+                <input class="button" id="maxPages" type="number" value="100">
             </label>
-            <button id="startBtn">
+            <button class="button" id="startBtn">
                 Start
             </button>
             <div id="status">
@@ -219,88 +184,7 @@
                 </h2>
             </div>
         </main>
-        <script>
-            (function(){
-                const startUrl = document.getElementById('startUrl');
-                const maxPages = document.getElementById('maxPages');
-                const startBtn = document.getElementById('startBtn');
-                const statusEl = document.getElementById('status');
-                const htmlSection = document.getElementById('htmlSection');
-                const jsSection = document.getElementById('jsSection');
-                const otherSection = document.getElementById('otherSection');
-                startUrl.value = location.origin + '/';
-                const ESC = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' };
-                function escapeHTML(s) { return String(s).replace(/[&<>"']/g, ch => ESC[ch]); }
-                function addResult(parent, url, cls, content) {
-                    const details = document.createElement('details');
-                    const summary = document.createElement('summary');
-                    summary.innerHTML = `<span class="pill ${cls}">${cls.toUpperCase()}</span> ${escapeHTML(url)}`;
-                    const pre = document.createElement('pre');
-                    pre.textContent = content;
-                    details.appendChild(summary);
-                    details.appendChild(pre);
-                    parent.appendChild(details);
-                }
-                async function parseListXML(start) {
-                    const base = new URL(start);
-                    const listURL = new URL('/list.xml', base).toString();
-                    try {
-                        const res = await fetch(listURL, { credentials: 'include' });
-                        if (!res.ok) throw new Error('list.xml not found');
-                        const txt = await res.text();
-                        const dom = new DOMParser().parseFromString(txt, 'application/xml');
-                        const locs = Array.from(dom.getElementsByTagNameNS("*", "loc")).map(n => n.textContent.trim());
-                        return locs.filter(u => u.startsWith(base.origin));
-                    } catch(e) {
-                        console.error(e);
-                        return [];
-                    }
-                }
-                function categorizeAndSort(urls) {
-                    const htmlFiles = [];
-                    const jsFiles = [];
-                    const otherFiles = [];
-                    urls.forEach(url => {
-                        const ext = (url.split('.').pop() || '').toLowerCase();
-                        if (ext === 'html' || ext === 'htm') htmlFiles.push(url);
-                        else if (ext === 'js') jsFiles.push(url);
-                        else otherFiles.push(url);
-                    });
-                    htmlFiles.sort(); jsFiles.sort(); otherFiles.sort();
-                    return { htmlFiles, jsFiles, otherFiles };
-                }
-                async function crawl() {
-                    htmlSection.innerHTML = "<h2>HTML Files</h2>";
-                    jsSection.innerHTML = "<h2>JavaScript Files</h2>";
-                    otherSection.innerHTML = "<h2>Other Files</h2>";
-                    const start = startUrl.value.trim() || location.origin + '/';
-                    const limitPages = Math.max(1, parseInt(maxPages.value) || 1);
-                    statusEl.textContent = "Loading...";
-                    let urls = await parseListXML(start);
-                    if (!urls.length) urls = [start];
-                    const { htmlFiles, jsFiles, otherFiles } = categorizeAndSort(urls);
-                    const allFiles = [...htmlFiles, ...jsFiles, ...otherFiles].slice(0, limitPages);
-                    let count = 0;
-                    for (const file of allFiles) {
-                        statusEl.textContent = `Fetching ${file} (${++count}/${allFiles.length})`;
-                        try {
-                            const res = await fetch(file, { credentials: 'include' });
-                            const text = await res.text();
-                            const cls = res.ok ? 'ok' : 'warn';
-                            if (htmlFiles.includes(file)) addResult(htmlSection, file, cls, text);
-                            else if (jsFiles.includes(file)) addResult(jsSection, file, cls, text);
-                            else addResult(otherSection, file, cls, text);
-                        } catch(e) {
-                            if (htmlFiles.includes(file)) addResult(htmlSection, file, 'bad', e.message);
-                            else if (jsFiles.includes(file)) addResult(jsSection, file, 'bad', e.message);
-                            else addResult(otherSection, file, 'bad', e.message);
-                        }
-                        await new Promise(r => setTimeout(r, 500)); 
-                    }
-                    statusEl.textContent = "Done.";
-                }
-                startBtn.addEventListener('click', crawl);
-            })();
+        <script src="test.js">
         </script>
     </body>
 </html>
