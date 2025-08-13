@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <!-- HTML pages -->
   <url><loc>https://www.infinitecampus.xyz/404</loc></url>
   <url><loc>https://www.infinitecampus.xyz/index</loc></url>
   <url><loc>https://www.infinitecampus.xyz/InfiniteAbouts</loc></url>
@@ -48,8 +46,6 @@
   <url><loc>https://www.infinitecampus.xyz/InfiniteTalkers</loc></url>
   <url><loc>https://www.infinitecampus.xyz/InfiniteTubers</loc></url>
   <url><loc>https://www.infinitecampus.xyz/InfiniteUpdaters</loc></url>
-
-  <!-- JavaScript files -->
   <url><loc>https://www.infinitecampus.xyz/adminchat.js</loc></url>
   <url><loc>https://www.infinitecampus.xyz/adminupdates.js</loc></url>
   <url><loc>https://www.infinitecampus.xyz/archive.js</loc></url>
@@ -75,13 +71,10 @@
   <url><loc>https://www.infinitecampus.xyz/suggest.js</loc></url>
   <url><loc>https://www.infinitecampus.xyz/theme.js</loc></url>
   <url><loc>https://www.infinitecampus.xyz/updates.js</loc></url>
-
-  <!-- Other files -->
   <url><loc>https://www.infinitecampus.xyz/blooket.txt</loc></url>
   <url><loc>https://www.infinitecampus.xyz/gimkit.txt</loc></url>
   <url><loc>https://www.infinitecampus.xyz/quizlet.txt</loc></url>
   <url><loc>https://www.infinitecampus.xyz/global.css</loc></url>
   <url><loc>https://www.infinitecampus.xyz/subtitles.vtt</loc></url>
   <url><loc>https://www.infinitecampus.xyz/sitemap.xml</loc></url>
-
 </urlset>
