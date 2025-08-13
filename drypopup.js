@@ -13,16 +13,16 @@ window.addEventListener('DOMContentLoaded', () => {
                 <p class="txt">
                     Settings
                 </p>
+                <p style="font-size:12px; margin-top:5px;">
+                    Enable More Accurate Weather?
+                </p>
                 <label class="switch">
                     <input type="checkbox" id="betterWeatherToggle" ${betterWeatherState ? 'checked' : ''}>
                     <span class="slider">
                     </span>
                 </label>
-                <p style="font-size:12px; margin-top:5px;">
-                    Enable More Accurate Weather?
-                </p>
                 <br>
-                <input class="button" type="text" id="titleInput" placeholder="Enter page title" value="${savedTitle}"/>
+                <input style="width:auto !important;" class="button" type="text" id="titleInput" placeholder="Enter page title" value="${savedTitle}"/>
                 <button class="button" id="saveTitleBtn">
                     Save Title
                 </button>
