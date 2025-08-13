@@ -2,7 +2,7 @@ function safeGetItem(key) {
     try {
         return localStorage.getItem(key);
     } catch (err) {
-        console.warn(`localStorage unavailable for key: ${key}`, err);
+        console.warn(`LocalStorage Unavailable For Key: ${key}`, err);
         return null;
     }
 }
@@ -10,7 +10,7 @@ function safeSetItem(key, value) {
     try {
         localStorage.setItem(key, value);
     } catch (err) {
-        console.warn(`localStorage unavailable for key: ${key}`, err);
+        console.warn(`LocalStorage Unavailable For Key: ${key}`, err);
     }
 }
 const a = "TWZocGp3OTY=";
@@ -101,12 +101,12 @@ window.addEventListener('DOMContentLoaded', () => {
                             currentCity = revData.address.city || revData.address.town || revData.address.village || "";
                             resolve();
                         } catch (err) {
-                            console.error("Reverse geocode failed", err);
+                            console.error("Reverse Geocode Failed", err);
                             currentCity = "";
                             resolve();
                         }
                     }, async (err) => {
-                        console.warn("Geolocation failed, fallback to IP", err);
+                        console.warn("Geolocation Failed, Fallback To IP", err);
                         await fallbackToIP();
                         resolve();
                     });

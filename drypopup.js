@@ -7,7 +7,7 @@ window.addEventListener('DOMContentLoaded', () => {
         savedFavicon = localStorage.getItem('customFavicon') || '';
         betterWeatherState = localStorage.getItem('betterWeather') === 'true';
     } catch (e) {
-        console.warn('LocalStorage not available, using defaults:', e);
+        console.warn('LocalStorage Not Available, Using Defaults:', e);
     }
     const popupHTML = `
         <div class="popup2" id="popup">

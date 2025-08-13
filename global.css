@@ -609,6 +609,9 @@ audio {
 .disabled {
     cursor: not-allowed !important;
 }
+.apbtn {
+    margin:1vh;
+}
 @keyframes rgbAnimation {
   0% { background-color: red; }
   33% { background-color: green; }
