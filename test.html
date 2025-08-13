@@ -1,60 +1,261 @@
-<html>
-    <head>
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
-        </script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-7SV03ZXJ9R');
-        </script>
-        <title>
-            Infinite Campus
-        </title>
-        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
-        <link rel="stylesheet" href="global.css">
-        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
-        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
-        <meta property="og:title" content="Infinite Campus">
-        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
-        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
-        <meta name="theme-color" content="#8cbe37">
-        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
-        <script src="main.js">
-        </script>
-        <script src="drypopup.js">
-        </script>
-        <script src="theme.js">
-        </script>
-    </head>
-    <body>
-        <center>
-            <br>
-            <br>
-            <br>
-            <br>
-            <button onclick="viewHTML()">View 404 HTML</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Site HTML Viewer (Same-Origin Crawler)</title>
+<style>
+  :root { --bg:#0b0c10; --card:#151821; --ink:#eaeef7; --muted:#aab2c5; --accent:#7aa2ff; }
+  body { margin:0; font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:20px; background:linear-gradient(135deg, #1c2233, #0f1320); border-bottom:1px solid #222a3a; }
+  h1 { margin:0 0 8px; font-size:20px; font-weight:700; }
+  p.hint { margin:0; color:var(--muted); font-size:13px; }
+  main { padding:16px; max-width:1100px; margin:0 auto; }
+  .controls { display:grid; gap:12px; grid-template-columns: 1fr repeat(3, minmax(120px, 180px)) 140px; align-items:end; }
+  .controls label { font-size:12px; color:var(--muted); display:block; margin-bottom:6px; }
+  .controls input[type="text"], .controls input[type="number"] {
+    width:100%; padding:10px 12px; border-radius:12px; border:1px solid #2a3347; background:var(--card); color:var(--ink);
+  }
+  .controls .row { display:flex; gap:12px; align-items:center; }
+  .controls .chk { display:flex; gap:8px; align-items:center; font-size:13px; color:var(--muted); }
+  button {
+    padding:12px 14px; border:0; border-radius:14px; background:var(--accent); color:#0a0d18; font-weight:700; cursor:pointer;
+    box-shadow:0 8px 24px rgba(122,162,255,.25);
+  }
+  button:disabled { opacity:.6; cursor:not-allowed; box-shadow:none; }
+  .status { margin:14px 0 0; font-size:13px; color:var(--muted); }
+  .grid { margin-top:18px; display:grid; gap:14px; }
+  details { background:var(--card); border:1px solid #2a3347; border-radius:14px; overflow:hidden; }
+  summary {
+    padding:12px 14px; cursor:pointer; font-weight:600; list-style:none; display:flex; gap:12px; align-items:center;
+    border-bottom:1px solid #242b3d;
+  }
+  summary::-webkit-details-marker { display:none }
+  .pill { font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid #2a3347; color:var(--muted); }
+  .ok    { color:#9effa6; border-color:#33523a; }
+  .warn  { color:#ffd27a; border-color:#5a4a2b; }
+  .bad   { color:#ff9e9e; border-color:#5a2b2b; }
+  .url { word-break:break-all; }
+  pre {
+    margin:0; padding:14px; overflow:auto; max-height:420px; background:#0e111a; color:#cdd7ff; font-size:12px; line-height:1.4;
+  }
+  .rowline { padding:10px 14px; font-size:12px; color:var(--muted); border-top:1px solid #242b3d; background:#0f1320; }
+  .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Site HTML Viewer</h1>
+    <p class="hint">Crawls your site (same origin only), finds internal pages, and shows their raw HTML.</p>
+  </header>
+  <main>
+    <div class="controls">
+      <div>
+        <label for="startUrl">Start URL</label>
+        <input id="startUrl" type="text" placeholder="e.g. https://your-domain.com/" />
+      </div>
+      <div>
+        <label for="maxDepth">Max Depth</label>
+        <input id="maxDepth" type="number" min="0" max="10" value="2" />
+      </div>
+      <div>
+        <label for="maxPages">Max Pages</label>
+        <input id="maxPages" type="number" min="1" max="2000" value="50" />
+      </div>
+      <div>
+        <label for="concurrency">Concurrency</label>
+        <input id="concurrency" type="number" min="1" max="12" value="4" />
+      </div>
+      <div>
+        <button id="startBtn">Start crawl</button>
+      </div>
+      <div class="row">
+        <label class="chk"><input id="useSitemap" type="checkbox" checked /> Try /sitemap.xml first</label>
+        <label class="chk"><input id="stayPath" type="checkbox" /> Stay within start path</label>
+      </div>
+    </div>
+
+    <div class="status" id="status">Idle.</div>
+    <div class="grid" id="results"></div>
+  </main>
 
 <script>
-function viewHTML() {
-    fetch('404.html')
-        .then(response => response.text())
-        .then(html => {
-            const win = window.open();
-            win.document.write('<pre>' + 
-                html.replace(/</g, '&lt;').replace(/>/g, '&gt;') + 
-                '</pre>');
-        })
-        .catch(err => alert('Error: ' + err));
-}
-</script>
+(function(){
+  const $ = (sel) => document.querySelector(sel);
+  const startUrl = $('#startUrl');
+  const maxDepth = $('#maxDepth');
+  const maxPages = $('#maxPages');
+  const concurrency = $('#concurrency');
+  const startBtn = $('#startBtn');
+  const useSitemap = $('#useSitemap');
+  const stayPath = $('#stayPath');
+  const statusEl = $('#status');
+  const results = $('#results');
 
-            <br>
-            <br>
-            <br>
-        </center>
-        <script src="frame.js">
-        </script>
-    </body>
+  // Default to current origin
+  startUrl.value = location.origin + '/';
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  function sameOrigin(url, origin) {
+    try {
+      const u = new URL(url, origin);
+      return u.origin === new URL(origin).origin;
+    } catch { return false; }
+  }
+
+  function eligiblePageURL(href, origin, basePath, limitToPath) {
+    try {
+      const u = new URL(href, origin);
+      if (u.origin !== new URL(origin).origin) return false;
+      if (limitToPath && !u.pathname.startsWith(basePath)) return false;
+
+      const ext = (u.pathname.split('.').pop() || '').toLowerCase();
+      // Skip obvious non-HTML resources
+      const banned = new Set(['png','jpg','jpeg','webp','gif','svg','ico','css','js','mjs','json',
+                              'mp4','mp3','wav','ogg','pdf','zip','rar','7z','woff','woff2','ttf','eot']);
+      if (banned.has(ext)) return false;
+
+      // Skip fragments and non-http schemes
+      if (u.hash && u.hash.length) u.hash = ''; // normalize
+      if (!/^https?:$/.test(u.protocol)) return false;
+
+      return u.toString();
+    } catch { return false; }
+  }
+
+  function escapeHTML(s) {
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function addResult(url, statusClass, summary) {
+    const el = document.createElement('details');
+    el.open = false;
+    const sum = document.createElement('summary');
+    sum.innerHTML = `
+      <span class="pill ${statusClass}">${statusClass.toUpperCase()}</span>
+      <span class="url">${escapeHTML(url)}</span>
+    `;
+    const pre = document.createElement('pre');
+    pre.textContent = summary || '';
+    el.appendChild(sum);
+    el.appendChild(pre);
+    results.appendChild(el);
+    return pre;
+  }
+
+  async function parseSitemap(start) {
+    const base = new URL(start);
+    const sitemapURL = new URL('/sitemap.xml', base).toString();
+    try {
+      const res = await fetch(sitemapURL, { credentials: 'include' });
+      if (!res.ok) throw new Error('No sitemap');
+      const txt = await res.text();
+      const dom = new DOMParser().parseFromString(txt, 'application/xml');
+      const locs = Array.from(dom.getElementsByTagName('loc')).map(n => n.textContent.trim());
+      // Keep only same-origin pages
+      return locs.filter(u => sameOrigin(u, base.origin));
+    } catch { return []; }
+  }
+
+  async function crawl() {
+    results.innerHTML = '';
+    const originStart = startUrl.value.trim() || location.origin + '/';
+    const base = new URL(originStart);
+    const limitDepth = Math.max(0, parseInt(maxDepth.value || '0', 10));
+    const limitPages = Math.max(1, parseInt(maxPages.value || '1', 10));
+    const conc = Math.max(1, parseInt(concurrency.value || '4', 10));
+    const limitToPath = stayPath.checked;
+    const basePath = base.pathname.endsWith('/') ? base.pathname : base.pathname + '/';
+
+    let queue = [];
+    if (useSitemap.checked) {
+      statusEl.textContent = 'Fetching /sitemap.xml ...';
+      const sm = await parseSitemap(originStart);
+      if (sm.length) queue = sm.map(u => ({ url: u, depth: 0 }));
+    }
+    if (!queue.length) {
+      queue = [{ url: base.toString(), depth: 0 }];
+    }
+
+    const seen = new Set();
+    const pagesFetched = new Set();
+    let active = 0, done = 0, enqueued = queue.length;
+    let aborted = false;
+
+    startBtn.disabled = true;
+
+    const updateStatus = () => {
+      statusEl.textContent = `Queued: ${enqueued - done - active} | Active: ${active} | Done: ${done} | Unique pages: ${pagesFetched.size}`;
+    };
+
+    async function worker() {
+      while (!aborted) {
+        const next = queue.shift();
+        if (!next) break;
+        if (pagesFetched.size >= limitPages) break;
+
+        const { url, depth } = next;
+        if (seen.has(url)) { continue; }
+        seen.add(url);
+
+        active++; updateStatus();
+
+        let preEl, text = '';
+        try {
+          const res = await fetch(url, { credentials: 'include' });
+          const statusClass = res.ok ? 'ok' : (res.status === 404 ? 'bad' : 'warn');
+          preEl = addResult(url, statusClass, '');
+          text = await res.text();
+          preEl.textContent = text; // show raw HTML
+          pagesFetched.add(url);
+        } catch (e) {
+          preEl = addResult(url, 'bad', `Fetch failed: ${e.message || e}`);
+        }
+
+        // Discover more links if within depth & below page cap
+        if (text && pagesFetched.size < limitPages && depth < limitDepth) {
+          const doc = new DOMParser().parseFromString(text, 'text/html');
+          const links = Array.from(doc.querySelectorAll('a[href]'))
+            .map(a => a.getAttribute('href'))
+            .map(href => eligiblePageURL(href, url, basePath, limitToPath))
+            .filter(Boolean);
+
+          for (const u of links) {
+            if (!seen.has(u)) {
+              queue.push({ url: u, depth: depth + 1 });
+              enqueued++;
+            }
+          }
+        }
+
+        done++; active--; updateStatus();
+        await sleep(10); // yield a bit
+      }
+    }
+
+    const workers = Array.from({ length: conc }, () => worker());
+    await Promise.race([
+      Promise.all(workers),
+      // Safety timeout (optional): stop after 2 minutes
+      new Promise(r => setTimeout(() => { aborted = true; r(); }, 120000))
+    ]);
+
+    startBtn.disabled = false;
+    updateStatus();
+    if (pagesFetched.size >= limitPages) {
+      statusEl.textContent += ' — Reached max page limit.';
+    } else if (aborted) {
+      statusEl.textContent += ' — Stopped by time limit.';
+    } else {
+      statusEl.textContent += ' — Complete.';
+    }
+  }
+
+  startBtn.addEventListener('click', () => {
+    crawl();
+  });
+})();
+</script>
+</body>
 </html>
