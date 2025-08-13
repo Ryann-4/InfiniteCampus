@@ -1,3 +1,18 @@
+function safeGetItem(key) {
+    try {
+        return localStorage.getItem(key);
+    } catch (err) {
+        console.warn(`localStorage unavailable for key: ${key}`, err);
+        return null;
+    }
+}
+function safeSetItem(key, value) {
+    try {
+        localStorage.setItem(key, value);
+    } catch (err) {
+        console.warn(`localStorage unavailable for key: ${key}`, err);
+    }
+}
 const a = "TWZocGp3OTY=";
 const b = "WGp1d3M2NzY1Jg==";
 const c = "Tml0cml4";
@@ -51,7 +66,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
     function applyDarkModeClass() {
-        const isDark = localStorage.getItem("globalDarkTheme") === "true";
+        const isDark = safeGetItem("globalDarkTheme") === "true";
         const toggle = document.getElementById("toggle");
         const weather = document.getElementById("weather");
         const poppups = document.getElementById("ppupcolor");
@@ -69,48 +84,48 @@ window.addEventListener('DOMContentLoaded', () => {
         setPopup2Color(isDark);
     }
     const observer = new MutationObserver(() => {
-        const isDark = localStorage.getItem("globalDarkTheme") === "true";
+        const isDark = safeGetItem("globalDarkTheme") === "true";
         setPopup2Color(isDark);
     });
     observer.observe(document.body, { childList: true, subtree: true });
     async function getLocation() {
-    try {
-        if (localStorage.getItem("betterWeather") === "true") {
-            return new Promise((resolve) => {
-                navigator.geolocation.getCurrentPosition(async (pos) => {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
-                    try {
-                        const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                        const revData = await revRes.json();
-                        currentCity = revData.address.city || revData.address.town || revData.address.village || "";
+        try {
+            if (safeGetItem("betterWeather") === "true") {
+                return new Promise((resolve) => {
+                    navigator.geolocation.getCurrentPosition(async (pos) => {
+                        const lat = pos.coords.latitude;
+                        const lon = pos.coords.longitude;
+                        try {
+                            const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                            const revData = await revRes.json();
+                            currentCity = revData.address.city || revData.address.town || revData.address.village || "";
+                            resolve();
+                        } catch (err) {
+                            console.error("Reverse geocode failed", err);
+                            currentCity = "";
+                            resolve();
+                        }
+                    }, async (err) => {
+                        console.warn("Geolocation failed, fallback to IP", err);
+                        await fallbackToIP();
                         resolve();
-                    } catch (err) {
-                        console.error("Reverse geocode failed", err);
-                        currentCity = "";
-                        resolve();
-                    }
-                }, async (err) => {
-                    console.warn("Geolocation failed, fallback to IP", err);
-                    await fallbackToIP();
-                    resolve();
+                    });
                 });
-            });
-        } else {
-            await fallbackToIP();
+            } else {
+                await fallbackToIP();
+            }
+        } catch (error) {
+            const weatherEl = document.getElementById("weather");
+            if (weatherEl) weatherEl.innerText = "Weather Unavailable";
+            currentCity = "";
         }
-    } catch (error) {
-        const weatherEl = document.getElementById("weather");
-        if (weatherEl) weatherEl.innerText = "Weather Unavailable";
-        currentCity = "";
     }
-}
-async function fallbackToIP() {
-    const locRes = await fetch("https://ipapi.co/json/");
-    if (!locRes.ok) throw new Error("Weather Unavailable");
-    const loc = await locRes.json();
-    currentCity = loc.city;
-}
+    async function fallbackToIP() {
+        const locRes = await fetch("https://ipapi.co/json/");
+        if (!locRes.ok) throw new Error("Weather Unavailable");
+        const loc = await locRes.json();
+        currentCity = loc.city;
+    }
     async function getWeather(city, useFahrenheit) {
         city = city.replace(/\+/g, "");
         const unit = useFahrenheit ? "u" : "m";
@@ -146,9 +161,9 @@ async function fallbackToIP() {
         removePlusSignsFromPage();
         applyDarkModeClass();
     }
-    const savedTitle = localStorage.getItem('pageTitle');
+    const savedTitle = safeGetItem('pageTitle');
     if (savedTitle) document.title = savedTitle;
-    const savedFavicon = localStorage.getItem('customFavicon');
+    const savedFavicon = safeGetItem('customFavicon');
     if (savedFavicon) {
         const favicon = document.getElementById('dynamic-favicon');
         if (favicon) favicon.href = savedFavicon;
