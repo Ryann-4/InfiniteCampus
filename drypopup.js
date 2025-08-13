@@ -30,7 +30,6 @@ window.addEventListener('DOMContentLoaded', () => {
                     Reset Title
                 </button>
                 <br>
-                <br>
                 <label for="faviconInput" class="button">
                     Choose Favicon Image
                 </label>

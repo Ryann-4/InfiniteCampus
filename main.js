@@ -105,7 +105,6 @@ window.addEventListener('DOMContentLoaded', () => {
         currentCity = "";
     }
 }
-
 async function fallbackToIP() {
     const locRes = await fetch("https://ipapi.co/json/");
     if (!locRes.ok) throw new Error("Weather Unavailable");
