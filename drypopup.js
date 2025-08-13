@@ -1,7 +1,14 @@
 window.addEventListener('DOMContentLoaded', () => {
-    const savedTitle = localStorage.getItem('pageTitle') || '';
-    const savedFavicon = localStorage.getItem('customFavicon') || '';
-    const betterWeatherState = localStorage.getItem('betterWeather') === 'true';
+    let savedTitle = '';
+    let savedFavicon = '';
+    let betterWeatherState = false;
+    try {
+        savedTitle = localStorage.getItem('pageTitle') || '';
+        savedFavicon = localStorage.getItem('customFavicon') || '';
+        betterWeatherState = localStorage.getItem('betterWeather') === 'true';
+    } catch (e) {
+        console.warn('LocalStorage not available, using defaults:', e);
+    }
     const popupHTML = `
         <div class="popup2" id="popup">
             <div class="bar test rgb-element">
