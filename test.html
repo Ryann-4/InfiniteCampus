@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Site HTML Viewer (Same-Origin Crawler)</title>
+<title>Site HTML Viewer (list.xml categories)</title>
 <style>
-  :root { --bg:#0b0c10; --card:#151821; --ink:#eaeef7; --muted:#aab2c5; --accent:#7aa2ff; }
+    :root { --bg:#0b0c10; --card:#151821; --ink:#eaeef7; --muted:#aab2c5; --accent:#7aa2ff; }
   body { margin:0; font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); }
   header { padding:20px; background:linear-gradient(135deg, #1c2233, #0f1320); border-bottom:1px solid #222a3a; }
   h1 { margin:0 0 8px; font-size:20px; font-weight:700; }
@@ -41,220 +40,139 @@
   }
   .rowline { padding:10px 14px; font-size:12px; color:var(--muted); border-top:1px solid #242b3d; background:#0f1320; }
   .flex { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+body { background:#0b0c10; color:#eaeef7; font-family:sans-serif; margin:0; }
+header { padding:10px; background:#151821; }
+main { padding:10px; }
+pre { background:#0e111a; color:#cdd7ff; padding:10px; overflow:auto; max-height:400px; }
+.pill { font-size:11px; padding:3px 6px; border-radius:999px; border:1px solid #2a3347; }
+.ok { color:#9effa6; }
+.warn { color:#ffd27a; }
+.bad { color:#ff9e9e; }
+h2 { margin-top:30px; border-bottom:1px solid #333; padding-bottom:4px; }
 </style>
 </head>
 <body>
-  <header>
-    <h1>Site HTML Viewer</h1>
-    <p class="hint">Crawls your site (same origin only), finds internal pages, and shows their raw HTML.</p>
-  </header>
-  <main>
-    <div class="controls">
-      <div>
-        <label for="startUrl">Start URL</label>
-        <input id="startUrl" type="text" placeholder="e.g. https://your-domain.com/" />
-      </div>
-      <div>
-        <label for="maxDepth">Max Depth</label>
-        <input id="maxDepth" type="number" min="0" max="10" value="2" />
-      </div>
-      <div>
-        <label for="maxPages">Max Pages</label>
-        <input id="maxPages" type="number" min="1" max="2000" value="50" />
-      </div>
-      <div>
-        <label for="concurrency">Concurrency</label>
-        <input id="concurrency" type="number" min="1" max="12" value="4" />
-      </div>
-      <div>
-        <button id="startBtn">Start crawl</button>
-      </div>
-      <div class="row">
-        <label class="chk"><input id="useSitemap" type="checkbox" checked /> Try /sitemap.xml first</label>
-        <label class="chk"><input id="stayPath" type="checkbox" /> Stay within start path</label>
-      </div>
-    </div>
-
-    <div class="status" id="status">Idle.</div>
-    <div class="grid" id="results"></div>
-  </main>
-
+<header>
+  <h1>Site HTML Viewer (list.xml Categories)</h1>
+  <p>Crawls your site from list.xml (same origin only) and displays raw file contents in sorted categories.</p>
+</header>
+<main>
+  <label>Start URL: <input id="startUrl" type="text" style="width:300px"></label>
+  <label>Max Pages: <input id="maxPages" type="number" value="50"></label>
+  <button id="startBtn">Start</button>
+  <div id="status">Idle.</div>
+  <div id="htmlSection"><h2>HTML Files</h2></div>
+  <div id="jsSection"><h2>JavaScript Files</h2></div>
+  <div id="otherSection"><h2>Other Files</h2></div>
+</main>
 <script>
 (function(){
-  const $ = (sel) => document.querySelector(sel);
-  const startUrl = $('#startUrl');
-  const maxDepth = $('#maxDepth');
-  const maxPages = $('#maxPages');
-  const concurrency = $('#concurrency');
-  const startBtn = $('#startBtn');
-  const useSitemap = $('#useSitemap');
-  const stayPath = $('#stayPath');
-  const statusEl = $('#status');
-  const results = $('#results');
-
-  // Default to current origin
+  const startUrl = document.getElementById('startUrl');
+  const maxPages = document.getElementById('maxPages');
+  const startBtn = document.getElementById('startBtn');
+  const statusEl = document.getElementById('status');
+  const htmlSection = document.getElementById('htmlSection');
+  const jsSection = document.getElementById('jsSection');
+  const otherSection = document.getElementById('otherSection');
   startUrl.value = location.origin + '/';
 
-  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
-  function sameOrigin(url, origin) {
-    try {
-      const u = new URL(url, origin);
-      return u.origin === new URL(origin).origin;
-    } catch { return false; }
-  }
+function escapeHTML(s) {
+  return String(s).replace(/[&<>"']/g, ch => ESC[ch]);
+}
 
-  function eligiblePageURL(href, origin, basePath, limitToPath) {
-    try {
-      const u = new URL(href, origin);
-      if (u.origin !== new URL(origin).origin) return false;
-      if (limitToPath && !u.pathname.startsWith(basePath)) return false;
 
-      const ext = (u.pathname.split('.').pop() || '').toLowerCase();
-      // Skip obvious non-HTML resources
-      const banned = new Set(['png','jpg','jpeg','webp','gif','svg','ico','css','mjs','json',
-                              'mp4','mp3','wav','ogg','pdf','zip','rar','7z','woff','woff2','ttf','eot']);
-      if (banned.has(ext)) return false;
-
-      // Skip fragments and non-http schemes
-      if (u.hash && u.hash.length) u.hash = ''; // normalize
-      if (!/^https?:$/.test(u.protocol)) return false;
-
-      return u.toString();
-    } catch { return false; }
-  }
-
-  function escapeHTML(s) {
-    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  function addResult(url, statusClass, summary) {
-    const el = document.createElement('details');
-    el.open = false;
-    const sum = document.createElement('summary');
-    sum.innerHTML = `
-      <span class="pill ${statusClass}">${statusClass.toUpperCase()}</span>
-      <span class="url">${escapeHTML(url)}</span>
-    `;
+  function addResult(parent, url, cls, content) {
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.innerHTML = `<span class="pill ${cls}">${cls.toUpperCase()}</span> ${escapeHTML(url)}`;
     const pre = document.createElement('pre');
-    pre.textContent = summary || '';
-    el.appendChild(sum);
-    el.appendChild(pre);
-    results.appendChild(el);
-    return pre;
+    pre.textContent = content;
+    details.appendChild(summary);
+    details.appendChild(pre);
+    parent.appendChild(details);
   }
 
-  async function parseSitemap(start) {
-    const base = new URL(start);
-    const sitemapURL = new URL('/sitemap.xml', base).toString();
+  function sameOrigin(u, base) {
     try {
-      const res = await fetch(sitemapURL, { credentials: 'include' });
-      if (!res.ok) throw new Error('No sitemap');
+      return new URL(u, base).origin === new URL(base).origin;
+    } catch { return false; }
+  }
+
+  async function parseListXML(start) {
+    const base = new URL(start);
+    const listURL = new URL('/list.xml', base).toString();
+    try {
+      const res = await fetch(listURL, { credentials: 'include' });
+      if (!res.ok) throw new Error('list.xml not found');
       const txt = await res.text();
       const dom = new DOMParser().parseFromString(txt, 'application/xml');
+      // grab all loc tags
       const locs = Array.from(dom.getElementsByTagName('loc')).map(n => n.textContent.trim());
-      // Keep only same-origin pages
       return locs.filter(u => sameOrigin(u, base.origin));
     } catch { return []; }
   }
 
-  async function crawl() {
-    results.innerHTML = '';
-    const originStart = startUrl.value.trim() || location.origin + '/';
-    const base = new URL(originStart);
-    const limitDepth = Math.max(0, parseInt(maxDepth.value || '0', 10));
-    const limitPages = Math.max(1, parseInt(maxPages.value || '1', 10));
-    const conc = Math.max(1, parseInt(concurrency.value || '4', 10));
-    const limitToPath = stayPath.checked;
-    const basePath = base.pathname.endsWith('/') ? base.pathname : base.pathname + '/';
-
-    let queue = [];
-    if (useSitemap.checked) {
-      statusEl.textContent = 'Fetching /sitemap.xml ...';
-      const sm = await parseSitemap(originStart);
-      if (sm.length) queue = sm.map(u => ({ url: u, depth: 0 }));
-    }
-    if (!queue.length) {
-      queue = [{ url: base.toString(), depth: 0 }];
-    }
-
-    const seen = new Set();
-    const pagesFetched = new Set();
-    let active = 0, done = 0, enqueued = queue.length;
-    let aborted = false;
-
-    startBtn.disabled = true;
-
-    const updateStatus = () => {
-      statusEl.textContent = `Queued: ${enqueued - done - active} | Active: ${active} | Done: ${done} | Unique pages: ${pagesFetched.size}`;
-    };
-
-    async function worker() {
-      while (!aborted) {
-        const next = queue.shift();
-        if (!next) break;
-        if (pagesFetched.size >= limitPages) break;
-
-        const { url, depth } = next;
-        if (seen.has(url)) { continue; }
-        seen.add(url);
-
-        active++; updateStatus();
-
-        let preEl, text = '';
-        try {
-          const res = await fetch(url, { credentials: 'include' });
-          const statusClass = res.ok ? 'ok' : (res.status === 404 ? 'bad' : 'warn');
-          preEl = addResult(url, statusClass, '');
-          text = await res.text();
-          preEl.textContent = text; // show raw HTML
-          pagesFetched.add(url);
-        } catch (e) {
-          preEl = addResult(url, 'bad', `Fetch failed: ${e.message || e}`);
-        }
-
-        // Discover more links if within depth & below page cap
-        if (text && pagesFetched.size < limitPages && depth < limitDepth) {
-          const doc = new DOMParser().parseFromString(text, 'text/html');
-          const links = Array.from(doc.querySelectorAll('a[href]'))
-            .map(a => a.getAttribute('href'))
-            .map(href => eligiblePageURL(href, url, basePath, limitToPath))
-            .filter(Boolean);
-
-          for (const u of links) {
-            if (!seen.has(u)) {
-              queue.push({ url: u, depth: depth + 1 });
-              enqueued++;
-            }
-          }
-        }
-
-        done++; active--; updateStatus();
-        await sleep(10); // yield a bit
+  function categorizeAndSort(urls) {
+    const htmlFiles = [];
+    const jsFiles = [];
+    const otherFiles = [];
+    urls.forEach(url => {
+      const ext = (url.split('.').pop() || '').toLowerCase();
+      if (ext === 'html' || ext === 'htm') {
+        htmlFiles.push(url);
+      } else if (ext === 'js') {
+        jsFiles.push(url);
+      } else {
+        otherFiles.push(url);
       }
-    }
-
-    const workers = Array.from({ length: conc }, () => worker());
-    await Promise.race([
-      Promise.all(workers),
-      // Safety timeout (optional): stop after 2 minutes
-      new Promise(r => setTimeout(() => { aborted = true; r(); }, 120000))
-    ]);
-
-    startBtn.disabled = false;
-    updateStatus();
-    if (pagesFetched.size >= limitPages) {
-      statusEl.textContent += ' — Reached max page limit.';
-    } else if (aborted) {
-      statusEl.textContent += ' — Stopped by time limit.';
-    } else {
-      statusEl.textContent += ' — Complete.';
-    }
+    });
+    htmlFiles.sort();
+    jsFiles.sort();
+    otherFiles.sort();
+    return { htmlFiles, jsFiles, otherFiles };
   }
 
-  startBtn.addEventListener('click', () => {
-    crawl();
-  });
+  async function crawl() {
+    htmlSection.innerHTML = "<h2>HTML Files</h2>";
+    jsSection.innerHTML = "<h2>JavaScript Files</h2>";
+    otherSection.innerHTML = "<h2>Other Files</h2>";
+    const start = startUrl.value.trim() || location.origin + '/';
+    const limitPages = Math.max(1, parseInt(maxPages.value) || 1);
+    statusEl.textContent = "Loading list.xml...";
+    let urls = await parseListXML(start);
+    if (!urls.length) urls = [start];
+    const { htmlFiles, jsFiles, otherFiles } = categorizeAndSort(urls);
+    const allFiles = [...htmlFiles, ...jsFiles, ...otherFiles].slice(0, limitPages);
+    let count = 0;
+    for (const file of allFiles) {
+      statusEl.textContent = `Fetching ${file} (${++count}/${allFiles.length})`;
+      try {
+        const res = await fetch(file, { credentials: 'include' });
+        const text = await res.text();
+        const cls = res.ok ? 'ok' : 'warn';
+        if (htmlFiles.includes(file)) {
+          addResult(htmlSection, file, cls, text);
+        } else if (jsFiles.includes(file)) {
+          addResult(jsSection, file, cls, text);
+        } else {
+          addResult(otherSection, file, cls, text);
+        }
+      } catch (e) {
+        if (htmlFiles.includes(file)) {
+          addResult(htmlSection, file, 'bad', e.message);
+        } else if (jsFiles.includes(file)) {
+          addResult(jsSection, file, 'bad', e.message);
+        } else {
+          addResult(otherSection, file, 'bad', e.message);
+        }
+      }
+    }
+    statusEl.textContent = "Done.";
+  }
+
+  startBtn.addEventListener('click', crawl);
 })();
 </script>
 </body>
