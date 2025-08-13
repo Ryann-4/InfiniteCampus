@@ -112,7 +112,7 @@
 
       const ext = (u.pathname.split('.').pop() || '').toLowerCase();
       // Skip obvious non-HTML resources
-      const banned = new Set(['png','jpg','jpeg','webp','gif','svg','ico','css','js','mjs','json',
+      const banned = new Set(['png','jpg','jpeg','webp','gif','svg','ico','css','mjs','json',
                               'mp4','mp3','wav','ogg','pdf','zip','rar','7z','woff','woff2','ttf','eot']);
       if (banned.has(ext)) return false;
 
