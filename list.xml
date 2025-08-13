@@ -1,77 +1,87 @@
-https://www.infinitecampus.xyz/404
-https://www.infinitecampus.xyz/index
-https://www.infinitecampus.xyz/InfiniteAbouts
-https://www.infinitecampus.xyz/InfiniteAdminChats
-https://www.infinitecampus.xyz/InfiniteAdminUpdaters
-https://www.infinitecampus.xyz/InfiniteApps
-https://www.infinitecampus.xyz/InfiniteArchives
-https://www.infinitecampus.xyz/InfiniteAwesomes
-https://www.infinitecampus.xyz/InfiniteBoards
-https://www.infinitecampus.xyz/InfiniteBrowsers
-https://www.infinitecampus.xyz/InfiniteBypassers
-https://www.infinitecampus.xyz/InfiniteChatters
-https://www.infinitecampus.xyz/InfiniteCheaters
-https://www.infinitecampus.xyz/InfiniteColors
-https://www.infinitecampus.xyz/InfiniteContacts
-https://www.infinitecampus.xyz/InfiniteCounters
-https://www.infinitecampus.xyz/InfiniteDatas
-https://www.infinitecampus.xyz/InfiniteDiscordMods
-https://www.infinitecampus.xyz/InfiniteDiscords
-https://www.infinitecampus.xyz/InfiniteErrors
-https://www.infinitecampus.xyz/InfiniteFeatures
-https://www.infinitecampus.xyz/InfiniteFutures
-https://www.infinitecampus.xyz/InfiniteGamers
-https://www.infinitecampus.xyz/InfiniteIssues
-https://www.infinitecampus.xyz/InfiniteKnowings
-https://www.infinitecampus.xyz/InfiniteLocators
-https://www.infinitecampus.xyz/InfiniteManagers
-https://www.infinitecampus.xyz/InfiniteMinecrafters
-https://www.infinitecampus.xyz/InfiniteMiners
-https://www.infinitecampus.xyz/InfiniteNavigators
-https://www.infinitecampus.xyz/InfiniteNettle1
-https://www.infinitecampus.xyz/InfiniteNettle2
-https://www.infinitecampus.xyz/InfiniteNotes
-https://www.infinitecampus.xyz/InfiniteOpeners
-https://www.infinitecampus.xyz/InfinitePasswords
-https://www.infinitecampus.xyz/InfinitePlacers
-https://www.infinitecampus.xyz/InfinitePlayers
-https://www.infinitecampus.xyz/InfinitePolls
-https://www.infinitecampus.xyz/InfiniteProxies
-https://www.infinitecampus.xyz/InfiniteQuestions
-https://www.infinitecampus.xyz/InfiniteSecretPages
-https://www.infinitecampus.xyz/InfiniteSecrets
-https://www.infinitecampus.xyz/InfiniteShreks
-https://www.infinitecampus.xyz/InfiniteTalkers
-https://www.infinitecampus.xyz/InfiniteTubers
-https://www.infinitecampus.xyz/InfiniteUpdaters
-https://www.infinitecampus.xyz/adminchat.js
-https://www.infinitecampus.xyz/adminupdates.js
-https://www.infinitecampus.xyz/archive.js
-https://www.infinitecampus.xyz/blank.js
-https://www.infinitecampus.xyz/blooket.txt
-https://www.infinitecampus.xyz/board.js
-https://www.infinitecampus.xyz/chat.js
-https://www.infinitecampus.xyz/controls.js
-https://www.infinitecampus.xyz/counters.js
-https://www.infinitecampus.xyz/data.js
-https://www.infinitecampus.xyz/discord.js
-https://www.infinitecampus.xyz/drypopup.js
-https://www.infinitecampus.xyz/errors.js
-https://www.infinitecampus.xyz/frame.js
-https://www.infinitecampus.xyz/games.js
-https://www.infinitecampus.xyz/gimkit.txt
-https://www.infinitecampus.xyz/global.css
-https://www.infinitecampus.xyz/locators.js
-https://www.infinitecampus.xyz/login.js
-https://www.infinitecampus.xyz/main.js
-https://www.infinitecampus.xyz/mediaplayer.js
-https://www.infinitecampus.xyz/messages.js
-https://www.infinitecampus.xyz/notes.js
-https://www.infinitecampus.xyz/online.js
-https://www.infinitecampus.xyz/passwords.js
-https://www.infinitecampus.xyz/quizlet.txt
-https://www.infinitecampus.xyz/sitemap.xml
-https://www.infinitecampus.xyz/subtitles.vtt
-https://www.infinitecampus.xyz/suggest.js
-https://www.infinitecampus.xyz/theme.js
-https://www.infinitecampus.xyz/updates.js
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- HTML pages -->
+  <url><loc>https://www.infinitecampus.xyz/404</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/index</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteAbouts</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteAdminChats</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteAdminUpdaters</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteApps</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteArchives</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteAwesomes</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteBoards</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteBrowsers</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteBypassers</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteChatters</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteCheaters</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteColors</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteContacts</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteCounters</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteDatas</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteDiscordMods</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteDiscords</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteErrors</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteFeatures</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteFutures</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteGamers</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteIssues</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteKnowings</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteLocators</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteManagers</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteMinecrafters</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteMiners</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteNavigators</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteNettle1</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteNettle2</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteNotes</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteOpeners</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfinitePasswords</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfinitePlacers</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfinitePlayers</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfinitePolls</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteProxies</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteQuestions</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteSecretPages</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteSecrets</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteShreks</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteTalkers</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteTubers</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/InfiniteUpdaters</loc></url>
+
+  <!-- JavaScript files -->
+  <url><loc>https://www.infinitecampus.xyz/adminchat.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/adminupdates.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/archive.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/blank.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/board.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/chat.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/controls.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/counters.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/data.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/discord.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/drypopup.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/errors.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/frame.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/games.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/locators.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/login.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/main.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/mediaplayer.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/messages.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/notes.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/online.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/passwords.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/suggest.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/theme.js</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/updates.js</loc></url>
+
+  <!-- Other files -->
+  <url><loc>https://www.infinitecampus.xyz/blooket.txt</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/gimkit.txt</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/quizlet.txt</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/global.css</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/subtitles.vtt</loc></url>
+  <url><loc>https://www.infinitecampus.xyz/sitemap.xml</loc></url>
+
+</urlset>
