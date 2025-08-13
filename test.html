@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Site HTML Viewer (list.xml categories)</title>
+<title>Site Crawler with Categories</title>
 <style>
     :root { --bg:#0b0c10; --card:#151821; --ink:#eaeef7; --muted:#aab2c5; --accent:#7aa2ff; }
   body { margin:0; font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); }
@@ -53,12 +53,12 @@ h2 { margin-top:30px; border-bottom:1px solid #333; padding-bottom:4px; }
 </head>
 <body>
 <header>
-  <h1>Site HTML Viewer (list.xml Categories)</h1>
-  <p>Crawls your site from list.xml (same origin only) and displays raw file contents in sorted categories.</p>
+  <h1>Site Crawler (list.xml Categories)</h1>
+  <p>Crawls your site from list.xml and displays files in HTML, JS, and Other categories.</p>
 </header>
 <main>
   <label>Start URL: <input id="startUrl" type="text" style="width:300px"></label>
-  <label>Max Pages: <input id="maxPages" type="number" value="50"></label>
+  <label>Max Pages: <input id="maxPages" type="number" value="100"></label>
   <button id="startBtn">Start</button>
   <div id="status">Idle.</div>
   <div id="htmlSection"><h2>HTML Files</h2></div>
@@ -76,12 +76,8 @@ h2 { margin-top:30px; border-bottom:1px solid #333; padding-bottom:4px; }
   const otherSection = document.getElementById('otherSection');
   startUrl.value = location.origin + '/';
 
-  const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-
-function escapeHTML(s) {
-  return String(s).replace(/[&<>"']/g, ch => ESC[ch]);
-}
-
+  const ESC = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' };
+  function escapeHTML(s) { return String(s).replace(/[&<>"']/g, ch => ESC[ch]); }
 
   function addResult(parent, url, cls, content) {
     const details = document.createElement('details');
@@ -94,12 +90,6 @@ function escapeHTML(s) {
     parent.appendChild(details);
   }
 
-  function sameOrigin(u, base) {
-    try {
-      return new URL(u, base).origin === new URL(base).origin;
-    } catch { return false; }
-  }
-
   async function parseListXML(start) {
     const base = new URL(start);
     const listURL = new URL('/list.xml', base).toString();
@@ -108,10 +98,13 @@ function escapeHTML(s) {
       if (!res.ok) throw new Error('list.xml not found');
       const txt = await res.text();
       const dom = new DOMParser().parseFromString(txt, 'application/xml');
-      // grab all loc tags
-      const locs = Array.from(dom.getElementsByTagName('loc')).map(n => n.textContent.trim());
-      return locs.filter(u => sameOrigin(u, base.origin));
-    } catch { return []; }
+      // grab <loc> elements in any namespace
+      const locs = Array.from(dom.getElementsByTagNameNS("*", "loc")).map(n => n.textContent.trim());
+      return locs.filter(u => u.startsWith(base.origin));
+    } catch(e) {
+      console.error(e);
+      return [];
+    }
   }
 
   function categorizeAndSort(urls) {
@@ -120,17 +113,11 @@ function escapeHTML(s) {
     const otherFiles = [];
     urls.forEach(url => {
       const ext = (url.split('.').pop() || '').toLowerCase();
-      if (ext === 'html' || ext === 'htm') {
-        htmlFiles.push(url);
-      } else if (ext === 'js') {
-        jsFiles.push(url);
-      } else {
-        otherFiles.push(url);
-      }
+      if (ext === 'html' || ext === 'htm') htmlFiles.push(url);
+      else if (ext === 'js') jsFiles.push(url);
+      else otherFiles.push(url);
     });
-    htmlFiles.sort();
-    jsFiles.sort();
-    otherFiles.sort();
+    htmlFiles.sort(); jsFiles.sort(); otherFiles.sort();
     return { htmlFiles, jsFiles, otherFiles };
   }
 
@@ -140,11 +127,14 @@ function escapeHTML(s) {
     otherSection.innerHTML = "<h2>Other Files</h2>";
     const start = startUrl.value.trim() || location.origin + '/';
     const limitPages = Math.max(1, parseInt(maxPages.value) || 1);
+
     statusEl.textContent = "Loading list.xml...";
     let urls = await parseListXML(start);
     if (!urls.length) urls = [start];
+
     const { htmlFiles, jsFiles, otherFiles } = categorizeAndSort(urls);
     const allFiles = [...htmlFiles, ...jsFiles, ...otherFiles].slice(0, limitPages);
+
     let count = 0;
     for (const file of allFiles) {
       statusEl.textContent = `Fetching ${file} (${++count}/${allFiles.length})`;
@@ -152,21 +142,13 @@ function escapeHTML(s) {
         const res = await fetch(file, { credentials: 'include' });
         const text = await res.text();
         const cls = res.ok ? 'ok' : 'warn';
-        if (htmlFiles.includes(file)) {
-          addResult(htmlSection, file, cls, text);
-        } else if (jsFiles.includes(file)) {
-          addResult(jsSection, file, cls, text);
-        } else {
-          addResult(otherSection, file, cls, text);
-        }
-      } catch (e) {
-        if (htmlFiles.includes(file)) {
-          addResult(htmlSection, file, 'bad', e.message);
-        } else if (jsFiles.includes(file)) {
-          addResult(jsSection, file, 'bad', e.message);
-        } else {
-          addResult(otherSection, file, 'bad', e.message);
-        }
+        if (htmlFiles.includes(file)) addResult(htmlSection, file, cls, text);
+        else if (jsFiles.includes(file)) addResult(jsSection, file, cls, text);
+        else addResult(otherSection, file, cls, text);
+      } catch(e) {
+        if (htmlFiles.includes(file)) addResult(htmlSection, file, 'bad', e.message);
+        else if (jsFiles.includes(file)) addResult(jsSection, file, 'bad', e.message);
+        else addResult(otherSection, file, 'bad', e.message);
       }
     }
     statusEl.textContent = "Done.";
