@@ -1,9 +1,11 @@
-const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages'; 
+const backendUrl = 'https://3c2c303238a0.ngrok-free.app'; 
+let lastMessageId = null; // Tracks the last rendered message
 
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
 
+// Fetch messages incrementally
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
   try {
@@ -12,14 +14,23 @@ async function fetchMessages() {
     });
     const data = await res.json();
     const list = document.getElementById('messages');
-    list.innerHTML = '';
-    for (const msg of data.reverse()) {
+
+    // Only new messages
+    let newMessages = data;
+    if (lastMessageId) {
+      const index = data.findIndex(msg => msg.id === lastMessageId);
+      if (index >= 0) newMessages = data.slice(index + 1);
+    }
+
+    for (const msg of newMessages.reverse()) {
       const li = document.createElement('li');
       const displayName = msg.member?.nick || msg.author.username;
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
       const timestamp = new Date(msg.timestamp).toLocaleString();
+
+      // Mentions
       let contentWithMentions = msg.content || '';
       if (msg.mentions && msg.mentions.length > 0) {
         msg.mentions.forEach(u => {
@@ -27,25 +38,29 @@ async function fetchMessages() {
           contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`, 'g'), `@${name}`);
         });
       }
+
+      // Images in content
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let imagesHTML = '';
       let match;
       while ((match = imageRegex.exec(contentWithMentions)) !== null) {
         imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
       }
+
+      // Embeds
       let embedText = '';
       if (msg.embeds && msg.embeds.length > 0) {
         msg.embeds.forEach(embed => {
           if (embed.title) embedText += `\nTitle: ${embed.title}`;
           if (embed.description) embedText += `\n${embed.description}`;
           if (embed.fields && embed.fields.length > 0) {
-            embed.fields.forEach(f => {
-              embedText += `\n${f.name}: ${f.value}`;
-            });
+            embed.fields.forEach(f => embedText += `\n${f.name}: ${f.value}`);
           }
         });
         if (embedText) embedText = `<br><div style="font-style:italic;color:#555;">${embedText}</div>`;
       }
+
+      // Attachments
       let attachmentsHTML = '';
       if (msg.attachments && msg.attachments.length > 0) {
         msg.attachments.forEach(att => {
@@ -63,6 +78,8 @@ async function fetchMessages() {
           }
         });
       }
+
+      // Reactions
       let reactionsHTML = '';
       if (msg.reactions && msg.reactions.length > 0) {
         msg.reactions.forEach(r => {
@@ -73,6 +90,8 @@ async function fetchMessages() {
         });
         if (reactionsHTML) reactionsHTML = `<div style="margin-top:5px;">${reactionsHTML}</div>`;
       }
+
+      // Replies
       let replyHTML = '';
       if (msg.reference) {
         try {
@@ -86,6 +105,7 @@ async function fetchMessages() {
           replyHTML = `<div style="font-style:italic;color:#666;">Replying to a deleted message</div>`;
         }
       }
+
       li.innerHTML = `
         <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
         <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
@@ -99,11 +119,15 @@ async function fetchMessages() {
       `;
       list.prepend(li);
     }
+
+    if (data.length > 0) lastMessageId = data[data.length - 1].id;
+
   } catch (err) {
     console.error('Error fetching messages:', err);
   }
 }
 
+// Send message
 async function sendMessage(name, content) {
   const channelId = getSelectedChannelId();
   try {
@@ -123,6 +147,7 @@ async function sendMessage(name, content) {
   }
 }
 
+// Upload file
 document.getElementById('uploadForm').addEventListener('submit', async e => {
   e.preventDefault();
   const channelId = getSelectedChannelId();
@@ -143,7 +168,11 @@ document.getElementById('uploadForm').addEventListener('submit', async e => {
   }
 });
 
-document.getElementById('channelSelector').addEventListener('change', fetchMessages);
+document.getElementById('channelSelector').addEventListener('change', () => {
+  lastMessageId = null; // reset for new channel
+  fetchMessages();
+});
+
 document.getElementById('sendForm').addEventListener('submit', e => {
   e.preventDefault();
   const name = document.getElementById('nameInput').value.trim();
@@ -151,5 +180,6 @@ document.getElementById('sendForm').addEventListener('submit', e => {
   if (name && msg) sendMessage(name, msg);
 });
 
+// Initial fetch and interval
 fetchMessages();
 setInterval(fetchMessages, 5000);
