@@ -1,4 +1,4 @@
-const backendUrl = 'https://3c2c303238a0.ngrok-free.app';
+const backendUrl = 'https://3c2c303238a0.ngrok-free.app.api';
     function getSelectedChannelId() {
       return document.getElementById('channelSelector').value;
     }
