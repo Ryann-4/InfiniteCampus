@@ -1,4 +1,4 @@
-const backendUrl = 'https://3c2c303238a0.ngrok-free.app'; 
+const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages'; 
 let lastMessageId = null; // Tracks the last rendered message
 
 function getSelectedChannelId() {
