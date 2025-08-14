@@ -1,10 +1,8 @@
 const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app';
 const apiMessagesUrl = `${backendUrl}/api/messages`;
-
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
-
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
   try {
@@ -13,29 +11,21 @@ async function fetchMessages() {
     });
     const data = await res.json();
     const list = document.getElementById('messages');
-    list.innerHTML = ''; // clear old messages on channel switch
-
+    list.innerHTML = '';
     for (const msg of data.reverse()) {
       const li = document.createElement('li');
       const displayName = msg.member?.nick || msg.author.username;
-
-      // Server tags
       let serverTag = '';
       if (msg.clan?.identity_enabled && msg.clan.tag) {
         serverTag = ` [${msg.clan.tag}]`;
       } else if (msg.primary_guild?.identity_enabled && msg.primary_guild.tag) {
         serverTag = ` [${msg.primary_guild.tag}]`;
       }
-
       const displayNameWithTag = displayName + serverTag;
-
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
-
       const timestamp = new Date(msg.timestamp).toLocaleString();
-
-      // Mentions
       let contentWithMentions = msg.content || '';
       if (msg.mentions && msg.mentions.length > 0) {
         msg.mentions.forEach(u => {
@@ -43,16 +33,12 @@ async function fetchMessages() {
           contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`, 'g'), `@${name}`);
         });
       }
-
-      // Images
       let imagesHTML = '';
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let match;
       while ((match = imageRegex.exec(contentWithMentions)) !== null) {
         imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
       }
-
-      // Attachments
       let attachmentsHTML = '';
       if (msg.attachments && msg.attachments.length > 0) {
         msg.attachments.forEach(att => {
@@ -70,7 +56,6 @@ async function fetchMessages() {
           }
         });
       }
-
       li.innerHTML = `
         <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
         <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
@@ -83,10 +68,9 @@ async function fetchMessages() {
       list.prepend(li);
     }
   } catch (err) {
-    console.error('Error fetching messages:', err);
+    console.error('Error Fetching Messages:', err);
   }
 }
-
 async function sendMessage(name, content) {
   const channelId = getSelectedChannelId();
   try {
@@ -102,19 +86,16 @@ async function sendMessage(name, content) {
     document.getElementById('nameInput').value = '';
     fetchMessages();
   } catch (err) {
-    console.error('Error sending message:', err);
+    console.error('Error Sending Message:', err);
   }
 }
-
 async function uploadFile() {
   const channelId = getSelectedChannelId();
   const file = document.getElementById('fileInput').files[0];
   if (!file) return;
-
   const formData = new FormData();
   formData.append('file', file);
   formData.append('channelId', channelId);
-
   try {
     await fetch(`${backendUrl}/upload`, {
       method: 'POST',
@@ -124,23 +105,19 @@ async function uploadFile() {
     document.getElementById('fileInput').value = '';
     fetchMessages();
   } catch (err) {
-    console.error('Error uploading file:', err);
+    console.error('Error Uploading File:', err);
   }
 }
-
 document.getElementById('sendForm').addEventListener('submit', e => {
   e.preventDefault();
   const name = document.getElementById('nameInput').value.trim();
   const msg = document.getElementById('msgInput').value.trim();
   if (name && msg) sendMessage(name, msg);
 });
-
 document.getElementById('uploadForm').addEventListener('submit', e => {
   e.preventDefault();
   uploadFile();
 });
-
 document.getElementById('channelSelector').addEventListener('change', fetchMessages);
-
 fetchMessages();
 setInterval(fetchMessages, 5000);
