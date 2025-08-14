@@ -8,19 +8,23 @@ async function fetchMessages() {
   const channelId = getSelectedChannelId();
   try {
     const res = await fetch(`${backendUrl}?channelId=${channelId}`, {
-      headers: {
-        'ngrok-skip-browser-warning': 'any'
-      }
+      headers: { 'ngrok-skip-browser-warning': 'any' }
     });
     const data = await res.json();
     const list = document.getElementById('messages');
     list.innerHTML = '';
-    for (const msg of data.reverse()) {
+    const filteredMessages = data.filter(msg => msg.channel_id === channelId);
+    for (const msg of filteredMessages.reverse()) {
       const li = document.createElement('li');
-      const username = msg.author.username;
-      const discriminator = msg.author.discriminator;
-      const displayName = msg.member?.nick || username;
-      const displayNameWithTag = `${displayName}#${discriminator}`;
+      const displayName = msg.member?.nick || msg.author.username;
+      let serverTag = '';
+      if (msg.clan?.identity_enabled && msg.clan.tag) {
+        serverTag = msg.clan.tag;
+      } else if (msg.primary_guild?.identity_enabled && msg.primary_guild.tag) {
+        serverTag = msg.primary_guild.tag;
+      }
+
+      const displayNameWithTag = serverTag ? `${displayName} ${serverTag}` : displayName;
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
@@ -29,10 +33,7 @@ async function fetchMessages() {
       if (msg.mentions && msg.mentions.length > 0) {
         msg.mentions.forEach(u => {
           const name = u.nick || u.username;
-          contentWithMentions = contentWithMentions.replace(
-            new RegExp(`<@!?${u.id}>`, 'g'),
-            `@${name}`
-          );
+          contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`, 'g'), `@${name}`);
         });
       }
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
@@ -47,9 +48,7 @@ async function fetchMessages() {
           if (embed.title) embedText += `\nTitle: ${embed.title}`;
           if (embed.description) embedText += `\n${embed.description}`;
           if (embed.fields && embed.fields.length > 0) {
-            embed.fields.forEach(f => {
-              embedText += `\n${f.name}: ${f.value}`;
-            });
+            embed.fields.forEach(f => { embedText += `\n${f.name}: ${f.value}`; });
           }
         });
         if (embedText) embedText = `<br><div style="font-style:italic;color:#555;">${embedText}</div>`;
