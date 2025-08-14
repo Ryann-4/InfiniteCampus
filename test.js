@@ -1,28 +1,18 @@
-const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app/api/messages';
-let lastMessageId = null;
-let currentChannelId = getSelectedChannelId();
-function getSelectedChannelId() {
-  return document.getElementById('channelSelector').value;
-}
-async function fetchMessages() {
+
+    const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app/api/messages';
+    function getSelectedChannelId() {
+      return document.getElementById('channelSelector').value;
+    }
+    async function fetchMessages() {
   const channelId = getSelectedChannelId();
   try {
-    const res = await fetch(`${backendUrl}?channelId=${channelId}`, {
-      headers: { 'ngrok-skip-browser-warning': 'any' }
-    });
+    const res = await fetch(`${backendUrl}/api/messages?channelId=${channelId}`);
     const data = await res.json();
     const list = document.getElementById('messages');
     list.innerHTML = '';
     for (const msg of data.reverse()) {
       const li = document.createElement('li');
-      let displayName = msg.member?.nick || msg.author.username;
-      let serverTag = '';
-      if (msg.clan?.identity_enabled && msg.clan.tag) {
-        serverTag = ` [${msg.clan.tag}]`;
-      } else if (msg.primary_guild?.identity_enabled && msg.primary_guild.tag) {
-        serverTag = ` [${msg.primary_guild.tag}]`;
-      }
-      const displayNameWithTag = displayName + serverTag;
+      const displayName = msg.member?.nick || msg.author.username;
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
@@ -46,10 +36,12 @@ async function fetchMessages() {
           if (embed.title) embedText += `\nTitle: ${embed.title}`;
           if (embed.description) embedText += `\n${embed.description}`;
           if (embed.fields && embed.fields.length > 0) {
-            embed.fields.forEach(f => embedText += `\n${f.name}: ${f.value}`);
+            embed.fields.forEach(f => {
+              embedText += `\n${f.name}: ${f.value}`;
+            });
           }
         });
-        if (embedText) embedText = `<br><div style="color:white;">${embedText}</div>`;
+        if (embedText) embedText = `<br><div style="font-style:italic;color:#555;">${embedText}</div>`;
       }
       let attachmentsHTML = '';
       if (msg.attachments && msg.attachments.length > 0) {
@@ -81,20 +73,18 @@ async function fetchMessages() {
       let replyHTML = '';
       if (msg.reference) {
         try {
-          const refRes = await fetch(`${backendUrl}?channelId=${msg.reference.channel_id}&messageId=${msg.reference.message_id}`, {
-            headers: { 'ngrok-skip-browser-warning': 'any' }
-          });
+          const refRes = await fetch(`${backendUrl}/api/messages?channelId=${msg.reference.channel_id}&messageId=${msg.reference.message_id}`);
           const refMsg = await refRes.json();
           const refName = refMsg.member?.nick || refMsg.author.username;
-          replyHTML = `<div style="font-style:italic;color:#666;">Replying To ${refName}: ${refMsg.content}</div>`;
+          replyHTML = `<div style="font-style:italic;color:#666;">Replying to ${refName}: ${refMsg.content}</div>`;
         } catch {
-          replyHTML = `<div style="font-style:italic;color:#666;">Replying To A Deleted Message</div>`;
+          replyHTML = `<div style="font-style:italic;color:#666;">Replying to a deleted message</div>`;
         }
       }
       li.innerHTML = `
         <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
         <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
-          <strong>${displayNameWithTag}</strong>
+          <strong>${displayName}</strong>
           ${replyHTML}
           <div>${contentWithMentions}${imagesHTML}${embedText}</div>
           ${attachmentsHTML}
@@ -105,49 +95,50 @@ async function fetchMessages() {
       list.prepend(li);
     }
   } catch (err) {
-    console.error('Error Fetching Messages:', err);
+    console.error('Error fetching messages:', err);
   }
 }
-async function sendMessage(name, content) {
-  const channelId = getSelectedChannelId();
-  try {
-    await fetch(`${backendUrl}/send`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-      body: JSON.stringify({ message: `${name}\n${content}`, channelId })
+    async function sendMessage(name, content) {
+      const channelId = getSelectedChannelId();
+      try {
+        await fetch(`${backendUrl}/send`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `${name}\n${content}`, channelId })
+        });
+        document.getElementById('msgInput').value = '';
+        document.getElementById('nameInput').value = '';
+        fetchMessages();
+      } catch (err) {
+        console.error('Error sending message:', err);
+      }
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const channelId = getSelectedChannelId();
+      const formData = new FormData();
+      const file = document.getElementById('fileInput').files[0];
+      formData.append('file', file);
+      formData.append('channelId', channelId);
+      try {
+        await fetch(`${backendUrl}/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        document.getElementById('fileInput').value = '';
+        fetchMessages();
+      } catch (err) {
+        console.error('Error uploading file:', err);
+      }
     });
-    document.getElementById('msgInput').value = '';
-    document.getElementById('nameInput').value = '';
-    fetchMessages();
-  } catch (err) {
-    console.error('Error Sending Message:', err);
-  }
-}
-document.getElementById('uploadForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const channelId = getSelectedChannelId();
-  const formData = new FormData();
-  const file = document.getElementById('fileInput').files[0];
-  formData.append('file', file);
-  formData.append('channelId', channelId);
-  try {
-    await fetch(`${backendUrl}/upload`, {
-      method: 'POST',
-      body: formData,
-      headers: { 'ngrok-skip-browser-warning': 'true' }
+    document.getElementById('channelSelector').addEventListener('change', fetchMessages);
+    document.getElementById('sendForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('nameInput').value.trim();
+      const msg = document.getElementById('msgInput').value.trim();
+      if (name && msg) sendMessage(name, msg);
     });
-    document.getElementById('fileInput').value = '';
     fetchMessages();
-  } catch (err) {
-    console.error('Error Uploading File:', err);
-  }
-});
-document.getElementById('channelSelector').addEventListener('change', fetchMessages);
-document.getElementById('sendForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const name = document.getElementById('nameInput').value.trim();
-  const msg = document.getElementById('msgInput').value.trim();
-  if (name && msg) sendMessage(name, msg);
-});
-fetchMessages();
-setInterval(fetchMessages, 5000);
+    setInterval(fetchMessages, 5000);
+  
