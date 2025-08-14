@@ -1,11 +1,15 @@
-const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages';
-    function getSelectedChannelId() {
-      return document.getElementById('channelSelector').value;
-    }
-    async function fetchMessages() {
+const backendUrl = 'https://3c2c303238a0.ngrok-free.app'; 
+
+function getSelectedChannelId() {
+  return document.getElementById('channelSelector').value;
+}
+
+async function fetchMessages() {
   const channelId = getSelectedChannelId();
   try {
-    const res = await fetch(`${backendUrl}?channelId=${channelId}`);
+    const res = await fetch(`${backendUrl}?channelId=${channelId}`, {
+      headers: { 'ngrok-skip-browser-warning': 'true' }
+    });
     const data = await res.json();
     const list = document.getElementById('messages');
     list.innerHTML = '';
@@ -72,7 +76,9 @@ const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages';
       let replyHTML = '';
       if (msg.reference) {
         try {
-          const refRes = await fetch(`${backendUrl}?channelId=${msg.reference.channel_id}&messageId=${msg.reference.message_id}`);
+          const refRes = await fetch(`${backendUrl}?channelId=${msg.reference.channel_id}&messageId=${msg.reference.message_id}`, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+          });
           const refMsg = await refRes.json();
           const refName = refMsg.member?.nick || refMsg.author.username;
           replyHTML = `<div style="font-style:italic;color:#666;">Replying to ${refName}: ${refMsg.content}</div>`;
@@ -97,46 +103,53 @@ const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages';
     console.error('Error fetching messages:', err);
   }
 }
-    async function sendMessage(name, content) {
-      const channelId = getSelectedChannelId();
-      try {
-        await fetch(`${backendUrl}/send`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: `${name}\n${content}`, channelId })
-        });
-        document.getElementById('msgInput').value = '';
-        document.getElementById('nameInput').value = '';
-        fetchMessages();
-      } catch (err) {
-        console.error('Error sending message:', err);
-      }
-    }
 
-    document.getElementById('uploadForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const channelId = getSelectedChannelId();
-      const formData = new FormData();
-      const file = document.getElementById('fileInput').files[0];
-      formData.append('file', file);
-      formData.append('channelId', channelId);
-      try {
-        await fetch(`${backendUrl}/upload`, {
-          method: 'POST',
-          body: formData
-        });
-        document.getElementById('fileInput').value = '';
-        fetchMessages();
-      } catch (err) {
-        console.error('Error uploading file:', err);
-      }
+async function sendMessage(name, content) {
+  const channelId = getSelectedChannelId();
+  try {
+    await fetch(`${backendUrl}/send`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      },
+      body: JSON.stringify({ message: `${name}\n${content}`, channelId })
     });
-    document.getElementById('channelSelector').addEventListener('change', fetchMessages);
-    document.getElementById('sendForm').addEventListener('submit', e => {
-      e.preventDefault();
-      const name = document.getElementById('nameInput').value.trim();
-      const msg = document.getElementById('msgInput').value.trim();
-      if (name && msg) sendMessage(name, msg);
-    });
+    document.getElementById('msgInput').value = '';
+    document.getElementById('nameInput').value = '';
     fetchMessages();
-    setInterval(fetchMessages, 5000);
+  } catch (err) {
+    console.error('Error sending message:', err);
+  }
+}
+
+document.getElementById('uploadForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const channelId = getSelectedChannelId();
+  const formData = new FormData();
+  const file = document.getElementById('fileInput').files[0];
+  formData.append('file', file);
+  formData.append('channelId', channelId);
+  try {
+    await fetch(`${backendUrl}/upload`, {
+      method: 'POST',
+      headers: { 'ngrok-skip-browser-warning': 'true' },
+      body: formData
+    });
+    document.getElementById('fileInput').value = '';
+    fetchMessages();
+  } catch (err) {
+    console.error('Error uploading file:', err);
+  }
+});
+
+document.getElementById('channelSelector').addEventListener('change', fetchMessages);
+document.getElementById('sendForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = document.getElementById('nameInput').value.trim();
+  const msg = document.getElementById('msgInput').value.trim();
+  if (name && msg) sendMessage(name, msg);
+});
+
+fetchMessages();
+setInterval(fetchMessages, 5000);
