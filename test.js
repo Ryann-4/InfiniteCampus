@@ -17,14 +17,19 @@ async function fetchMessages() {
     for (const msg of data.reverse()) {
       const li = document.createElement('li');
 
-      // Display name with server tag
-      const displayName = msg.member?.nick || msg.author.username;
+      // Determine display name
+      let displayName = msg.member?.nick || msg.author.username;
+
+      // Determine server tag (clan > primary_guild)
       let serverTag = '';
       if (msg.clan?.identity_enabled && msg.clan.tag) {
         serverTag = ` [${msg.clan.tag}]`;
       } else if (msg.primary_guild?.identity_enabled && msg.primary_guild.tag) {
         serverTag = ` [${msg.primary_guild.tag}]`;
       }
+
+      // Append tag to display name
+      const displayNameWithTag = displayName + serverTag;
 
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
@@ -41,7 +46,7 @@ async function fetchMessages() {
         });
       }
 
-      // Extract images from message content
+      // Images in content
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let imagesHTML = '';
       let match;
@@ -49,7 +54,7 @@ async function fetchMessages() {
         imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
       }
 
-      // Embed text
+      // Embeds
       let embedText = '';
       if (msg.embeds && msg.embeds.length > 0) {
         msg.embeds.forEach(embed => {
@@ -111,7 +116,7 @@ async function fetchMessages() {
       li.innerHTML = `
         <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
         <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
-          <strong>${displayName}${serverTag}</strong>
+          <strong>${displayNameWithTag}</strong>
           ${replyHTML}
           <div>${contentWithMentions}${imagesHTML}${embedText}</div>
           ${attachmentsHTML}
