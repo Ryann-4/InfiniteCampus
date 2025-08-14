@@ -1,77 +1,59 @@
 const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages';
 let lastMessageId = null;
 let currentChannelId = getSelectedChannelId();
-
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
-
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
-
-  // Clear messages if channel changed
-  if (currentChannelId !== channelId) {
-    lastMessageId = null;
-    currentChannelId = channelId;
-    document.getElementById('messages').innerHTML = '';
-  }
-
   try {
     const res = await fetch(`${backendUrl}?channelId=${channelId}`, {
-      headers: { 'ngrok-skip-browser-warning': 'true' }
+      headers: {
+        'ngrok-skip-browser-warning': 'any'
+      }
     });
     const data = await res.json();
-
-    // Filter messages to only the selected channel
-    const filtered = data.filter(msg => msg.channel_id === channelId);
-
-    // Only new messages since last fetch
-    let newMessages = filtered;
-    if (lastMessageId) {
-      const index = filtered.findIndex(msg => msg.id === lastMessageId);
-      if (index >= 0) newMessages = filtered.slice(index + 1);
-    }
-
     const list = document.getElementById('messages');
-    for (const msg of newMessages.reverse()) {
+    list.innerHTML = '';
+    for (const msg of data.reverse()) {
       const li = document.createElement('li');
-
-      const displayName = msg.member?.nick || msg.author.username;
+      const username = msg.author.username;
+      const discriminator = msg.author.discriminator;
+      const displayName = msg.member?.nick || username;
+      const displayNameWithTag = `${displayName}#${discriminator}`;
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
       const timestamp = new Date(msg.timestamp).toLocaleString();
       let contentWithMentions = msg.content || '';
-
       if (msg.mentions && msg.mentions.length > 0) {
         msg.mentions.forEach(u => {
           const name = u.nick || u.username;
-          contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`, 'g'), `@${name}`);
+          contentWithMentions = contentWithMentions.replace(
+            new RegExp(`<@!?${u.id}>`, 'g'),
+            `@${name}`
+          );
         });
       }
-
-      // Images from message content
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let imagesHTML = '';
       let match;
       while ((match = imageRegex.exec(contentWithMentions)) !== null) {
         imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
       }
-
-      // Embeds
       let embedText = '';
       if (msg.embeds && msg.embeds.length > 0) {
         msg.embeds.forEach(embed => {
           if (embed.title) embedText += `\nTitle: ${embed.title}`;
           if (embed.description) embedText += `\n${embed.description}`;
           if (embed.fields && embed.fields.length > 0) {
-            embed.fields.forEach(f => embedText += `\n${f.name}: ${f.value}`);
+            embed.fields.forEach(f => {
+              embedText += `\n${f.name}: ${f.value}`;
+            });
           }
         });
         if (embedText) embedText = `<br><div style="font-style:italic;color:#555;">${embedText}</div>`;
       }
-
-      // Attachments
       let attachmentsHTML = '';
       if (msg.attachments && msg.attachments.length > 0) {
         msg.attachments.forEach(att => {
@@ -89,8 +71,6 @@ async function fetchMessages() {
           }
         });
       }
-
-      // Reactions
       let reactionsHTML = '';
       if (msg.reactions && msg.reactions.length > 0) {
         msg.reactions.forEach(r => {
@@ -101,13 +81,11 @@ async function fetchMessages() {
         });
         if (reactionsHTML) reactionsHTML = `<div style="margin-top:5px;">${reactionsHTML}</div>`;
       }
-
-      // Replies
       let replyHTML = '';
       if (msg.reference) {
         try {
           const refRes = await fetch(`${backendUrl}?channelId=${msg.reference.channel_id}&messageId=${msg.reference.message_id}`, {
-            headers: { 'ngrok-skip-browser-warning': 'true' }
+            headers: { 'ngrok-skip-browser-warning': 'any' }
           });
           const refMsg = await refRes.json();
           const refName = refMsg.member?.nick || refMsg.author.username;
@@ -116,11 +94,10 @@ async function fetchMessages() {
           replyHTML = `<div style="font-style:italic;color:#666;">Replying to a deleted message</div>`;
         }
       }
-
       li.innerHTML = `
         <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
         <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
-          <strong>${displayName}</strong>
+          <strong>${displayNameWithTag}</strong>
           ${replyHTML}
           <div>${contentWithMentions}${imagesHTML}${embedText}</div>
           ${attachmentsHTML}
@@ -130,14 +107,10 @@ async function fetchMessages() {
       `;
       list.prepend(li);
     }
-
-    if (filtered.length > 0) lastMessageId = filtered[filtered.length - 1].id;
-
   } catch (err) {
     console.error('Error fetching messages:', err);
   }
 }
-
 async function sendMessage(name, content) {
   const channelId = getSelectedChannelId();
   try {
@@ -150,10 +123,9 @@ async function sendMessage(name, content) {
     document.getElementById('nameInput').value = '';
     fetchMessages();
   } catch (err) {
-    console.error('Error sending message:', err);
+    console.error('Error Sending Message:', err);
   }
 }
-
 document.getElementById('uploadForm').addEventListener('submit', async e => {
   e.preventDefault();
   const channelId = getSelectedChannelId();
@@ -170,10 +142,9 @@ document.getElementById('uploadForm').addEventListener('submit', async e => {
     document.getElementById('fileInput').value = '';
     fetchMessages();
   } catch (err) {
-    console.error('Error uploading file:', err);
+    console.error('Error Uploading File:', err);
   }
 });
-
 document.getElementById('channelSelector').addEventListener('change', fetchMessages);
 document.getElementById('sendForm').addEventListener('submit', e => {
   e.preventDefault();
@@ -181,6 +152,5 @@ document.getElementById('sendForm').addEventListener('submit', e => {
   const msg = document.getElementById('msgInput').value.trim();
   if (name && msg) sendMessage(name, msg);
 });
-
 fetchMessages();
 setInterval(fetchMessages, 5000);
