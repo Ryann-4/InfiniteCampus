@@ -1,13 +1,19 @@
 const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages'; 
-let lastMessageId = null; // Tracks the last rendered message
+let lastMessageId = null;
+let currentChannelId = null;
 
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
 
-// Fetch messages incrementally
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
+  if (currentChannelId !== channelId) {
+    // Channel changed: reset lastMessageId
+    lastMessageId = null;
+    currentChannelId = channelId;
+  }
+
   try {
     const res = await fetch(`${backendUrl}?channelId=${channelId}`, {
       headers: { 'ngrok-skip-browser-warning': 'true' }
@@ -15,11 +21,14 @@ async function fetchMessages() {
     const data = await res.json();
     const list = document.getElementById('messages');
 
+    // Filter messages for the selected channel
+    const filtered = data.filter(msg => msg.channel_id === channelId);
+
     // Only new messages
-    let newMessages = data;
+    let newMessages = filtered;
     if (lastMessageId) {
-      const index = data.findIndex(msg => msg.id === lastMessageId);
-      if (index >= 0) newMessages = data.slice(index + 1);
+      const index = filtered.findIndex(msg => msg.id === lastMessageId);
+      if (index >= 0) newMessages = filtered.slice(index + 1);
     }
 
     for (const msg of newMessages.reverse()) {
@@ -29,9 +38,8 @@ async function fetchMessages() {
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
       const timestamp = new Date(msg.timestamp).toLocaleString();
-
-      // Mentions
       let contentWithMentions = msg.content || '';
+
       if (msg.mentions && msg.mentions.length > 0) {
         msg.mentions.forEach(u => {
           const name = u.nick || u.username;
@@ -54,7 +62,7 @@ async function fetchMessages() {
           if (embed.title) embedText += `\nTitle: ${embed.title}`;
           if (embed.description) embedText += `\n${embed.description}`;
           if (embed.fields && embed.fields.length > 0) {
-            embed.fields.forEach(f => embedText += `\n${f.name}: ${f.value}`);
+            embed.fields.forEach(f => { embedText += `\n${f.name}: ${f.value}`; });
           }
         });
         if (embedText) embedText = `<br><div style="font-style:italic;color:#555;">${embedText}</div>`;
@@ -120,14 +128,13 @@ async function fetchMessages() {
       list.prepend(li);
     }
 
-    if (data.length > 0) lastMessageId = data[data.length - 1].id;
+    if (filtered.length > 0) lastMessageId = filtered[filtered.length - 1].id;
 
   } catch (err) {
     console.error('Error fetching messages:', err);
   }
 }
 
-// Send message
 async function sendMessage(name, content) {
   const channelId = getSelectedChannelId();
   try {
@@ -147,7 +154,7 @@ async function sendMessage(name, content) {
   }
 }
 
-// Upload file
+// File upload
 document.getElementById('uploadForm').addEventListener('submit', async e => {
   e.preventDefault();
   const channelId = getSelectedChannelId();
@@ -158,8 +165,8 @@ document.getElementById('uploadForm').addEventListener('submit', async e => {
   try {
     await fetch(`${backendUrl}/upload`, {
       method: 'POST',
-      headers: { 'ngrok-skip-browser-warning': 'true' },
-      body: formData
+      body: formData,
+      headers: { 'ngrok-skip-browser-warning': 'true' }
     });
     document.getElementById('fileInput').value = '';
     fetchMessages();
@@ -168,11 +175,7 @@ document.getElementById('uploadForm').addEventListener('submit', async e => {
   }
 });
 
-document.getElementById('channelSelector').addEventListener('change', () => {
-  lastMessageId = null; // reset for new channel
-  fetchMessages();
-});
-
+document.getElementById('channelSelector').addEventListener('change', fetchMessages);
 document.getElementById('sendForm').addEventListener('submit', e => {
   e.preventDefault();
   const name = document.getElementById('nameInput').value.trim();
@@ -180,6 +183,6 @@ document.getElementById('sendForm').addEventListener('submit', e => {
   if (name && msg) sendMessage(name, msg);
 });
 
-// Initial fetch and interval
+// Initial fetch
 fetchMessages();
 setInterval(fetchMessages, 5000);
