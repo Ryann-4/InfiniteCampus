@@ -1,6 +1,6 @@
-const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages'; 
+const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages';
 let lastMessageId = null;
-let currentChannelId = null;
+let currentChannelId = getSelectedChannelId();
 
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
@@ -8,10 +8,12 @@ function getSelectedChannelId() {
 
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
+
+  // Clear messages if channel changed
   if (currentChannelId !== channelId) {
-    // Channel changed: reset lastMessageId
     lastMessageId = null;
     currentChannelId = channelId;
+    document.getElementById('messages').innerHTML = '';
   }
 
   try {
@@ -19,20 +21,21 @@ async function fetchMessages() {
       headers: { 'ngrok-skip-browser-warning': 'true' }
     });
     const data = await res.json();
-    const list = document.getElementById('messages');
 
-    // Filter messages for the selected channel
+    // Filter messages to only the selected channel
     const filtered = data.filter(msg => msg.channel_id === channelId);
 
-    // Only new messages
+    // Only new messages since last fetch
     let newMessages = filtered;
     if (lastMessageId) {
       const index = filtered.findIndex(msg => msg.id === lastMessageId);
       if (index >= 0) newMessages = filtered.slice(index + 1);
     }
 
+    const list = document.getElementById('messages');
     for (const msg of newMessages.reverse()) {
       const li = document.createElement('li');
+
       const displayName = msg.member?.nick || msg.author.username;
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
@@ -47,7 +50,7 @@ async function fetchMessages() {
         });
       }
 
-      // Images in content
+      // Images from message content
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let imagesHTML = '';
       let match;
@@ -62,7 +65,7 @@ async function fetchMessages() {
           if (embed.title) embedText += `\nTitle: ${embed.title}`;
           if (embed.description) embedText += `\n${embed.description}`;
           if (embed.fields && embed.fields.length > 0) {
-            embed.fields.forEach(f => { embedText += `\n${f.name}: ${f.value}`; });
+            embed.fields.forEach(f => embedText += `\n${f.name}: ${f.value}`);
           }
         });
         if (embedText) embedText = `<br><div style="font-style:italic;color:#555;">${embedText}</div>`;
@@ -140,10 +143,7 @@ async function sendMessage(name, content) {
   try {
     await fetch(`${backendUrl}/send`, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true'
-      },
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
       body: JSON.stringify({ message: `${name}\n${content}`, channelId })
     });
     document.getElementById('msgInput').value = '';
@@ -154,7 +154,6 @@ async function sendMessage(name, content) {
   }
 }
 
-// File upload
 document.getElementById('uploadForm').addEventListener('submit', async e => {
   e.preventDefault();
   const channelId = getSelectedChannelId();
@@ -183,6 +182,5 @@ document.getElementById('sendForm').addEventListener('submit', e => {
   if (name && msg) sendMessage(name, msg);
 });
 
-// Initial fetch
 fetchMessages();
 setInterval(fetchMessages, 5000);
