@@ -5,7 +5,7 @@
         </script>
         <script>
             window.dataLayer = window.dataLayer || [];
-            function gtag() { dataLayer.push(arguments); }
+            function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'G-7SV03ZXJ9R');
         </script>
@@ -26,8 +26,6 @@
         <script src="drypopup.js">
         </script>
         <script src="theme.js">
-        </script>
-        <script src="login.js">
         </script>
         <style>
             form {
@@ -56,7 +54,6 @@
                 background-color: black;
                 width: 75vw;
                 overflow-wrap: anywhere;
-                margin-left: 12.5vw;
                 padding: 10px;
                 border-radius: 25px;
                 color: white;
@@ -71,6 +68,7 @@
             }
             .content {
                 flex: 1;
+                text-align:left;
             }
             .timestamp {
                 font-size: 0.75em;
@@ -97,8 +95,9 @@
             <br>
             <br>
             <h1 class="tptxt">
-                Discord Mod Chat
+                Live Discord Chat
             </h1>
+            <br>
             <p style="color:white; padding:0px; margin:0px;" id="presenceCount">
                 Loading Presence Count...
             </p>
@@ -168,31 +167,29 @@
                     Github Chat
                 </option>
             </select>
-            <form id="sendForm" enctype="multipart/form-data">
-                <input class="button" type="text" id="nameInput" placeholder="Your Name" required />
+            <form id="sendForm">
+                <input class="button" type="text" id="nameInput" placeholder="Your name" required />
                 <br>
-                <input class="button" type="text" id="msgInput" placeholder="Type Your Message..." required />
+                <input class="button" type="text" id="msgInput" placeholder="Type your message..." required />
                 <br>
-                <label for="imageInput" class="custom-file-upload">
-                    Choose A File
-                </label>
-                <input style="display:none;" type="file" id="imageInput" />
-                <br>
-                <div id="fileLabel">
-                </div>
                 <button class="button" type="submit">
                     Send
                 </button>
             </form>
+            <form id="uploadForm" enctype="multipart/form-data" style="margin-top:10px;">
+                <label for="fileInput" class="custom-file-upload">
+                    Select A File
+                </label>
+                <input type="file" id="fileInput" name="file" accept="image/*" required />
+                <br>
+                <button class="button" type="submit">
+                    Upload
+                </button>
+            </form>
+            <ul id="messages"></ul>
+            <br>
+            <br>
         </center>
-        <ul id="messages"></ul>
-        <p id="loadingMessage" style="color:white; text-align:center; display:none;">
-            Loading Messages...
-        </p>
-        <br>
-        <br>
-        <br>
-        <br>
         <script src="online.js">
         </script>
         <script src="messages.js">

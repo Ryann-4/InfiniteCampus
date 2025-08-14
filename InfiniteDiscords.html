@@ -5,7 +5,7 @@
         </script>
         <script>
             window.dataLayer = window.dataLayer || [];
-            function gtag() { dataLayer.push(arguments); }
+            function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'G-7SV03ZXJ9R');
         </script>
@@ -54,7 +54,6 @@
                 background-color: black;
                 width: 75vw;
                 overflow-wrap: anywhere;
-                margin-left: 12.5vw;
                 padding: 10px;
                 border-radius: 25px;
                 color: white;
@@ -69,6 +68,7 @@
             }
             .content {
                 flex: 1;
+                text-align:left;
             }
             .timestamp {
                 font-size: 0.75em;
@@ -97,6 +97,7 @@
             <h1 class="tptxt">
                 Live Discord Chat
             </h1>
+            <br>
             <p style="color:white; padding:0px; margin:0px;" id="presenceCount">
                 Loading Presence Count...
             </p>
@@ -135,32 +136,33 @@
                 <option value="1334945403912720586">
                     Support
                 </option>
+                <option value="1391898825588740108">
+                    AI Chat
+                </option>
             </select>
-            <form id="sendForm" enctype="multipart/form-data">
-                <input class="button" type="text" id="nameInput" placeholder="Your Name" required />
+            <form id="sendForm">
+                <input class="button" type="text" id="nameInput" placeholder="Your name" required />
                 <br>
-                <input class="button" type="text" id="msgInput" placeholder="Type Your Message..." required />
+                <input class="button" type="text" id="msgInput" placeholder="Type your message..." required />
                 <br>
-                <label for="imageInput" class="custom-file-upload">
-                    Choose A File
-                </label>
-                <input style="display:none;" type="file" id="imageInput" />
-                <br>
-                <div id="fileLabel">
-                </div>
                 <button class="button" type="submit">
                     Send
                 </button>
             </form>
+            <form id="uploadForm" enctype="multipart/form-data" style="margin-top:10px;">
+                <label for="fileInput" class="custom-file-upload">
+                    Select A File
+                </label>
+                <input type="file" id="fileInput" name="file" accept="image/*" required />
+                <br>
+                <button class="button" type="submit">
+                    Upload
+                </button>
+            </form>
+            <ul id="messages"></ul>
+            <br>
+            <br>
         </center>
-        <ul id="messages"></ul>
-        <p id="loadingMessage" style="color:white; text-align:center; display:none;">
-            Loading Messages...
-        </p>
-        <br>
-        <br>
-        <br>
-        <br>
         <script src="online.js">
         </script>
         <script src="messages.js">
