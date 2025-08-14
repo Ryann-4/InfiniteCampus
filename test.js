@@ -1,4 +1,5 @@
-const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app/api/messages';
+const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app';
+const apiMessagesUrl = `${backendUrl}/api/messages`;
 
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
@@ -7,7 +8,7 @@ function getSelectedChannelId() {
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
   try {
-    const res = await fetch(`${backendUrl}?channelId=${channelId}`, {
+    const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
       headers: { 'ngrok-skip-browser-warning': 'true' }
     });
     const data = await res.json();
@@ -34,6 +35,7 @@ async function fetchMessages() {
 
       const timestamp = new Date(msg.timestamp).toLocaleString();
 
+      // Mentions
       let contentWithMentions = msg.content || '';
       if (msg.mentions && msg.mentions.length > 0) {
         msg.mentions.forEach(u => {
@@ -42,6 +44,7 @@ async function fetchMessages() {
         });
       }
 
+      // Images
       let imagesHTML = '';
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let match;
@@ -49,6 +52,7 @@ async function fetchMessages() {
         imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
       }
 
+      // Attachments
       let attachmentsHTML = '';
       if (msg.attachments && msg.attachments.length > 0) {
         msg.attachments.forEach(att => {
@@ -76,7 +80,6 @@ async function fetchMessages() {
           <div class="timestamp" style="font-size:0.8em;color:#888;">${timestamp}</div>
         </div>
       `;
-
       list.prepend(li);
     }
   } catch (err) {
@@ -103,18 +106,12 @@ async function sendMessage(name, content) {
   }
 }
 
-document.getElementById('sendForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const name = document.getElementById('nameInput').value.trim();
-  const msg = document.getElementById('msgInput').value.trim();
-  if (name && msg) sendMessage(name, msg);
-});
-
-document.getElementById('uploadForm').addEventListener('submit', async e => {
-  e.preventDefault();
+async function uploadFile() {
   const channelId = getSelectedChannelId();
-  const formData = new FormData();
   const file = document.getElementById('fileInput').files[0];
+  if (!file) return;
+
+  const formData = new FormData();
   formData.append('file', file);
   formData.append('channelId', channelId);
 
@@ -129,6 +126,18 @@ document.getElementById('uploadForm').addEventListener('submit', async e => {
   } catch (err) {
     console.error('Error uploading file:', err);
   }
+}
+
+document.getElementById('sendForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = document.getElementById('nameInput').value.trim();
+  const msg = document.getElementById('msgInput').value.trim();
+  if (name && msg) sendMessage(name, msg);
+});
+
+document.getElementById('uploadForm').addEventListener('submit', e => {
+  e.preventDefault();
+  uploadFile();
 });
 
 document.getElementById('channelSelector').addEventListener('change', fetchMessages);
