@@ -27,6 +27,66 @@
         </script>
         <script src="theme.js">
         </script>
+        <style>
+            form {
+                margin-bottom: 20px;
+            }
+            input[type="text"] {
+                padding: 8px;
+                width: 300px;
+                margin-bottom: 10px;
+            }
+            button {
+                padding: 8px 12px;
+                background: #7289da;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+            ul {
+                list-style: none;
+                padding: 0;
+            }
+            li {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 15px;
+                background-color: black;
+                width: 75vw;
+                overflow-wrap: anywhere;
+                margin-left: 12.5vw;
+                padding: 10px;
+                border-radius: 25px;
+                color: white;
+                border: 1px solid white;
+            }
+            .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+                border: 1px solid white;
+            }
+            .content {
+                flex: 1;
+            }
+            .timestamp {
+                font-size: 0.75em;
+                color: white;
+                margin-top: 4px;
+            }
+            .message-img {
+                max-width: 100%;
+                border-radius: 5px;
+                margin-top: 8px;
+            }
+            #fileLabel {
+                color: white;
+                margin-top: 5px;
+                font-style: italic;
+                min-height: 1.2em;
+            }
+        </style>
     </head>
     <body>
         <center>
@@ -85,14 +145,20 @@
                 </button>
             </form>
             <form id="uploadForm" enctype="multipart/form-data" style="margin-top:10px;">
+                <label for="fileInput" class="custom-file-upload">
+                    Select A File
+                </label>
                 <input type="file" id="fileInput" name="file" accept="image/*" required />
                 <button class="button" type="submit">
-                    Upload
                 </button>
             </form>
+            <ul id="messages"></ul>
+            <br>
+            <br>
         </center>
-        <ul id="messages"></ul>
-  <script src="test.js">
-  </script>
-</body>
+        <script src="test.js">
+        </script>
+        <script src="frame.js">
+        </script>
+    </body>
 </html>
