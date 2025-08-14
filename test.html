@@ -1,696 +1,98 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Infinite Campus — Canvas Editor</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root { --handle: 10px; }
-    body { margin: 0; font-family: system-ui, sans-serif; background:#f6f7f8; }
-    #toolbar {
-      margin: 10px;
-      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
-    }
-    #canvas {
-      display:block;
-      background:#fff;
-      border:1px solid #ddd;
-      width: min(100vw, 1400px);
-      height: 70vh;
-      margin: 10px;
-      touch-action: none;
-      cursor: crosshair;
-    }
-    button, input[type="file"]::file-selector-button {
-      cursor: pointer;
-    }
-    .sep { width:1px; height:24px; background:#ddd; margin:0 4px; }
-    #exportBtn {
-      margin: 0 10px 16px 10px;
-      padding: 10px 14px;
-      border: 1px solid #ccc;
-      background: #fff;
-      border-radius: 10px;
-    }
-    .hint { margin: 0 12px; color:#666; font-size:12px; }
-  </style>
-</head>
-<body>
-
-  <div id="toolbar">
-    <label>Color: <input type="color" id="colorPicker" value="#000000"></label>
-    <label>Brush: <input type="range" id="brushSize" min="1" max="50" value="5"></label>
-    <button id="eraser">Eraser</button>
-    <button id="clear">Clear</button>
-    <div class="sep"></div>
-    <input type="file" id="imageUpload" accept="image/*">
-    <button id="cropBtn" title="Crop selected image">Crop Mode: Off</button>
-    <button id="deselectBtn" title="Deselect image">Deselect</button>
-  </div>
-
-  <canvas id="canvas" width="1200" height="600"></canvas>
-  <button id="exportBtn">Export as PNG</button>
-  <span class="hint">Tip: Click an image to show its box. Drag corners to resize, the circle handle to rotate, inside to move. In Crop Mode, drag a rectangle and release — crop applies immediately.</span>
-
-  <script>
-    // --- DOM
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-
-    const colorPicker = document.getElementById('colorPicker');
-    const brushSize = document.getElementById('brushSize');
-    const eraserBtn = document.getElementById('eraser');
-    const clearBtn = document.getElementById('clear');
-    const imageUpload = document.getElementById('imageUpload');
-    const cropBtn = document.getElementById('cropBtn');
-    const deselectBtn = document.getElementById('deselectBtn');
-    const exportBtn = document.getElementById('exportBtn');
-
-    // --- Drawing layer (freehand strokes live on their own offscreen canvas)
-    const drawLayer = document.createElement('canvas');
-    const drawCtx = drawLayer.getContext('2d');
-    drawLayer.width = canvas.width;
-    drawLayer.height = canvas.height;
-
-    let drawing = false;
-    let isErasing = false;
-
-    // --- Image objects
-    /** image object:
-     * {
-     *   id, srcDataURL, bitmap (HTMLImageElement),
-     *   x, y, width, height, rotation (radians),
-     * }
-     */
-    let images = [];
-    let selectedId = null;
-
-    // --- UI modes
-    let cropMode = false;
-    let interaction = null; // {type: 'move'|'rotate'|'scale', corner: 'tl'|'tr'|'br'|'bl', start...}
-    let marquee = null;     // crop rectangle in screen coords while dragging
-
-    // --- Constants
-    const HANDLE = 10;  // visual handle size in pixels (screen space)
-    const ROTATE_OFFSET = 28; // rotation handle distance above box (screen px)
-    const MIN_SIZE = 20;
-
-    // ============ Persistence ============
-    const SAVE_KEY = 'ic_canvas_editor_v1';
-
-    function saveState() {
-      const state = {
-        drawLayer: drawLayer.toDataURL('image/png'),
-        images: images.map(o => ({
-          id: o.id,
-          src: o.bitmap ? o.bitmap.src : o.srcDataURL,
-          x: o.x, y: o.y, width: o.width, height: o.height,
-          rotation: o.rotation
-        })),
-        selectedId,
-      };
-      try {
-        localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-      } catch (e) {
-        // storage may be full; ignore silently
-      }
-    }
-
-    function loadState() {
-      const raw = localStorage.getItem(SAVE_KEY);
-      if (!raw) return;
-      try {
-        const state = JSON.parse(raw);
-        // restore drawing layer
-        if (state.drawLayer) {
-          const img = new Image();
-          img.onload = () => {
-            drawCtx.clearRect(0,0,drawLayer.width, drawLayer.height);
-            drawCtx.drawImage(img, 0, 0);
-            redraw();
-          };
-          img.src = state.drawLayer;
-        }
-        // restore images
-        images = [];
-        const toLoad = (state.images || []).length;
-        if (toLoad === 0) { redraw(); return; }
-        let loaded = 0;
-        (state.images || []).forEach(o => {
-          const img = new Image();
-          img.onload = () => {
-            images.push({
-              id: o.id,
-              bitmap: img,
-              x: o.x, y: o.y,
-              width: o.width, height: o.height,
-              rotation: o.rotation || 0
-            });
-            loaded++;
-            if (loaded === toLoad) {
-              selectedId = state.selectedId ?? null;
-              redraw();
-            }
-          };
-          img.src = o.src;
-        });
-      } catch (e) {
-        // ignore bad state
-      }
-    }
-
-    // ============ Drawing (brush/eraser) ============
-    function setDrawStyle() {
-      drawCtx.lineWidth = +brushSize.value;
-      drawCtx.lineCap = 'round';
-      drawCtx.strokeStyle = isErasing ? '#ffffff' : colorPicker.value;
-      drawCtx.globalCompositeOperation = isErasing ? 'destination-out' : 'source-over';
-    }
-
-    function canvasPos(evt) {
-      const rect = canvas.getBoundingClientRect();
-      const x = (evt.clientX - rect.left) * (canvas.width / rect.width);
-      const y = (evt.clientY - rect.top) * (canvas.height / rect.height);
-      return { x, y };
-    }
-
-    canvas.addEventListener('pointerdown', onPointerDown);
-    canvas.addEventListener('pointermove', onPointerMove);
-    canvas.addEventListener('pointerup', onPointerUp);
-    canvas.addEventListener('pointerleave', onPointerUp);
-    canvas.addEventListener('contextmenu', e => e.preventDefault());
-
-    function onPointerDown(e) {
-      canvas.setPointerCapture(e.pointerId);
-      const p = canvasPos(e);
-
-      if (cropMode && selectedId) {
-        marquee = { x0: p.x, y0: p.y, x1: p.x, y1: p.y };
-        redraw();
-        return;
-      }
-
-      // First: try hitting handles / image bounds
-      const hit = hitTest(p.x, p.y);
-      if (hit) {
-        interaction = { ...hit, start: { x: p.x, y: p.y }, orig: snapshotSelection() };
-        return;
-      }
-
-      // Else: drawing mode if no image handle hit
-      drawing = true;
-      setDrawStyle();
-      drawCtx.beginPath();
-      drawCtx.moveTo(p.x, p.y);
-    }
-
-    function onPointerMove(e) {
-      const p = canvasPos(e);
-
-      if (cropMode && marquee) {
-        marquee.x1 = p.x; marquee.y1 = p.y;
-        redraw();
-        drawMarquee(marquee);
-        return;
-      }
-
-      if (interaction) {
-        applyInteraction(p);
-        redraw();
-        return;
-      }
-
-      if (drawing) {
-        setDrawStyle();
-        drawCtx.lineTo(p.x, p.y);
-        drawCtx.stroke();
-        drawCtx.beginPath();
-        drawCtx.moveTo(p.x, p.y);
-        redraw();
-        return;
-      }
-
-      // Hover cursor feedback
-      const hover = hitTest(p.x, p.y);
-      canvas.style.cursor = hover ? hover.cursor : (selectedId ? 'move' : 'crosshair');
-    }
-
-    function onPointerUp(e) {
-      if (drawing) {
-        drawing = false;
-        drawCtx.closePath();
-        saveState();
-      }
-      if (interaction) {
-        interaction = null;
-        saveState();
-      }
-      if (marquee && cropMode && selectedId) {
-        // Apply crop immediately
-        const rect = normalizeRect(marquee);
-        marquee = null;
-        applyCrop(rect);
-        cropMode = false;
-        cropBtn.textContent = 'Crop Mode: Off';
-        redraw();
-        saveState();
-      }
-      try { canvas.releasePointerCapture(e.pointerId); } catch {}
-    }
-
-    function normalizeRect(r) {
-      const x = Math.min(r.x0, r.x1);
-      const y = Math.min(r.y0, r.y1);
-      const w = Math.abs(r.x1 - r.x0);
-      const h = Math.abs(r.y1 - r.y0);
-      return { x, y, w, h };
-    }
-
-    // ============ Images: drawing & transforms ============
-    function redraw() {
-      ctx.clearRect(0,0,canvas.width, canvas.height);
-      // composite: draw layer underneath, then images
-      ctx.drawImage(drawLayer, 0, 0);
-
-      for (const o of images) {
-        drawImageObject(ctx, o);
-      }
-
-      // selection UI on top
-      const sel = selected();
-      if (sel && !cropMode) drawSelectionUI(sel);
-      if (marquee && cropMode) drawMarquee(marquee);
-    }
-
-    function drawImageObject(g, o) {
-      g.save();
-      g.translate(o.x + o.width/2, o.y + o.height/2);
-      g.rotate(o.rotation);
-      g.drawImage(o.bitmap, -o.width/2, -o.height/2, o.width, o.height);
-      g.restore();
-    }
-
-    function selected() {
-      return images.find(i => i.id === selectedId) || null;
-    }
-
-    // ============ Selection UI (box, handles, rotate handle) ============
-    function drawSelectionUI(o) {
-      const box = transformedBox(o);
-
-      // box lines
-      ctx.save();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = '#1971c2';
-      ctx.fillStyle = '#1971c233';
-
-      // box polygon
-      ctx.beginPath();
-      ctx.moveTo(box.tl.x, box.tl.y);
-      ctx.lineTo(box.tr.x, box.tr.y);
-      ctx.lineTo(box.br.x, box.br.y);
-      ctx.lineTo(box.bl.x, box.bl.y);
-      ctx.closePath();
-      ctx.stroke();
-
-      // resize handles at corners
-      [box.tl, box.tr, box.br, box.bl].forEach(pt => drawHandle(pt.x, pt.y));
-
-      // rotation handle (above top center)
-      const rx = (box.tl.x + box.tr.x) / 2;
-      const ry = (box.tl.y + box.tr.y) / 2;
-      const v = unitVector(rx - box.center.x, ry - box.center.y);
-      const rotX = rx + v.x * ROTATE_OFFSET;
-      const rotY = ry + v.y * ROTATE_OFFSET;
-
-      // stem
-      ctx.beginPath();
-      ctx.moveTo(rx, ry);
-      ctx.lineTo(rotX, rotY);
-      ctx.stroke();
-
-      drawRotateHandle(rotX, rotY);
-      ctx.restore();
-    }
-
-    function drawHandle(x, y) {
-      ctx.save();
-      ctx.fillStyle = '#fff';
-      ctx.strokeStyle = '#1971c2';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.rect(x - HANDLE/2, y - HANDLE/2, HANDLE, HANDLE);
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
-    }
-    function drawRotateHandle(x, y) {
-      ctx.save();
-      ctx.fillStyle = '#1971c2';
-      ctx.beginPath();
-      ctx.arc(x, y, HANDLE/2 + 2, 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    function drawMarquee(r) {
-      const n = normalizeRect(r);
-      ctx.save();
-      ctx.strokeStyle = '#2b8a3e';
-      ctx.setLineDash([6,4]);
-      ctx.lineWidth = 1;
-      ctx.strokeRect(n.x, n.y, n.w, n.h);
-      ctx.restore();
-    }
-
-    // ============ Hit testing ============
-    function transformedBox(o) {
-      // compute the 4 corners in screen space
-      const cx = o.x + o.width/2, cy = o.y + o.height/2;
-      const hw = o.width/2, hh = o.height/2;
-      const rot = o.rotation;
-      const corners = [
-        { name:'tl', x:-hw, y:-hh },
-        { name:'tr', x: hw, y:-hh },
-        { name:'br', x: hw, y: hh },
-        { name:'bl', x:-hw, y: hh },
-      ].map(p => rotatePoint(p.x, p.y, rot, cx, cy));
-      const [tl, tr, br, bl] = corners;
-      return {
-        tl, tr, br, bl,
-        center: { x: cx, y: cy }
-      };
-    }
-
-    function rotatePoint(x, y, angle, cx, cy) {
-      const cos = Math.cos(angle), sin = Math.sin(angle);
-      const rx = x * cos - y * sin + cx;
-      const ry = x * sin + y * cos + cy;
-      return { x: rx, y: ry };
-    }
-
-    function unitVector(x, y) {
-      const m = Math.hypot(x, y) || 1;
-      return { x: x/m, y: y/m };
-    }
-
-    function pointNear(x, y, px, py, r=HANDLE) {
-      return Math.hypot(x-px, y-py) <= r;
-    }
-
-    function hitTest(px, py) {
-      // check images top-down (last drawn on top)
-      for (let i = images.length - 1; i >= 0; i--) {
-        const o = images[i];
-        // transform point to the image's local space (unrotate, untranslate)
-        const local = screenToLocal(px, py, o);
-        if (Math.abs(local.x) <= o.width/2 && Math.abs(local.y) <= o.height/2) {
-          // inside bounds; see if hitting handles or rotate
-          selectedId = o.id;
-          const box = transformedBox(o);
-
-          // corners
-          const corners = [
-            { corner:'tl', pt: box.tl, cursor: 'nwse-resize' },
-            { corner:'tr', pt: box.tr, cursor: 'nesw-resize' },
-            { corner:'br', pt: box.br, cursor: 'nwse-resize' },
-            { corner:'bl', pt: box.bl, cursor: 'nesw-resize' },
-          ];
-          for (const c of corners) {
-            if (pointNear(px, py, c.pt.x, c.pt.y, HANDLE)) {
-              return { type:'scale', corner: c.corner, id:o.id, cursor: c.cursor };
-            }
-          }
-          // rotate handle
-          const rx = (box.tl.x + box.tr.x)/2;
-          const ry = (box.tl.y + box.tr.y)/2;
-          const v = unitVector(rx - box.center.x, ry - box.center.y);
-          const rotX = rx + v.x * ROTATE_OFFSET;
-          const rotY = ry + v.y * ROTATE_OFFSET;
-          if (pointNear(px, py, rotX, rotY, HANDLE)) {
-            return { type:'rotate', id:o.id, cursor:'grab' };
-          }
-          // else move
-          return { type:'move', id:o.id, cursor:'move' };
-        }
-      }
-      // nothing hit
-      selectedId = null;
-      return null;
-    }
-
-    function screenToLocal(px, py, o) {
-      // translate to center
-      let x = px - (o.x + o.width/2);
-      let y = py - (o.y + o.height/2);
-      // un-rotate
-      const cos = Math.cos(-o.rotation), sin = Math.sin(-o.rotation);
-      const lx = x * cos - y * sin;
-      const ly = x * sin + y * cos;
-      return { x: lx, y: ly };
-    }
-
-    function snapshotSelection() {
-      const o = selected();
-      if (!o) return null;
-      return {
-        x: o.x, y: o.y, width: o.width, height: o.height, rotation: o.rotation
-      };
-    }
-
-    function applyInteraction(p) {
-      const o = images.find(i => i.id === interaction.id);
-      if (!o) return;
-      const dx = p.x - interaction.start.x;
-      const dy = p.y - interaction.start.y;
-
-      if (interaction.type === 'move') {
-        o.x = interaction.orig.x + dx;
-        o.y = interaction.orig.y + dy;
-        return;
-      }
-
-      if (interaction.type === 'rotate') {
-        const c = { x: interaction.orig.x + interaction.orig.width/2, y: interaction.orig.y + interaction.orig.height/2 };
-        const a0 = Math.atan2(interaction.start.y - c.y, interaction.start.x - c.x);
-        const a1 = Math.atan2(p.y - c.y, p.x - c.x);
-        o.rotation = interaction.orig.rotation + (a1 - a0);
-        return;
-      }
-
-      if (interaction.type === 'scale') {
-        // scale relative to the opposite corner, keep center consistent
-        const corners = {
-          tl: { x: interaction.orig.x + interaction.orig.width, y: interaction.orig.y + interaction.orig.height },
-          tr: { x: interaction.orig.x, y: interaction.orig.y + interaction.orig.height },
-          br: { x: interaction.orig.x, y: interaction.orig.y },
-          bl: { x: interaction.orig.x + interaction.orig.width, y: interaction.orig.y }
-        };
-        const anchor = corners[interaction.corner];
-
-        // desired new point is current mouse p projected to unrotated space then rotated back to axis-aligned bbox logic
-        // Simpler approach: compute new bbox by rotating mouse into object-local, scale from opposite local corner.
-        const localAnchor = screenToLocal(anchor.x, anchor.y, o);
-        const localMouse  = screenToLocal(p.x, p.y, o);
-
-        // original local corner for moving handle:
-        const origLocalHandle = {
-          tl: { x: -interaction.orig.width/2, y: -interaction.orig.height/2 },
-          tr: { x:  interaction.orig.width/2, y: -interaction.orig.height/2 },
-          br: { x:  interaction.orig.width/2, y:  interaction.orig.height/2 },
-          bl: { x: -interaction.orig.width/2, y:  interaction.orig.height/2 },
-        }[interaction.corner];
-
-        // new size is distance between localMouse and localAnchor along axes
-        const newHalfW = Math.max(MIN_SIZE/2, Math.abs(localMouse.x - localAnchor.x) / 2);
-        const newHalfH = Math.max(MIN_SIZE/2, Math.abs(localMouse.y - localAnchor.y) / 2);
-
-        // maintain the sign depending on which corner is being dragged
-        const signX = Math.sign(origLocalHandle.x);
-        const signY = Math.sign(origLocalHandle.y);
-
-        o.width  = newHalfW * 2;
-        o.height = newHalfH * 2;
-
-        // Recompute world position so the dragged corner follows the pointer
-        const newLocalHandle = { x: signX * newHalfW, y: signY * newHalfH };
-        // world position of new handle should be at p (roughly); compute center from handle world
-        const cos = Math.cos(o.rotation), sin = Math.sin(o.rotation);
-        const worldHandleX = (o.x + o.width/2) + (newLocalHandle.x * cos - newLocalHandle.y * sin);
-        const worldHandleY = (o.y + o.height/2) + (newLocalHandle.x * sin + newLocalHandle.y * cos);
-
-        const dwhx = p.x - worldHandleX;
-        const dwhy = p.y - worldHandleY;
-
-        // shift center by this delta
-        o.x += dwhx;
-        o.y += dwhy;
-      }
-    }
-
-    // ============ Cropping ============
-    function applyCrop(screenRect) {
-      const o = selected();
-      if (!o) return;
-
-      // Map screenRect corners to local (unrotated) image space
-      const r = {
-        tl: screenToLocal(screenRect.x,             screenRect.y,              o),
-        tr: screenToLocal(screenRect.x + screenRect.w, screenRect.y,          o),
-        br: screenToLocal(screenRect.x + screenRect.w, screenRect.y + screenRect.h, o),
-        bl: screenToLocal(screenRect.x,             screenRect.y + screenRect.h, o),
-      };
-
-      // Compute axis-aligned bounds in local space
-      const xs = [r.tl.x, r.tr.x, r.br.x, r.bl.x];
-      const ys = [r.tl.y, r.tr.y, r.br.y, r.bl.y];
-      let minX = Math.max(-o.width/2,  Math.min(...xs));
-      let maxX = Math.min( o.width/2,  Math.max(...xs));
-      let minY = Math.max(-o.height/2, Math.min(...ys));
-      let maxY = Math.min( o.height/2,  Math.max(...ys));
-
-      const cropW = Math.max(0, maxX - minX);
-      const cropH = Math.max(0, maxY - minY);
-      if (cropW < 1 || cropH < 1) return; // nothing to crop
-
-      // Create a temp canvas in image-local coordinates
-      const tmp = document.createElement('canvas');
-      tmp.width = Math.round(cropW);
-      tmp.height = Math.round(cropH);
-      const g = tmp.getContext('2d');
-
-      // draw from the current bitmap: source rect in local -> convert to bitmap space
-      // Since o.bitmap is what we draw scaled to o.width/height, we need to map:
-      // local space [-w/2..w/2] maps to bitmap natural size [0..bitmap.width]
-      const sx = (minX + o.width/2) * (o.bitmap.width / o.width);
-      const sy = (minY + o.height/2) * (o.bitmap.height / o.height);
-      const sw = cropW * (o.bitmap.width / o.width);
-      const sh = cropH * (o.bitmap.height / o.height);
-
-      g.drawImage(o.bitmap, sx, sy, sw, sh, 0, 0, tmp.width, tmp.height);
-
-      // Replace bitmap with cropped data, keep rotation, reposition to keep the crop's center in place
-      const newImg = new Image();
-      const centerBefore = { x: o.x + o.width/2, y: o.y + o.height/2 };
-
-      newImg.onload = () => {
-        // Update size to the crop (scale 1:1 to on-canvas pixels)
-        const newW = cropW;
-        const newH = cropH;
-
-        // Compute where the crop rect center was in world space to keep visual position stable
-        const cropLocalCenter = { x: (minX + maxX)/2, y: (minY + maxY)/2 };
-        const cos = Math.cos(o.rotation), sin = Math.sin(o.rotation);
-        const cropWorldCx = (o.x + o.width/2) + (cropLocalCenter.x * cos - cropLocalCenter.y * sin);
-        const cropWorldCy = (o.y + o.height/2) + (cropLocalCenter.x * sin + cropLocalCenter.y * cos);
-
-        o.bitmap = newImg;
-        o.width = newW;
-        o.height = newH;
-
-        // Place new center at previous crop center
-        o.x = cropWorldCx - newW/2;
-        o.y = cropWorldCy - newH/2;
-
-        redraw();
-        saveState();
-      };
-      newImg.src = tmp.toDataURL('image/png');
-    }
-
-    // ============ Controls ============
-    eraserBtn.addEventListener('click', () => {
-      isErasing = !isErasing;
-      eraserBtn.textContent = isErasing ? 'Drawing Mode' : 'Eraser';
-    });
-
-    clearBtn.addEventListener('click', () => {
-      // Clear everything
-      drawCtx.clearRect(0,0,drawLayer.width, drawLayer.height);
-      images = [];
-      selectedId = null;
-      saveState();
-      redraw();
-    });
-
-    cropBtn.addEventListener('click', () => {
-      cropMode = !cropMode && !!selectedId; // need a selected image to crop
-      cropBtn.textContent = 'Crop Mode: ' + (cropMode ? 'On' : 'Off');
-      if (!selectedId && cropMode) {
-        cropMode = false;
-        cropBtn.textContent = 'Crop Mode: Off';
-      }
-      redraw();
-    });
-
-    deselectBtn.addEventListener('click', () => {
-      selectedId = null;
-      cropMode = false;
-      cropBtn.textContent = 'Crop Mode: Off';
-      redraw();
-    });
-
-    exportBtn.addEventListener('click', () => {
-      // Render final composite into a temp canvas (same as on-screen)
-      const out = document.createElement('canvas');
-      out.width = canvas.width;
-      out.height = canvas.height;
-      const g = out.getContext('2d');
-      g.drawImage(drawLayer, 0, 0);
-      for (const o of images) drawImageObject(g, o);
-
-      const link = document.createElement('a');
-      link.download = 'canvas.png';
-      link.href = out.toDataURL('image/png');
-      link.click();
-    });
-
-    imageUpload.addEventListener('change', e => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = () => {
-          const scale = Math.min(1, 800 / Math.max(img.width, img.height));
-          const w = Math.max(80, Math.round(img.width * scale));
-          const h = Math.max(80, Math.round(img.height * scale));
-          const o = {
-            id: 'img_' + Date.now() + '_' + Math.random().toString(36).slice(2,7),
-            bitmap: img,
-            x: (canvas.width - w) / 2,
-            y: (canvas.height - h) / 2,
-            width: w,
-            height: h,
-            rotation: 0
-          };
-          images.push(o);
-          selectedId = o.id;
-          redraw();
-          saveState();
-          imageUpload.value = '';
-        };
-        img.src = reader.result;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // ============ Init & Resize handling ============
-    function fitToCSSSize() {
-      // Keep internal pixel buffer fixed (so saved content doesn’t warp when browser zoom/resize)
-      // Only the CSS size changes; we already draw in device pixels.
-      const rect = canvas.getBoundingClientRect();
-      // nothing else needed; drawLayer already matches canvas pixel size
-      redraw();
-    }
-    window.addEventListener('resize', fitToCSSSize);
-
-    // Initial setup
-    loadState();
-    redraw();
-
-    // ============ Utilities ============
-    // (none beyond helpers above)
+<html>
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.css">
+        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+        <meta property="og:title" content="Infinite Campus">
+        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+        <meta name="theme-color" content="#8cbe37">
+        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+        <script src="main.js">
+        </script>
+        <script src="drypopup.js">
+        </script>
+        <script src="theme.js">
+        </script>
+    </head>
+    <body>
+        <center>
+            <br>
+            <br>
+            <br>
+            <br>
+            <h1 class="tptxt">
+                Live Discord Chat
+            </h1>
+            <select id="channelSelector" class="button">
+                <option value="1309160050904006696">
+                    General
+                </option>
+                <option value="1334376148087603294">
+                    Rules
+                </option>
+                <option value="1334377158789042226">
+                    Suggestions
+                </option>
+                <option value="1334377258609147967">
+                    Event
+                </option>
+                <option value="1336026895405551667">
+                    Site Updates
+                </option>
+                <option value="1389630067457527879">
+                    Website Chat
+                </option>
+                <option value="1392882466351616153">
+                    Welcome
+                </option>
+                <option value="1309164699417448550">
+                    Memes
+                </option>
+                <option value="1007051892821594183">
+                    Advertisements
+                </option>
+                <option value="1086362556203028540">
+                    Gaming
+                </option>
+                <option value="1334945403912720586">
+                    Support
+                </option>
+                <option value="1391898825588740108">
+                    AI Chat
+                </option>
+            </select>
+            <form id="sendForm">
+                <input class="button" type="text" id="nameInput" placeholder="Your name" required />
+                <br>
+                <input class="button" type="text" id="msgInput" placeholder="Type your message..." required />
+                <br>
+                <button class="button" type="submit">
+                    Send
+                </button>
+            </form>
+            <form id="uploadForm" enctype="multipart/form-data" style="margin-top:10px;">
+                <input type="file" id="fileInput" name="file" accept="image/*" required />
+                <button class="button" type="submit">
+                    Upload
+                </button>
+            </form>
+        </center>
+        <ul id="messages"></ul>
+  <script src="test.js">
   </script>
 </body>
 </html>
