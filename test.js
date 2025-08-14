@@ -1,4 +1,4 @@
-const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages';
+const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app/api/messages';
 let lastMessageId = null;
 let currentChannelId = getSelectedChannelId();
 function getSelectedChannelId() {
