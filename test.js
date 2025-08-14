@@ -12,23 +12,27 @@ async function fetchMessages() {
     });
     const data = await res.json();
     const list = document.getElementById('messages');
-    list.innerHTML = '';
-    const filteredMessages = data.filter(msg => msg.channel_id === channelId);
-    for (const msg of filteredMessages.reverse()) {
+    list.innerHTML = ''; // clear old messages on channel switch
+
+    for (const msg of data.reverse()) {
       const li = document.createElement('li');
+
+      // Display name with server tag
       const displayName = msg.member?.nick || msg.author.username;
       let serverTag = '';
       if (msg.clan?.identity_enabled && msg.clan.tag) {
-        serverTag = msg.clan.tag;
+        serverTag = ` [${msg.clan.tag}]`;
       } else if (msg.primary_guild?.identity_enabled && msg.primary_guild.tag) {
-        serverTag = msg.primary_guild.tag;
+        serverTag = ` [${msg.primary_guild.tag}]`;
       }
 
-      const displayNameWithTag = serverTag ? `${displayName} ${serverTag}` : displayName;
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
+
       const timestamp = new Date(msg.timestamp).toLocaleString();
+
+      // Mentions replacement
       let contentWithMentions = msg.content || '';
       if (msg.mentions && msg.mentions.length > 0) {
         msg.mentions.forEach(u => {
@@ -36,23 +40,29 @@ async function fetchMessages() {
           contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`, 'g'), `@${name}`);
         });
       }
+
+      // Extract images from message content
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let imagesHTML = '';
       let match;
       while ((match = imageRegex.exec(contentWithMentions)) !== null) {
         imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
       }
+
+      // Embed text
       let embedText = '';
       if (msg.embeds && msg.embeds.length > 0) {
         msg.embeds.forEach(embed => {
           if (embed.title) embedText += `\nTitle: ${embed.title}`;
           if (embed.description) embedText += `\n${embed.description}`;
           if (embed.fields && embed.fields.length > 0) {
-            embed.fields.forEach(f => { embedText += `\n${f.name}: ${f.value}`; });
+            embed.fields.forEach(f => embedText += `\n${f.name}: ${f.value}`);
           }
         });
         if (embedText) embedText = `<br><div style="font-style:italic;color:#555;">${embedText}</div>`;
       }
+
+      // Attachments
       let attachmentsHTML = '';
       if (msg.attachments && msg.attachments.length > 0) {
         msg.attachments.forEach(att => {
@@ -70,6 +80,8 @@ async function fetchMessages() {
           }
         });
       }
+
+      // Reactions
       let reactionsHTML = '';
       if (msg.reactions && msg.reactions.length > 0) {
         msg.reactions.forEach(r => {
@@ -80,6 +92,8 @@ async function fetchMessages() {
         });
         if (reactionsHTML) reactionsHTML = `<div style="margin-top:5px;">${reactionsHTML}</div>`;
       }
+
+      // Replies
       let replyHTML = '';
       if (msg.reference) {
         try {
@@ -93,10 +107,11 @@ async function fetchMessages() {
           replyHTML = `<div style="font-style:italic;color:#666;">Replying to a deleted message</div>`;
         }
       }
+
       li.innerHTML = `
         <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
         <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
-          <strong>${displayNameWithTag}</strong>
+          <strong>${displayName}${serverTag}</strong>
           ${replyHTML}
           <div>${contentWithMentions}${imagesHTML}${embedText}</div>
           ${attachmentsHTML}
@@ -104,6 +119,7 @@ async function fetchMessages() {
           <div class="timestamp" style="font-size:0.8em;color:#888;">${timestamp}</div>
         </div>
       `;
+
       list.prepend(li);
     }
   } catch (err) {
