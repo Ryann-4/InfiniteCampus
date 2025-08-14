@@ -1,11 +1,11 @@
-const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api';
+const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api/messages';
     function getSelectedChannelId() {
       return document.getElementById('channelSelector').value;
     }
     async function fetchMessages() {
   const channelId = getSelectedChannelId();
   try {
-    const res = await fetch(`${backendUrl}/api/messages?channelId=${channelId}`);
+    const res = await fetch(`${backendUrl}?channelId=${channelId}`);
     const data = await res.json();
     const list = document.getElementById('messages');
     list.innerHTML = '';
@@ -72,7 +72,7 @@ const backendUrl = 'https://3c2c303238a0.ngrok-free.app/api';
       let replyHTML = '';
       if (msg.reference) {
         try {
-          const refRes = await fetch(`${backendUrl}/api/messages?channelId=${msg.reference.channel_id}&messageId=${msg.reference.message_id}`);
+          const refRes = await fetch(`${backendUrl}?channelId=${msg.reference.channel_id}&messageId=${msg.reference.message_id}`);
           const refMsg = await refRes.json();
           const refName = refMsg.member?.nick || refMsg.author.username;
           replyHTML = `<div style="font-style:italic;color:#666;">Replying to ${refName}: ${refMsg.content}</div>`;
