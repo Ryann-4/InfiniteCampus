@@ -1,13 +1,45 @@
 const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app';
 const apiMessagesUrl = `${backendUrl}/api/messages`;
+const widgetUrl = 'https://discord.com/api/guilds/1002698920809463808/widget.json';
+
+let widgetData = null;
+let currentChannelId = getSelectedChannelId();
+
+// Fetch the Discord widget periodically
+async function fetchWidget() {
+  try {
+    const res = await fetch(widgetUrl);
+    widgetData = await res.json();
+  } catch (err) {
+    console.error('Error fetching widget:', err);
+    widgetData = null;
+  }
+}
+fetchWidget();
+setInterval(fetchWidget, 30000); // update every 30s
 
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
-let currentChannelId = getSelectedChannelId();
 
-// Track existing messages per channel
-const messageIdsByChannel = {};
+function getStatusColor(status) {
+  switch (status) {
+    case 'online': return 'green';
+    case 'idle': return 'yellow';
+    case 'dnd': return 'red';
+    default: return 'grey'; // offline
+  }
+}
+
+// Get server nickname, clan tag, and status color from widget
+function getMemberInfo(username) {
+  if (!widgetData || !widgetData.members) return { displayName: username, clanTag: '', statusColor: 'grey' };
+  const member = widgetData.members.find(m => m.username === username);
+  const displayName = member?.nick || username;
+  const clanTag = member?.name?.split('#')[0] || '';
+  const statusColor = getStatusColor(member?.status || 'offline');
+  return { displayName, clanTag, statusColor };
+}
 
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
@@ -34,12 +66,10 @@ async function fetchMessages() {
 
       const li = document.createElement('li');
       li.dataset.id = msg.id;
-      li.dataset.channelId = channelId; // Track which channel it belongs to
+      li.dataset.channelId = channelId;
 
-      // Prefer server nickname if available
-      const displayName = msg.member?.nick || msg.author.username;
-      const serverTag = msg.member?.guild_tag ? ` [${msg.member.guild_tag}]` : '';
-      const displayNameWithTag = displayName + serverTag;
+      // Get nickname, clan tag, and status from widget
+      const { displayName, clanTag, statusColor } = getMemberInfo(msg.author.username);
 
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
@@ -109,7 +139,9 @@ async function fetchMessages() {
       li.innerHTML = `
         <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
         <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
-          <strong>${displayNameWithTag}</strong>
+          <strong>${displayName}</strong>
+          <span style="margin-left:5px;color:#888;">${clanTag}</span>
+          <span style="display:inline-block;width:10px;height:10px;background-color:${statusColor};border-radius:50%;margin-left:5px;"></span>
           ${replyHTML}
           <div>${contentWithMentions}${imagesHTML}</div>
           ${attachmentsHTML}
@@ -124,7 +156,6 @@ async function fetchMessages() {
     console.error('Error Fetching Messages:', err);
   }
 }
-
 
 // Switch channels
 document.getElementById('channelSelector').addEventListener('change', () => {
