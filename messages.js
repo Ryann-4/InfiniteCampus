@@ -3,9 +3,6 @@ const apiMessagesUrl = `${backendUrl}/api/messages`;
 const widgetUrl = 'https://discord.com/api/guilds/1002698920809463808/widget.json';
 let widgetData = null;
 
-// Track ongoing fetches per channel
-const ongoingFetches = {};
-
 async function fetchWidget() {
     try {
         const res = await fetch(widgetUrl);
@@ -45,20 +42,13 @@ async function fetchMessages() {
     const channelId = currentChannelId;
     const list = document.getElementById('messages');
 
-    // Abort previous fetch for this channel only
-    if (ongoingFetches[channelId]) ongoingFetches[channelId].abort();
-    const controller = new AbortController();
-    ongoingFetches[channelId] = controller;
-    const signal = controller.signal;
-
     try {
         const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
-            headers: { 'ngrok-skip-browser-warning': 'true' },
-            signal
+            headers: { 'ngrok-skip-browser-warning': 'true' }
         });
         const data = await res.json();
 
-        // Ignore results if channel changed mid-fetch
+        // Ignore results if user switched channels mid-fetch
         if (channelId !== currentChannelId) return;
 
         [...list.children].forEach(li => {
@@ -148,7 +138,7 @@ async function fetchMessages() {
             list.prepend(li);
         }
     } catch (err) {
-        if (err.name !== 'AbortError') console.error('Error Fetching Messages:', err);
+        console.error('Error Fetching Messages:', err);
     }
 }
 
@@ -198,5 +188,6 @@ document.getElementById('uploadForm').addEventListener('submit', e => {
     uploadFile();
 });
 
+// Initial fetch and auto-refresh
 fetchMessages();
 setInterval(fetchMessages, 5000);
