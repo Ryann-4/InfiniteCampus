@@ -1,0 +1,364 @@
+<html>
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.css">
+        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+        <meta property="og:title" content="Infinite Campus">
+        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+        <meta name="theme-color" content="#8cbe37">
+        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+        <script src="main.js">
+        </script>
+        <script src="drypopup.js">
+        </script>
+        <script src="theme.js">
+        </script>
+        <style>
+            form {
+                margin-bottom: 20px;
+            }
+            input[type="text"] {
+                padding: 8px;
+                width: 300px;
+                margin-bottom: 10px;
+            }
+            button {
+                padding: 8px 12px;
+                background: #7289da;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+            ul {
+                list-style: none;
+                padding: 0;
+            }
+            li {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 15px;
+                background-color: black;
+                width: 75vw;
+                overflow-wrap: anywhere;
+                padding: 10px;
+                border-radius: 25px;
+                color: white;
+                border: 1px solid white;
+            }
+            .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+                border: 1px solid white;
+            }
+            .content {
+                flex: 1;
+                text-align:left;
+            }
+            .timestamp {
+                font-size: 0.75em;
+                color: white;
+                margin-top: 4px;
+            }
+            .message-img {
+                max-width: 100%;
+                border-radius: 5px;
+                margin-top: 8px;
+            }
+            #fileLabel {
+                color: white;
+                margin-top: 5px;
+                font-style: italic;
+                min-height: 1.2em;
+            }
+        </style>
+    </head>
+    <body>
+        <center>
+            <br>
+            <br>
+            <br>
+            <br>
+            <h1 class="tptxt">
+                Live Discord Chat
+            </h1>
+            <br>
+            <p style="color:white; padding:0px; margin:0px;" id="presenceCount">
+                Loading Presence Count...
+            </p>
+            <br>
+            <select id="channelSelector" class="button">
+                <option value="1309160050904006696">
+                    General
+                </option>
+                <option value="1334376148087603294">
+                    Rules
+                </option>
+                <option value="1334377158789042226">
+                    Suggestions
+                </option>
+                <option value="1334377258609147967">
+                    Event
+                </option>
+                <option value="1389630067457527879">
+                    Website Chat
+                </option>
+                <option value="1392882466351616153">
+                    Welcome
+                </option>
+                <option value="1309164699417448550">
+                    Memes
+                </option>
+                <option value="1007051892821594183">
+                    Advertisements
+                </option>
+                <option value="1086362556203028540">
+                    Gaming
+                </option>
+                <option value="1334945403912720586">
+                    Support
+                </option>
+                <option value="1391898825588740108">
+                    AI Chat
+                </option>
+            </select>
+            <form id="sendForm">
+                <input class="button" type="text" id="nameInput" placeholder="Your name" required />
+                <br>
+                <input class="button" type="text" id="msgInput" placeholder="Type your message..." required />
+                <br>
+                <button class="button" type="submit">
+                    Send
+                </button>
+            </form>
+            <form id="uploadForm" enctype="multipart/form-data" style="margin-top:10px;">
+                <label for="fileInput" class="custom-file-upload">
+                    Select A File
+                </label>
+                <input type="file" id="fileInput" name="file" accept="image/*" required />
+                <br>
+                <button class="button" type="submit">
+                    Upload
+                </button>
+            </form>
+            <ul id="messages"></ul>
+            <br>
+            <br>
+        </center>
+        <script src="online.js">
+        </script>
+        <script>
+            const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app';
+const apiMessagesUrl = `${backendUrl}/api/messages`;
+const widgetUrl = 'https://discord.com/api/guilds/1002698920809463808/widget.json';
+let widgetData = null;
+
+async function fetchWidget() {
+    try {
+        const res = await fetch(widgetUrl);
+        widgetData = await res.json();
+    } catch (err) {
+        console.error('Error Fetching Widget:', err);
+        widgetData = null;
+    }
+}
+fetchWidget();
+setInterval(fetchWidget, 30000);
+
+function getSelectedChannelId() {
+    return document.getElementById('channelSelector').value;
+}
+
+function getStatusImage(status) {
+    switch (status) {
+        case 'online': return 'https://codehs.com/uploads/32492fbd9c7975781bec905cc80efbde';
+        case 'idle': return 'https://codehs.com/uploads/366cef0d856f621ae394ef8ca02c0807';
+        case 'dnd': return 'https://codehs.com/uploads/ad7edef57db7e5c9eab58f45b9b8d7a4';
+        default: return 'https://codehs.com/uploads/1837fc15433ac1289c3b36ec975fbc56';
+    }
+}
+
+function getStatusFromWidget(globalName) {
+    if (globalName === 'Dad Bot') return 'online';
+    if (!widgetData?.members) return 'offline';
+    const member = widgetData.members.find(m => m.username === globalName || m.nick === globalName);
+    return member?.status || 'offline';
+}
+
+let currentChannelId = getSelectedChannelId();
+const messageIdsByChannel = {};
+
+async function fetchMessages() {
+    const channelId = currentChannelId;
+    const list = document.getElementById('messages');
+
+    try {
+        const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
+        const data = await res.json();
+
+        // Ignore results if user switched channels mid-fetch
+        if (channelId !== currentChannelId) return;
+
+        [...list.children].forEach(li => {
+            if (li.dataset.channelId && li.dataset.channelId !== channelId) li.remove();
+        });
+
+        const existingMessageIds = new Set([...list.children].map(li => li.dataset.id));
+
+        for (const msg of data.reverse()) {
+            if (existingMessageIds.has(msg.id)) continue;
+            const li = document.createElement('li');
+            li.dataset.id = msg.id;
+            li.dataset.channelId = channelId;
+
+            const serverTag = msg.author.clan?.tag || '';
+            const displayName = msg.author.global_name || msg.author.username;
+            const avatarUrl = msg.author.avatar
+                ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
+                : `https://cdn.discordapp.com/embed/avatars/0.png`;
+            const statusColor = getStatusFromWidget(displayName);
+            const timestamp = new Date(msg.timestamp).toLocaleString();
+
+            let contentWithMentions = msg.content || '';
+            if (msg.mentions?.length) {
+                msg.mentions.forEach(u => {
+                    const name = u.global_name || u.username;
+                    contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`, 'g'), `@${name}`);
+                });
+            }
+
+            let imagesHTML = '';
+            const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
+            let match;
+            while ((match = imageRegex.exec(contentWithMentions)) !== null) {
+                imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
+            }
+
+            let attachmentsHTML = '';
+            if (msg.attachments?.length) {
+                msg.attachments.forEach(att => {
+                    const url = att.url;
+                    const name = att.filename.toLowerCase();
+                    if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) attachmentsHTML += `<br><img src="${url}" alt="${name}" style="max-width:300px;">`;
+                    else if (/\.(mp4|webm|mov)$/.test(name)) attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}" type="video/${name.split('.').pop()}"></video>`;
+                    else if (/\.(mp3|wav|ogg)$/.test(name)) attachmentsHTML += `<br><audio controls><source src="${url}" type="audio/${name.split('.').pop()}"></audio>`;
+                    else attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
+                });
+            }
+
+            let replyHTML = '';
+            if (msg.referenced_message) {
+                const replyAuthor = msg.referenced_message.author;
+                const replyServerTag = replyAuthor.clan?.tag || '';
+                const replyDisplayName = replyAuthor.global_name || replyAuthor.username;
+                const replyStatusColor = getStatusFromWidget(replyDisplayName);
+                const replyContent = msg.referenced_message.content || '[no content]';
+                replyHTML = `
+                    <div class="reply" style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
+                        Replying to <strong>${replyDisplayName}</strong>
+                        <span style="margin-left:5px;color:#888;${replyServerTag ? 'border:1px solid white;border-radius:5px;padding:0 4px;' : ''}">${replyServerTag}</span>
+                        <img src="${getStatusImage(replyStatusColor)}" style="width:16px;height:16px;margin-left:5px;vertical-align:middle;">
+                        : ${replyContent}
+                    </div>
+                `;
+            }
+
+            let reactionsHTML = '';
+            if (msg.reactions?.length) {
+                reactionsHTML = `<div class="reactions" style="margin-top:4px;">` +
+                    msg.reactions.map(r => `<span style="border:1px solid #ccc;border-radius:4px;padding:2px 4px;margin-right:2px;">${r.emoji.name} ${r.count}</span>`).join('') +
+                    `</div>`;
+            }
+
+            li.innerHTML = `
+                <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
+                <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
+                    <strong>${displayName}</strong>
+                    <span style="margin-left:5px;color:#888;${serverTag ? 'border:1px solid white;border-radius:5px;padding:0 4px;' : ''}">${serverTag}</span>
+                    <img src="${getStatusImage(statusColor)}" style="width:16px;height:16px;margin-left:5px;vertical-align:middle;">
+                    ${replyHTML}
+                    <div>${contentWithMentions}${imagesHTML}</div>
+                    ${attachmentsHTML}
+                    ${reactionsHTML}
+                    <div class="timestamp" style="font-size:0.8em;color:#888;">${timestamp}</div>
+                </div>
+            `;
+            list.prepend(li);
+        }
+    } catch (err) {
+        console.error('Error Fetching Messages:', err);
+    }
+}
+
+document.getElementById('channelSelector').addEventListener('change', () => {
+    currentChannelId = getSelectedChannelId();
+    const list = document.getElementById('messages');
+    list.innerHTML = '';
+    if (!messageIdsByChannel[currentChannelId]) messageIdsByChannel[currentChannelId] = new Set();
+    fetchMessages();
+});
+
+async function sendMessage(name, content) {
+    const channelId = currentChannelId;
+    try {
+        await fetch(`${backendUrl}/send`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json','ngrok-skip-browser-warning': 'true' },
+            body: JSON.stringify({ message: `${name}\n${content}`, channelId })
+        });
+        document.getElementById('msgInput').value = '';
+        document.getElementById('nameInput').value = '';
+        fetchMessages();
+    } catch (err) { console.error('Error Sending Message:', err); }
+}
+
+async function uploadFile() {
+    const channelId = currentChannelId;
+    const file = document.getElementById('fileInput').files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('channelId', channelId);
+    try {
+        await fetch(`${backendUrl}/upload`, { method: 'POST', body: formData, headers: { 'ngrok-skip-browser-warning': 'true' } });
+        document.getElementById('fileInput').value = '';
+        fetchMessages();
+    } catch (err) { console.error('Error Uploading File:', err); }
+}
+
+document.getElementById('sendForm').addEventListener('submit', e => {
+    e.preventDefault();
+    sendMessage(document.getElementById('nameInput').value.trim(), document.getElementById('msgInput').value.trim());
+});
+
+document.getElementById('uploadForm').addEventListener('submit', e => {
+    e.preventDefault();
+    uploadFile();
+});
+
+// Initial fetch and auto-refresh
+fetchMessages();
+setInterval(fetchMessages, 5000);
+
+        </script>
+        <script src="frame.js">
+        </script>
+    </body>
+</html>
