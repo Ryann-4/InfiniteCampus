@@ -3,6 +3,11 @@ const apiMessagesUrl = `${backendUrl}/api/messages`;
 const widgetUrl = 'https://discord.com/api/guilds/1002698920809463808/widget.json';
 
 let widgetData = null;
+
+function getSelectedChannelId() {
+  return document.getElementById('channelSelector').value;
+}
+
 let currentChannelId = getSelectedChannelId();
 
 // Fetch the Discord widget periodically
@@ -18,10 +23,6 @@ async function fetchWidget() {
 fetchWidget();
 setInterval(fetchWidget, 30000); // update every 30s
 
-function getSelectedChannelId() {
-  return document.getElementById('channelSelector').value;
-}
-
 function getStatusColor(status) {
   switch (status) {
     case 'online': return 'green';
@@ -31,15 +32,24 @@ function getStatusColor(status) {
   }
 }
 
-// Get server nickname, clan tag, and status color from widget
-function getMemberInfo(username) {
-  if (!widgetData || !widgetData.members) return { displayName: username, clanTag: '', statusColor: 'grey' };
-  const member = widgetData.members.find(m => m.username === username);
-  const displayName = member?.nick || username;
+// Get member info by matching avatar URL
+function getMemberInfoByAvatar(avatarUrl) {
+  if (!widgetData || !widgetData.members) return { displayName: '', clanTag: '', statusColor: 'grey' };
+  
+  const member = widgetData.members.find(m => {
+    const memberAvatar = m.avatar_url || '';
+    return memberAvatar && avatarUrl.includes(memberAvatar.split('/').pop().split('.')[0]);
+  });
+
+  const displayName = member?.nick || '';
   const clanTag = member?.name?.split('#')[0] || '';
   const statusColor = getStatusColor(member?.status || 'offline');
+
   return { displayName, clanTag, statusColor };
 }
+
+// Track existing messages per channel
+const messageIdsByChannel = {};
 
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
@@ -68,15 +78,16 @@ async function fetchMessages() {
       li.dataset.id = msg.id;
       li.dataset.channelId = channelId;
 
-      // Get nickname, clan tag, and status from widget
-      const { displayName, clanTag, statusColor } = getMemberInfo(msg.author.username);
-
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
 
+      // Get nickname, clan tag, and status from widget using avatar
+      const { displayName, clanTag, statusColor } = getMemberInfoByAvatar(avatarUrl);
+
       const timestamp = new Date(msg.timestamp).toLocaleString();
 
+      // Mentions replacement
       let contentWithMentions = msg.content || '';
       if (msg.mentions?.length) {
         msg.mentions.forEach(u => {
@@ -88,7 +99,7 @@ async function fetchMessages() {
         });
       }
 
-      // Images
+      // Images in content
       let imagesHTML = '';
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let match;
@@ -117,11 +128,16 @@ async function fetchMessages() {
       // Replies
       let replyHTML = '';
       if (msg.referenced_message) {
-        const replyAuthor = msg.referenced_message.member?.nick || msg.referenced_message.author?.username || 'Unknown';
+        const replyAvatarUrl = msg.referenced_message.author?.avatar
+          ? `https://cdn.discordapp.com/avatars/${msg.referenced_message.author.id}/${msg.referenced_message.author.avatar}.png`
+          : `https://cdn.discordapp.com/embed/avatars/0.png`;
+        const { displayName: replyName, clanTag: replyClan, statusColor: replyStatus } = getMemberInfoByAvatar(replyAvatarUrl);
         const replyContent = msg.referenced_message.content || '[no content]';
         replyHTML = `
           <div class="reply" style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
-            Replying to <strong>${replyAuthor}</strong>: ${replyContent}
+            Replying to <strong>${replyName}</strong> <span style="color:#888;">${replyClan}</span>
+            <span style="display:inline-block;width:10px;height:10px;background-color:${replyStatus};border-radius:50%;margin-left:5px;"></span>
+            : ${replyContent}
           </div>
         `;
       }
