@@ -4,6 +4,7 @@ const apiMessagesUrl = `${backendUrl}/api/messages`;
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
+let currentChannelId = getSelectedChannelId();
 
 // Track existing messages per channel
 const messageIdsByChannel = {};
