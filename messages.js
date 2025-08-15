@@ -88,40 +88,37 @@ async function fetchMessages() {
 
             // Attachments handling with blob URLs
             let attachmentsHTML = '';
-if (msg.attachments && msg.attachments.length > 0) {
-    msg.attachments.forEach(att => {
-        const fileExt = att.filename.split('.').pop().toLowerCase();
+            if (msg.attachments && msg.attachments.length > 0) {
+                msg.attachments.forEach(att => {
+                    const fileExt = att.filename.split('.').pop().toLowerCase();
 
-        // IMAGE
-        if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileExt)) {
-            attachmentsHTML += `<div class="attachment"><img src="${att.url}" 
-                alt="${att.filename}" loading="lazy" style="max-width:400px;border-radius:8px;"></div>`;
-        }
+                    // IMAGE
+                    if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileExt)) {
+                        attachmentsHTML += `<div class="attachment"><img src="${att.url}" 
+                            alt="${att.filename}" loading="lazy" style="max-width:400px;border-radius:8px;"></div>`;
+                    }
 
-        // VIDEO
-        else if (["mp4", "mov", "webm"].includes(fileExt)) {
-            const type = fileExt === "mov" ? "video/quicktime" : `video/${fileExt}`;
-            attachmentsHTML += `<div class="attachment"><video controls preload="metadata" 
-                style="max-width:400px;border-radius:8px;">
-                <source src="${att.url}" type="${type}">
-            </video></div>`;
-        }
+                    // VIDEO as link
+                    else if (["mp4", "mov", "webm"].includes(fileExt)) {
+                        attachmentsHTML += `<div class="attachment">
+                            <a href="${att.url}" target="_blank">View Video: ${att.filename}</a>
+                        </div>`;
+                    }
 
-        // AUDIO
-        else if (["mp3", "wav", "ogg", "flac"].includes(fileExt)) {
-            attachmentsHTML += `<div class="attachment"><audio controls preload="metadata">
-                <source src="${att.url}" type="audio/${fileExt}">
-            </audio></div>`;
-        }
+                    // AUDIO
+                    else if (["mp3", "wav", "ogg", "flac"].includes(fileExt)) {
+                        attachmentsHTML += `<div class="attachment"><audio controls preload="metadata">
+                            <source src="${att.url}" type="audio/${fileExt}">
+                        </audio></div>`;
+                    }
 
-        // OTHER FILES
-        else {
-            attachmentsHTML += `<div class="attachment"><a href="${att.url}" download="${att.filename}" target="_blank">
-                Download ${att.filename}</a></div>`;
-        }
-    });
-}
-
+                    // OTHER FILES
+                    else {
+                        attachmentsHTML += `<div class="attachment"><a href="${att.url}" download="${att.filename}" target="_blank">
+                            Download ${att.filename}</a></div>`;
+                    }
+                });
+            }
 
             let replyHTML = '';
             if (msg.referenced_message) {
