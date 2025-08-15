@@ -87,16 +87,40 @@ async function fetchMessages() {
             }
 
             let attachmentsHTML = '';
-            if (msg.attachments?.length) {
-                msg.attachments.forEach(att => {
-                    const url = att.url;
-                    const name = att.filename.toLowerCase();
-                    if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) attachmentsHTML += `<br><img src="${url}" alt="${name}" style="max-width:300px;">`;
-                    else if (/\.(mp4|webm|mov)$/.test(name)) attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}" type="video/${name.split('.').pop()}"></video>`;
-                    else if (/\.(mp3|wav|ogg)$/.test(name)) attachmentsHTML += `<br><audio controls><source src="${url}" type="audio/${name.split('.').pop()}"></audio>`;
-                    else attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
-                });
+if (msg.attachments?.length) {
+    for (const att of msg.attachments) {
+        const url = att.url;
+        const name = att.filename.toLowerCase();
+
+        if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) {
+            attachmentsHTML += `<br><img src="${url}" alt="${name}" style="max-width:300px;">`;
+        } 
+        else if (/\.(mp4|webm|mov)$/.test(name)) {
+            // Fetch video as blob and create object URL
+            try {
+                const blob = await fetch(url).then(r => r.blob());
+                const videoUrl = URL.createObjectURL(blob);
+                attachmentsHTML += `<br><video controls style="max-width:300px;" src="${videoUrl}"></video>`;
+            } catch (e) {
+                console.error('Error loading video attachment:', e);
+                attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
             }
+        } 
+        else if (/\.(mp3|wav|ogg)$/.test(name)) {
+            try {
+                const blob = await fetch(url).then(r => r.blob());
+                const audioUrl = URL.createObjectURL(blob);
+                attachmentsHTML += `<br><audio controls src="${audioUrl}"></audio>`;
+            } catch (e) {
+                console.error('Error loading audio attachment:', e);
+                attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
+            }
+        } 
+        else {
+            attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
+        }
+    }
+}
 
             let replyHTML = '';
             if (msg.referenced_message) {
