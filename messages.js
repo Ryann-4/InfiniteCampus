@@ -48,7 +48,6 @@ async function fetchMessages() {
         });
         const data = await res.json();
 
-        // Ignore results if user switched channels mid-fetch
         if (channelId !== currentChannelId) return;
 
         [...list.children].forEach(li => {
@@ -59,6 +58,7 @@ async function fetchMessages() {
 
         for (const msg of data.reverse()) {
             if (existingMessageIds.has(msg.id)) continue;
+
             const li = document.createElement('li');
             li.dataset.id = msg.id;
             li.dataset.channelId = channelId;
@@ -86,41 +86,41 @@ async function fetchMessages() {
                 imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
             }
 
+            // Attachments handling with blob URLs
             let attachmentsHTML = '';
-if (msg.attachments?.length) {
-    for (const att of msg.attachments) {
-        const url = att.url;
-        const name = att.filename.toLowerCase();
+            if (msg.attachments?.length) {
+                for (const att of msg.attachments) {
+                    const url = att.url;
+                    const name = att.filename.toLowerCase();
 
-        if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) {
-            attachmentsHTML += `<br><img src="${url}" alt="${name}" style="max-width:300px;">`;
-        } 
-        else if (/\.(mp4|webm|mov)$/.test(name)) {
-            // Fetch video as blob and create object URL
-            try {
-                const blob = await fetch(url).then(r => r.blob());
-                const videoUrl = URL.createObjectURL(blob);
-                attachmentsHTML += `<br><video controls style="max-width:300px;" src="${videoUrl}"></video>`;
-            } catch (e) {
-                console.error('Error loading video attachment:', e);
-                attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
+                    if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) {
+                        attachmentsHTML += `<br><img src="${url}" alt="${name}" style="max-width:300px;">`;
+                    } 
+                    else if (/\.(mp4|webm|mov)$/.test(name)) {
+                        try {
+                            const blob = await fetch(url).then(r => r.blob());
+                            const videoUrl = URL.createObjectURL(blob);
+                            attachmentsHTML += `<br><video controls style="max-width:300px;" src="${videoUrl}"></video>`;
+                        } catch (e) {
+                            console.error('Error loading video attachment:', e);
+                            attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
+                        }
+                    } 
+                    else if (/\.(mp3|wav|ogg)$/.test(name)) {
+                        try {
+                            const blob = await fetch(url).then(r => r.blob());
+                            const audioUrl = URL.createObjectURL(blob);
+                            attachmentsHTML += `<br><audio controls src="${audioUrl}"></audio>`;
+                        } catch (e) {
+                            console.error('Error loading audio attachment:', e);
+                            attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
+                        }
+                    } 
+                    else {
+                        attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
+                    }
+                }
             }
-        } 
-        else if (/\.(mp3|wav|ogg)$/.test(name)) {
-            try {
-                const blob = await fetch(url).then(r => r.blob());
-                const audioUrl = URL.createObjectURL(blob);
-                attachmentsHTML += `<br><audio controls src="${audioUrl}"></audio>`;
-            } catch (e) {
-                console.error('Error loading audio attachment:', e);
-                attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
-            }
-        } 
-        else {
-            attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
-        }
-    }
-}
 
             let replyHTML = '';
             if (msg.referenced_message) {
@@ -153,8 +153,7 @@ if (msg.attachments?.length) {
                     <span style="margin-left:5px;color:#888;${serverTag ? 'border:1px solid white;border-radius:5px;padding:0 4px;' : ''}">${serverTag}</span>
                     <img src="${getStatusImage(statusColor)}" style="width:16px;height:16px;margin-left:5px;vertical-align:middle;">
                     ${replyHTML}
-                    <div>${contentWithMentions}${imagesHTML}</div>
-                    ${attachmentsHTML}
+                    <div>${contentWithMentions}${imagesHTML}${attachmentsHTML}</div>
                     ${reactionsHTML}
                     <div class="timestamp" style="font-size:0.8em;color:#888;">${timestamp}</div>
                 </div>
