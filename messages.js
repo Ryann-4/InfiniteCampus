@@ -12,35 +12,45 @@ async function fetchMessages() {
     const data = await res.json();
     const list = document.getElementById('messages');
     list.innerHTML = '';
+
     for (const msg of data.reverse()) {
       const li = document.createElement('li');
+
+      // Display name and server tag
       const displayName = msg.member?.nick || msg.author.username;
-      let serverTag = '';
-      if (msg.clan?.identity_enabled && msg.clan.tag) {
-        serverTag = ` [${msg.clan.tag}]`;
-      } else if (msg.primary_guild?.identity_enabled && msg.primary_guild.tag) {
-        serverTag = ` [${msg.primary_guild.tag}]`;
-      }
+      const serverTag = msg.member?.guild_tag ? ` [${msg.member.guild_tag}]` : '';
       const displayNameWithTag = displayName + serverTag;
+
+      // Avatar
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
+
       const timestamp = new Date(msg.timestamp).toLocaleString();
+
+      // Mentions replacement
       let contentWithMentions = msg.content || '';
-      if (msg.mentions && msg.mentions.length > 0) {
+      if (msg.mentions?.length) {
         msg.mentions.forEach(u => {
           const name = u.nick || u.username;
-          contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`, 'g'), `@${name}`);
+          contentWithMentions = contentWithMentions.replace(
+            new RegExp(`<@!?${u.id}>`, 'g'),
+            `@${name}`
+          );
         });
       }
+
+      // Images from message content
       let imagesHTML = '';
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let match;
       while ((match = imageRegex.exec(contentWithMentions)) !== null) {
         imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
       }
+
+      // Attachments
       let attachmentsHTML = '';
-      if (msg.attachments && msg.attachments.length > 0) {
+      if (msg.attachments?.length) {
         msg.attachments.forEach(att => {
           const url = att.url;
           const name = att.filename;
@@ -56,15 +66,41 @@ async function fetchMessages() {
           }
         });
       }
+
+      // Reply display
+      let replyHTML = '';
+      if (msg.referenced_message) {
+        const replyAuthor = msg.referenced_message.author?.username || 'Unknown';
+        const replyContent = msg.referenced_message.content || '[no content]';
+        replyHTML = `
+          <div class="reply" style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
+            Replying to <strong>${replyAuthor}</strong>: ${replyContent}
+          </div>
+        `;
+      }
+
+      // Reactions
+      let reactionsHTML = '';
+      if (msg.reactions?.length) {
+        reactionsHTML = `<div class="reactions" style="margin-top:4px;">` +
+          msg.reactions.map(r => 
+            `<span style="border:1px solid #ccc;border-radius:4px;padding:2px 4px;margin-right:2px;">${r.emoji.name} ${r.count}</span>`
+          ).join('') +
+          `</div>`;
+      }
+
       li.innerHTML = `
         <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
         <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
           <strong>${displayNameWithTag}</strong>
+          ${replyHTML}
           <div>${contentWithMentions}${imagesHTML}</div>
           ${attachmentsHTML}
+          ${reactionsHTML}
           <div class="timestamp" style="font-size:0.8em;color:#888;">${timestamp}</div>
         </div>
       `;
+
       list.prepend(li);
     }
   } catch (err) {
