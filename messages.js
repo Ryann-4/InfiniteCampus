@@ -16,19 +16,19 @@ setInterval(fetchWidget, 30000);
 function getSelectedChannelId() {
     return document.getElementById('channelSelector').value;
 }
-function getStatusColor(status) {
+function getStatusImage(status) {
     switch (status) {
-        case 'online': return 'green';
-        case 'idle': return 'yellow';
-        case 'dnd': return 'red';
-        default: return 'grey';
+        case 'online': return 'https://codehs.com/uploads/32492fbd9c7975781bec905cc80efbde';       // green circle
+        case 'idle': return 'https://codehs.com/uploads/366cef0d856f621ae394ef8ca02c0807';           // yellow quarter moon
+        case 'dnd': return 'https://codehs.com/uploads/ad7edef57db7e5c9eab58f45b9b8d7a4';             // do not enter sign
+        default: return 'https://codehs.com/uploads/1837fc15433ac1289c3b36ec975fbc56';            // hollow grey circle
     }
 }
 function getStatusFromWidget(globalName) {
-    if (globalName === 'Dad Bot') return getStatusColor('online');
-    if (!widgetData?.members) return 'grey';
+    if (globalName === 'Dad Bot') return 'online';
+    if (!widgetData?.members) return 'offline';
     const member = widgetData.members.find(m => m.username === globalName || m.nick === globalName);
-    return getStatusColor(member?.status || 'offline');
+    return member?.status || 'offline';
 }
 let currentChannelId = getSelectedChannelId();
 const messageIdsByChannel = {};
@@ -92,7 +92,7 @@ async function fetchMessages() {
                     <div class="reply" style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
                         Replying to <strong>${replyDisplayName}</strong>
                         <span style="margin-left:5px;color:#888;${replyServerTag ? 'border:1px solid white;border-radius:5px;padding:0 4px;' : ''}">${replyServerTag}</span>
-                        <span style="display:inline-block;width:10px;height:10px;background-color:${replyStatusColor};border-radius:50%;margin-left:5px;"></span>
+                        <img src="${getStatusImage(replyStatusColor)}" style="width:16px;height:16px;margin-left:5px;vertical-align:middle;">
                         : ${replyContent}
                     </div>
                 `;
@@ -108,7 +108,7 @@ async function fetchMessages() {
                 <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
                     <strong>${displayName}</strong>
                     <span style="margin-left:5px;color:#888;${serverTag ? 'border:1px solid white;border-radius:5px;padding:0 4px;' : ''}">${serverTag}</span>
-                    <span style="display:inline-block;width:10px;height:10px;background-color:${statusColor};border-radius:50%;margin-left:5px;"></span>
+                    <img src="${getStatusImage(statusColor)}" style="width:16px;height:16px;margin-left:5px;vertical-align:middle;">
                     ${replyHTML}
                     <div>${contentWithMentions}${imagesHTML}</div>
                     ${attachmentsHTML}
