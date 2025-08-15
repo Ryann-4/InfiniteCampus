@@ -1,215 +1,160 @@
 const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app';
 const apiMessagesUrl = `${backendUrl}/api/messages`;
 const widgetUrl = 'https://discord.com/api/guilds/1002698920809463808/widget.json';
-
 let widgetData = null;
-
-// Fetch widget to get online statuses only
 async function fetchWidget() {
-  try {
-    const res = await fetch(widgetUrl);
-    widgetData = await res.json();
-  } catch (err) {
-    console.error('Error fetching widget:', err);
-    widgetData = null;
-  }
+    try {
+        const res = await fetch(widgetUrl);
+        widgetData = await res.json();
+    } catch (err) {
+        console.error('Error Fetching Widget:', err);
+        widgetData = null;
+    }
 }
 fetchWidget();
-setInterval(fetchWidget, 30000); // refresh every 30s
-
+setInterval(fetchWidget, 30000);
 function getSelectedChannelId() {
-  return document.getElementById('channelSelector').value;
+    return document.getElementById('channelSelector').value;
 }
-// Get status from widget using global_name
+function getStatusColor(status) {
+    switch (status) {
+        case 'online': return 'green';
+        case 'idle': return 'yellow';
+        case 'dnd': return 'red';
+        default: return 'grey';
+    }
+}
 function getStatusFromWidget(globalName) {
-  if (!widgetData?.members) return 'grey';
-  const member = widgetData.members.find(m => m.username === globalName || m.nick === globalName);
-  return getStatusColor(member?.status || 'offline');
+    if (!widgetData?.members) return 'grey';
+    const member = widgetData.members.find(m => m.username === globalName || m.nick === globalName);
+    return getStatusColor(member?.status || 'offline');
 }
-
 let currentChannelId = getSelectedChannelId();
 const messageIdsByChannel = {};
-
 async function fetchMessages() {
-  const channelId = getSelectedChannelId();
-  const list = document.getElementById('messages');
-
-  try {
-    const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
-      headers: { 'ngrok-skip-browser-warning': 'true' }
-    });
-    const data = await res.json();
-
-    // Remove messages that belong to another channel
-    [...list.children].forEach(li => {
-      if (li.dataset.channelId && li.dataset.channelId !== channelId) {
-        li.remove();
-      }
-    });
-
-    // Store IDs of messages currently in the DOM
-    const existingMessageIds = new Set([...list.children].map(li => li.dataset.id));
-
-    for (const msg of data.reverse()) {
-      if (existingMessageIds.has(msg.id)) continue; // Skip duplicates
-
-      const li = document.createElement('li');
-      li.dataset.id = msg.id;
-      li.dataset.channelId = channelId;
-
-      // Get server nickname and clan tag from message JSON
-      const displayName = msg.author.global_name || msg.author.username;
-      const clanTag = msg.author.clan?.tag || '';
-
-      // Get status from widget
-      let status = 'offline';
-      if (widgetData?.members) {
-        const member = widgetData.members.find(m => m.username === msg.author.global_name);
-        if (member) status = member.status || 'offline';
-      }
-
-      // Convert status to icon
-      function getStatusIcon(status) {
-        switch (status) {
-          case 'online': return `<span style="color:green;">●</span>`; // green filled circle
-          case 'idle': return `<span style="color:gold;">🌙</span>`;   // yellow quarter moon
-          case 'dnd': return `<span style="color:red;">🚫</span>`;     // red do-not-enter
-          default: return `<span style="color:grey;">○</span>`;        // grey hollow circle
+    const channelId = getSelectedChannelId();
+    const list = document.getElementById('messages');
+    try {
+        const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
+        const data = await res.json();
+        [...list.children].forEach(li => {
+            if (li.dataset.channelId && li.dataset.channelId !== channelId) li.remove();
+        });
+        const existingMessageIds = new Set([...list.children].map(li => li.dataset.id));
+        for (const msg of data.reverse()) {
+            if (existingMessageIds.has(msg.id)) continue;
+            const li = document.createElement('li');
+            li.dataset.id = msg.id;
+            li.dataset.channelId = channelId;
+            const serverTag = msg.author.clan?.tag || '';
+            const displayName = msg.author.global_name || msg.author.username;
+            const username = msg.author.username;
+            const avatarUrl = msg.author.avatar
+                ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
+                : `https://cdn.discordapp.com/embed/avatars/0.png`;
+            const statusColor = getStatusFromWidget(displayName);
+            const timestamp = new Date(msg.timestamp).toLocaleString();
+            let contentWithMentions = msg.content || '';
+            if (msg.mentions?.length) {
+                msg.mentions.forEach(u => {
+                    const name = u.global_name || u.username;
+                    contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`, 'g'), `@${name}`);
+                });
+            }
+            let imagesHTML = '';
+            const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
+            let match;
+            while ((match = imageRegex.exec(contentWithMentions)) !== null) {
+                imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
+            }
+            let attachmentsHTML = '';
+            if (msg.attachments?.length) {
+                msg.attachments.forEach(att => {
+                    const url = att.url;
+                    const name = att.filename.toLowerCase();
+                    if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) attachmentsHTML += `<br><img src="${url}" alt="${name}" style="max-width:300px;">`;
+                    else if (/\.(mp4|webm|mov)$/.test(name)) attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}" type="video/${name.split('.').pop()}"></video>`;
+                    else if (/\.(mp3|wav|ogg)$/.test(name)) attachmentsHTML += `<br><audio controls><source src="${url}" type="audio/${name.split('.').pop()}"></audio>`;
+                    else attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
+                });
+            }
+            let replyHTML = '';
+            if (msg.referenced_message) {
+                const replyAuthor = msg.referenced_message.author;
+                const replyServerTag = replyAuthor.clan?.tag || '';
+                const replyDisplayName = replyAuthor.global_name || replyAuthor.username;
+                const replyStatusColor = getStatusFromWidget(replyDisplayName);
+                const replyContent = msg.referenced_message.content || '[no content]';
+                replyHTML = `
+                    <div class="reply" style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
+                        Replying to <strong>${replyDisplayName}</strong>
+                        <span style="margin-left:5px;color:#888;">${replyServerTag}</span>
+                        <span style="display:inline-block;width:10px;height:10px;background-color:${replyStatusColor};border-radius:50%;margin-left:5px;"></span>
+                        : ${replyContent}
+                    </div>
+                `;
+            }
+            let reactionsHTML = '';
+            if (msg.reactions?.length) {
+                reactionsHTML = `<div class="reactions" style="margin-top:4px;">` +
+                    msg.reactions.map(r => `<span style="border:1px solid #ccc;border-radius:4px;padding:2px 4px;margin-right:2px;">${r.emoji.name} ${r.count}</span>`).join('') +
+                `</div>`;
+            }
+            li.innerHTML = `
+                <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
+                <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
+                    <strong>${displayName}</strong>
+                    <span style="margin-left:5px;color:#888;border:1px solid white;border-radius:10px;">${serverTag}</span>
+                    <span style="display:inline-block;width:10px;height:10px;background-color:${statusColor};border-radius:50%;margin-left:5px;"></span>
+                    ${replyHTML}
+                    <div>${contentWithMentions}${imagesHTML}</div>
+                    ${attachmentsHTML}
+                    ${reactionsHTML}
+                    <div class="timestamp" style="font-size:0.8em;color:#888;">${timestamp}</div>
+                </div>
+            `;
+            list.prepend(li);
         }
-      }
-      const statusIcon = getStatusIcon(status);
-
-      const avatarUrl = msg.author.avatar
-        ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
-        : `https://cdn.discordapp.com/embed/avatars/0.png`;
-
-      const timestamp = new Date(msg.timestamp).toLocaleString();
-
-      // Mentions
-      let contentWithMentions = msg.content || '';
-      if (msg.mentions?.length) {
-        msg.mentions.forEach(u => {
-          const name = u.global_name || u.username;
-          contentWithMentions = contentWithMentions.replace(
-            new RegExp(`<@!?${u.id}>`, 'g'),
-            `@${name}`
-          );
-        });
-      }
-
-      // Images
-      let imagesHTML = '';
-      const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
-      let match;
-      while ((match = imageRegex.exec(contentWithMentions)) !== null) {
-        imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
-      }
-
-      // Attachments
-      let attachmentsHTML = '';
-      if (msg.attachments?.length) {
-        msg.attachments.forEach(att => {
-          const url = att.url;
-          const name = att.filename.toLowerCase();
-          if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) {
-            attachmentsHTML += `<br><img class="message-img" src="${url}" alt="${name}" style="max-width:300px;">`;
-          } else if (/\.(mp4|webm|mov)$/.test(name)) {
-            attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}" type="video/${name.split('.').pop()}"></video>`;
-          } else if (/\.(mp3|wav|ogg)$/.test(name)) {
-            attachmentsHTML += `<br><audio controls><source src="${url}" type="audio/${name.split('.').pop()}"></audio>`;
-          } else {
-            attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
-          }
-        });
-      }
-
-      // Replies
-      let replyHTML = '';
-      if (msg.referenced_message) {
-        const replyAuthor = msg.referenced_message.author.global_name || msg.referenced_message.author.username || 'Unknown';
-        const replyContent = msg.referenced_message.content || '[no content]';
-        replyHTML = `
-          <div class="reply" style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
-            Replying to <strong>${replyAuthor}</strong>: ${replyContent}
-          </div>
-        `;
-      }
-
-      // Reactions
-      let reactionsHTML = '';
-      if (msg.reactions?.length) {
-        reactionsHTML = `<div class="reactions" style="margin-top:4px;">` +
-          msg.reactions.map(r => 
-            `<span style="border:1px solid #ccc;border-radius:4px;padding:2px 4px;margin-right:2px;">${r.emoji.name} ${r.count}</span>`
-          ).join('') +
-          `</div>`;
-      }
-
-      li.innerHTML = `
-        <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
-        <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
-          <strong>${displayName}</strong>
-          <span style="margin-left:5px;color:#888;">${clanTag}</span>
-          <span style="margin-left:5px;">${statusIcon}</span>
-          ${replyHTML}
-          <div>${contentWithMentions}${imagesHTML}</div>
-          ${attachmentsHTML}
-          ${reactionsHTML}
-          <div class="timestamp" style="font-size:0.8em;color:#888;">${timestamp}</div>
-        </div>
-      `;
-
-      list.prepend(li);
+    } catch (err) {
+        console.error('Error Fetching Messages:', err);
     }
-  } catch (err) {
-    console.error('Error Fetching Messages:', err);
-  }
 }
-
-
-// Channel switch
 document.getElementById('channelSelector').addEventListener('change', () => {
-  const channelId = getSelectedChannelId();
-  const list = document.getElementById('messages');
-  list.innerHTML = '';
-  if (!messageIdsByChannel[channelId]) messageIdsByChannel[channelId] = new Set();
-  fetchMessages();
+    const channelId = getSelectedChannelId();
+    const list = document.getElementById('messages');
+    list.innerHTML = '';
+    if (!messageIdsByChannel[channelId]) messageIdsByChannel[channelId] = new Set();
+    fetchMessages();
 });
-
-// Send message
 async function sendMessage(name, content) {
-  const channelId = getSelectedChannelId();
-  try {
-    await fetch(`${backendUrl}/send`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json','ngrok-skip-browser-warning': 'true' },
-      body: JSON.stringify({ message: `${name}\n${content}`, channelId })
-    });
-    document.getElementById('msgInput').value = '';
-    document.getElementById('nameInput').value = '';
-    fetchMessages();
-  } catch (err) { console.error('Error Sending Message:', err); }
+    const channelId = getSelectedChannelId();
+    try {
+        await fetch(`${backendUrl}/send`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json','ngrok-skip-browser-warning': 'true' },
+            body: JSON.stringify({ message: `${name}\n${content}`, channelId })
+        });
+        document.getElementById('msgInput').value = '';
+        document.getElementById('nameInput').value = '';
+        fetchMessages();
+    } catch (err) { console.error('Error Sending Message:', err); }
 }
-
-// Upload
 async function uploadFile() {
-  const channelId = getSelectedChannelId();
-  const file = document.getElementById('fileInput').files[0];
-  if (!file) return;
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('channelId', channelId);
-  try {
-    await fetch(`${backendUrl}/upload`, { method: 'POST', body: formData, headers: { 'ngrok-skip-browser-warning': 'true' } });
-    document.getElementById('fileInput').value = '';
-    fetchMessages();
-  } catch (err) { console.error('Error Uploading File:', err); }
+    const channelId = getSelectedChannelId();
+    const file = document.getElementById('fileInput').files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('channelId', channelId);
+    try {
+        await fetch(`${backendUrl}/upload`, { method: 'POST', body: formData, headers: { 'ngrok-skip-browser-warning': 'true' } });
+        document.getElementById('fileInput').value = '';
+        fetchMessages();
+    } catch (err) { console.error('Error Uploading File:', err); }
 }
-
-// Form listeners
 document.getElementById('sendForm').addEventListener('submit', e => { e.preventDefault(); sendMessage(document.getElementById('nameInput').value.trim(), document.getElementById('msgInput').value.trim()); });
 document.getElementById('uploadForm').addEventListener('submit', e => { e.preventDefault(); uploadFile(); });
-
-// Initial fetch
 fetchMessages();
 setInterval(fetchMessages, 5000);
