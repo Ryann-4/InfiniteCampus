@@ -1,46 +1,48 @@
 const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app';
 const apiMessagesUrl = `${backendUrl}/api/messages`;
+
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
-let currentChannelId = null; // Track current channel
-function switchChannel(channelId) {
-  if (currentChannelId !== channelId) {
-    currentChannelId = channelId;
-    const list = document.getElementById('messages');
-    list.innerHTML = ''; // Clear only when channel changes
-    fetchMessages(); // Fetch fresh messages for new channel
-  }
-}
+
+// Track existing messages per channel
+const messageIdsByChannel = {};
 
 async function fetchMessages() {
-  if (!currentChannelId) return; // No channel selected yet
+  const channelId = getSelectedChannelId();
+  const list = document.getElementById('messages');
+
+  if (!messageIdsByChannel[channelId]) {
+    messageIdsByChannel[channelId] = new Set();
+  }
 
   try {
-    const res = await fetch(`${apiMessagesUrl}?channelId=${currentChannelId}`, {
+    const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
       headers: { 'ngrok-skip-browser-warning': 'true' }
     });
     const data = await res.json();
-    const list = document.getElementById('messages');
 
-    // Get IDs already in DOM
-    const existingMessageIds = new Set(
-      [...list.children].map(li => li.dataset.id)
-    );
-
-    // Render oldest first so prepend keeps order correct
+    // Reverse so oldest messages first
     for (const msg of data.reverse()) {
-      if (existingMessageIds.has(msg.id)) continue;
+      if (messageIdsByChannel[channelId].has(msg.id)) continue;
+      messageIdsByChannel[channelId].add(msg.id);
 
       const li = document.createElement('li');
       li.dataset.id = msg.id;
 
+      // Display name and server tag
       const displayName = msg.member?.nick || msg.author.username;
       const serverTag = msg.member?.guild_tag ? ` [${msg.member.guild_tag}]` : '';
+      const displayNameWithTag = displayName + serverTag;
+
+      // Avatar
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
 
+      const timestamp = new Date(msg.timestamp).toLocaleString();
+
+      // Mentions
       let contentWithMentions = msg.content || '';
       if (msg.mentions?.length) {
         msg.mentions.forEach(u => {
@@ -65,26 +67,27 @@ async function fetchMessages() {
       if (msg.attachments?.length) {
         msg.attachments.forEach(att => {
           const url = att.url;
-          const name = att.filename.toLowerCase();
-          if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) {
-            attachmentsHTML += `<br><img src="${url}" style="max-width:300px;">`;
-          } else if (/\.(mp4|webm|mov)$/.test(name)) {
-            attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}"></video>`;
-          } else if (/\.(mp3|wav|ogg)$/.test(name)) {
-            attachmentsHTML += `<br><audio controls><source src="${url}"></audio>`;
+          const name = att.filename;
+          const lowerName = name.toLowerCase();
+          if (/\.(png|jpg|jpeg|gif|webp)$/.test(lowerName)) {
+            attachmentsHTML += `<br><img class="message-img" src="${url}" alt="${name}" style="max-width:300px;">`;
+          } else if (/\.(mp4|webm|mov)$/.test(lowerName)) {
+            attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}" type="video/${lowerName.split('.').pop()}"></video>`;
+          } else if (/\.(mp3|wav|ogg)$/.test(lowerName)) {
+            attachmentsHTML += `<br><audio controls><source src="${url}" type="audio/${lowerName.split('.').pop()}"></audio>`;
           } else {
-            attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
+            attachmentsHTML += `<br><a href="${url}" download>${name}</a>`;
           }
         });
       }
 
-      // Reply
+      // Reply display
       let replyHTML = '';
       if (msg.referenced_message) {
         const replyAuthor = msg.referenced_message.author?.username || 'Unknown';
         const replyContent = msg.referenced_message.content || '[no content]';
         replyHTML = `
-          <div style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
+          <div class="reply" style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
             Replying to <strong>${replyAuthor}</strong>: ${replyContent}
           </div>
         `;
@@ -93,7 +96,7 @@ async function fetchMessages() {
       // Reactions
       let reactionsHTML = '';
       if (msg.reactions?.length) {
-        reactionsHTML = `<div style="margin-top:4px;">` +
+        reactionsHTML = `<div class="reactions" style="margin-top:4px;">` +
           msg.reactions.map(r => 
             `<span style="border:1px solid #ccc;border-radius:4px;padding:2px 4px;margin-right:2px;">${r.emoji.name} ${r.count}</span>`
           ).join('') +
@@ -101,14 +104,14 @@ async function fetchMessages() {
       }
 
       li.innerHTML = `
-        <img src="${avatarUrl}" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
-        <div style="display:inline-block;vertical-align:middle;margin-left:10px;">
-          <strong>${displayName}${serverTag}</strong>
+        <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
+        <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
+          <strong>${displayNameWithTag}</strong>
           ${replyHTML}
           <div>${contentWithMentions}${imagesHTML}</div>
           ${attachmentsHTML}
           ${reactionsHTML}
-          <div style="font-size:0.8em;color:#888;">${new Date(msg.timestamp).toLocaleString()}</div>
+          <div class="timestamp" style="font-size:0.8em;color:#888;">${timestamp}</div>
         </div>
       `;
 
@@ -119,12 +122,16 @@ async function fetchMessages() {
   }
 }
 
-
+// Switch channels
 document.getElementById('channelSelector').addEventListener('change', () => {
-  currentChannelId = getSelectedChannelId();
+  const channelId = getSelectedChannelId();
+  const list = document.getElementById('messages');
+  list.innerHTML = ''; // Clear old messages
+  if (!messageIdsByChannel[channelId]) messageIdsByChannel[channelId] = new Set();
   fetchMessages();
 });
 
+// Send message
 async function sendMessage(name, content) {
   const channelId = getSelectedChannelId();
   try {
@@ -143,6 +150,8 @@ async function sendMessage(name, content) {
     console.error('Error Sending Message:', err);
   }
 }
+
+// Upload file
 async function uploadFile() {
   const channelId = getSelectedChannelId();
   const file = document.getElementById('fileInput').files[0];
@@ -162,16 +171,20 @@ async function uploadFile() {
     console.error('Error Uploading File:', err);
   }
 }
+
+// Form listeners
 document.getElementById('sendForm').addEventListener('submit', e => {
   e.preventDefault();
   const name = document.getElementById('nameInput').value.trim();
   const msg = document.getElementById('msgInput').value.trim();
   if (name && msg) sendMessage(name, msg);
 });
+
 document.getElementById('uploadForm').addEventListener('submit', e => {
   e.preventDefault();
   uploadFile();
 });
-document.getElementById('channelSelector').addEventListener('change', fetchMessages);
+
+// Initial fetch and interval
 fetchMessages();
 setInterval(fetchMessages, 5000);
