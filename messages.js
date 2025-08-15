@@ -2,6 +2,8 @@ const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app';
 const apiMessagesUrl = `${backendUrl}/api/messages`;
 const widgetUrl = 'https://discord.com/api/guilds/1002698920809463808/widget.json';
 let widgetData = null;
+let ongoingFetchController = null; // abort previous fetches if needed
+
 async function fetchWidget() {
     try {
         const res = await fetch(widgetUrl);
@@ -13,9 +15,11 @@ async function fetchWidget() {
 }
 fetchWidget();
 setInterval(fetchWidget, 30000);
+
 function getSelectedChannelId() {
     return document.getElementById('channelSelector').value;
 }
+
 function getStatusImage(status) {
     switch (status) {
         case 'online': return 'https://codehs.com/uploads/32492fbd9c7975781bec905cc80efbde';
@@ -24,39 +28,56 @@ function getStatusImage(status) {
         default: return 'https://codehs.com/uploads/1837fc15433ac1289c3b36ec975fbc56';
     }
 }
+
 function getStatusFromWidget(globalName) {
     if (globalName === 'Dad Bot') return 'online';
     if (!widgetData?.members) return 'offline';
     const member = widgetData.members.find(m => m.username === globalName || m.nick === globalName);
     return member?.status || 'offline';
 }
+
 let currentChannelId = getSelectedChannelId();
 const messageIdsByChannel = {};
+
 async function fetchMessages() {
+    // Abort previous fetch if still in progress
+    if (ongoingFetchController) ongoingFetchController.abort();
+    ongoingFetchController = new AbortController();
+    const signal = ongoingFetchController.signal;
+
     const channelId = currentChannelId;
     const list = document.getElementById('messages');
+
     try {
         const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
-            headers: { 'ngrok-skip-browser-warning': 'true' }
+            headers: { 'ngrok-skip-browser-warning': 'true' },
+            signal
         });
         const data = await res.json();
+
+        // Ignore results if channel changed mid-fetch
+        if (channelId !== currentChannelId) return;
+
         [...list.children].forEach(li => {
             if (li.dataset.channelId && li.dataset.channelId !== channelId) li.remove();
         });
+
         const existingMessageIds = new Set([...list.children].map(li => li.dataset.id));
+
         for (const msg of data.reverse()) {
             if (existingMessageIds.has(msg.id)) continue;
             const li = document.createElement('li');
             li.dataset.id = msg.id;
             li.dataset.channelId = channelId;
+
             const serverTag = msg.author.clan?.tag || '';
             const displayName = msg.author.global_name || msg.author.username;
-            const username = msg.author.username;
             const avatarUrl = msg.author.avatar
                 ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
                 : `https://cdn.discordapp.com/embed/avatars/0.png`;
             const statusColor = getStatusFromWidget(displayName);
             const timestamp = new Date(msg.timestamp).toLocaleString();
+
             let contentWithMentions = msg.content || '';
             if (msg.mentions?.length) {
                 msg.mentions.forEach(u => {
@@ -64,12 +85,14 @@ async function fetchMessages() {
                     contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`, 'g'), `@${name}`);
                 });
             }
+
             let imagesHTML = '';
             const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
             let match;
             while ((match = imageRegex.exec(contentWithMentions)) !== null) {
                 imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
             }
+
             let attachmentsHTML = '';
             if (msg.attachments?.length) {
                 msg.attachments.forEach(att => {
@@ -81,6 +104,7 @@ async function fetchMessages() {
                     else attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
                 });
             }
+
             let replyHTML = '';
             if (msg.referenced_message) {
                 const replyAuthor = msg.referenced_message.author;
@@ -97,12 +121,14 @@ async function fetchMessages() {
                     </div>
                 `;
             }
+
             let reactionsHTML = '';
             if (msg.reactions?.length) {
                 reactionsHTML = `<div class="reactions" style="margin-top:4px;">` +
                     msg.reactions.map(r => `<span style="border:1px solid #ccc;border-radius:4px;padding:2px 4px;margin-right:2px;">${r.emoji.name} ${r.count}</span>`).join('') +
-                `</div>`;
+                    `</div>`;
             }
+
             li.innerHTML = `
                 <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
                 <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
@@ -119,9 +145,10 @@ async function fetchMessages() {
             list.prepend(li);
         }
     } catch (err) {
-        console.error('Error Fetching Messages:', err);
+        if (err.name !== 'AbortError') console.error('Error Fetching Messages:', err);
     }
 }
+
 document.getElementById('channelSelector').addEventListener('change', () => {
     currentChannelId = getSelectedChannelId();
     const list = document.getElementById('messages');
@@ -129,6 +156,7 @@ document.getElementById('channelSelector').addEventListener('change', () => {
     if (!messageIdsByChannel[currentChannelId]) messageIdsByChannel[currentChannelId] = new Set();
     fetchMessages();
 });
+
 async function sendMessage(name, content) {
     const channelId = currentChannelId;
     try {
@@ -142,6 +170,7 @@ async function sendMessage(name, content) {
         fetchMessages();
     } catch (err) { console.error('Error Sending Message:', err); }
 }
+
 async function uploadFile() {
     const channelId = currentChannelId;
     const file = document.getElementById('fileInput').files[0];
@@ -155,7 +184,9 @@ async function uploadFile() {
         fetchMessages();
     } catch (err) { console.error('Error Uploading File:', err); }
 }
+
 document.getElementById('sendForm').addEventListener('submit', e => { e.preventDefault(); sendMessage(document.getElementById('nameInput').value.trim(), document.getElementById('msgInput').value.trim()); });
 document.getElementById('uploadForm').addEventListener('submit', e => { e.preventDefault(); uploadFile(); });
+
 fetchMessages();
 setInterval(fetchMessages, 5000);
