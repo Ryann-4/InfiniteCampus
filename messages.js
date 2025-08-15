@@ -25,6 +25,7 @@ function getStatusColor(status) {
     }
 }
 function getStatusFromWidget(globalName) {
+    if (globalName === 'Dad Bot') return getStatusColor('online');
     if (!widgetData?.members) return 'grey';
     const member = widgetData.members.find(m => m.username === globalName || m.nick === globalName);
     return getStatusColor(member?.status || 'offline');
@@ -90,7 +91,7 @@ async function fetchMessages() {
                 replyHTML = `
                     <div class="reply" style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
                         Replying to <strong>${replyDisplayName}</strong>
-                        <span style="margin-left:5px;color:#888;">${replyServerTag}</span>
+                        <span style="margin-left:5px;color:#888;${replyServerTag ? 'border:1px solid white;border-radius:5px;padding:0 4px;' : ''}">${replyServerTag}</span>
                         <span style="display:inline-block;width:10px;height:10px;background-color:${replyStatusColor};border-radius:50%;margin-left:5px;"></span>
                         : ${replyContent}
                     </div>
@@ -106,7 +107,7 @@ async function fetchMessages() {
                 <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
                 <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
                     <strong>${displayName}</strong>
-                    <span style="margin-left:5px;color:#888;border:1px solid white;border-radius:10px;">${serverTag}</span>
+                    <span style="margin-left:5px;color:#888;${serverTag ? 'border:1px solid white;border-radius:5px;padding:0 4px;' : ''}">${serverTag}</span>
                     <span style="display:inline-block;width:10px;height:10px;background-color:${statusColor};border-radius:50%;margin-left:5px;"></span>
                     ${replyHTML}
                     <div>${contentWithMentions}${imagesHTML}</div>
