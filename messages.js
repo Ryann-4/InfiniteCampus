@@ -30,13 +30,10 @@ function getStatusColor(status) {
   }
 }
 
-// Get status from widget using avatar url
-function getStatusFromWidget(avatarUrl) {
+// Get status from widget using global_name
+function getStatusFromWidget(globalName) {
   if (!widgetData?.members) return 'grey';
-  const member = widgetData.members.find(m => {
-    const mAvatar = m.avatar ? `https://cdn.discordapp.com/avatars/${m.id}/${m.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/0.png`;
-    return mAvatar === avatarUrl;
-  });
+  const member = widgetData.members.find(m => m.username === globalName || m.nick === globalName);
   return getStatusColor(member?.status || 'offline');
 }
 
@@ -67,14 +64,16 @@ async function fetchMessages() {
       li.dataset.id = msg.id;
       li.dataset.channelId = channelId;
 
-      // Use values directly from server
-      const serverTag = msg.author.clan || '';
+      // Get values from message JSON
+      const serverTag = msg.author.clan?.tag || '';
       const displayName = msg.author.global_name || msg.author.username;
+      const username = msg.author.username;
+
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
 
-      const statusColor = getStatusFromWidget(avatarUrl);
+      const statusColor = getStatusFromWidget(displayName);
       const timestamp = new Date(msg.timestamp).toLocaleString();
 
       // Mentions
@@ -86,7 +85,7 @@ async function fetchMessages() {
         });
       }
 
-      // Images in content
+      // Images
       let imagesHTML = '';
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let match;
@@ -111,12 +110,9 @@ async function fetchMessages() {
       let replyHTML = '';
       if (msg.referenced_message) {
         const replyAuthor = msg.referenced_message.author;
-        const replyServerTag = replyAuthor.clan || '';
+        const replyServerTag = replyAuthor.clan?.tag || '';
         const replyDisplayName = replyAuthor.global_name || replyAuthor.username;
-        const replyAvatarUrl = replyAuthor.avatar
-          ? `https://cdn.discordapp.com/avatars/${replyAuthor.id}/${replyAuthor.avatar}.png`
-          : `https://cdn.discordapp.com/embed/avatars/0.png`;
-        const replyStatusColor = getStatusFromWidget(replyAvatarUrl);
+        const replyStatusColor = getStatusFromWidget(replyDisplayName);
         const replyContent = msg.referenced_message.content || '[no content]';
 
         replyHTML = `
@@ -158,7 +154,7 @@ async function fetchMessages() {
   }
 }
 
-// Switch channels
+// Channel switch
 document.getElementById('channelSelector').addEventListener('change', () => {
   const channelId = getSelectedChannelId();
   const list = document.getElementById('messages');
@@ -182,7 +178,7 @@ async function sendMessage(name, content) {
   } catch (err) { console.error('Error Sending Message:', err); }
 }
 
-// Upload file
+// Upload
 async function uploadFile() {
   const channelId = getSelectedChannelId();
   const file = document.getElementById('fileInput').files[0];
@@ -191,21 +187,14 @@ async function uploadFile() {
   formData.append('file', file);
   formData.append('channelId', channelId);
   try {
-    await fetch(`${backendUrl}/upload`, {
-      method: 'POST', body: formData, headers: { 'ngrok-skip-browser-warning': 'true' }
-    });
+    await fetch(`${backendUrl}/upload`, { method: 'POST', body: formData, headers: { 'ngrok-skip-browser-warning': 'true' } });
     document.getElementById('fileInput').value = '';
     fetchMessages();
   } catch (err) { console.error('Error Uploading File:', err); }
 }
 
 // Form listeners
-document.getElementById('sendForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const name = document.getElementById('nameInput').value.trim();
-  const msg = document.getElementById('msgInput').value.trim();
-  if (name && msg) sendMessage(name, msg);
-});
+document.getElementById('sendForm').addEventListener('submit', e => { e.preventDefault(); sendMessage(document.getElementById('nameInput').value.trim(), document.getElementById('msgInput').value.trim()); });
 document.getElementById('uploadForm').addEventListener('submit', e => { e.preventDefault(); uploadFile(); });
 
 // Initial fetch
