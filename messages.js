@@ -3,13 +3,20 @@ const apiMessagesUrl = `${backendUrl}/api/messages`;
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
+let currentChannelId = getSelectedChannelId();
+
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
+  currentChannelId = channelId; // Update the active channel
   try {
     const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
       headers: { 'ngrok-skip-browser-warning': 'true' }
     });
     const data = await res.json();
+
+    // If the channel changed before the fetch finished, ignore this result
+    if (channelId !== currentChannelId) return;
+
     const list = document.getElementById('messages');
     list.innerHTML = '';
 
@@ -107,6 +114,12 @@ async function fetchMessages() {
     console.error('Error Fetching Messages:', err);
   }
 }
+
+document.getElementById('channelSelector').addEventListener('change', () => {
+  currentChannelId = getSelectedChannelId();
+  fetchMessages();
+});
+
 async function sendMessage(name, content) {
   const channelId = getSelectedChannelId();
   try {
