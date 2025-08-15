@@ -2,7 +2,9 @@ const backendUrl = 'https://marginally-humble-jennet.ngrok-free.app';
 const apiMessagesUrl = `${backendUrl}/api/messages`;
 const widgetUrl = 'https://discord.com/api/guilds/1002698920809463808/widget.json';
 let widgetData = null;
-let ongoingFetchController = null; // abort previous fetches if needed
+
+// Track ongoing fetches per channel
+const ongoingFetches = {};
 
 async function fetchWidget() {
     try {
@@ -40,13 +42,14 @@ let currentChannelId = getSelectedChannelId();
 const messageIdsByChannel = {};
 
 async function fetchMessages() {
-    // Abort previous fetch if still in progress
-    if (ongoingFetchController) ongoingFetchController.abort();
-    ongoingFetchController = new AbortController();
-    const signal = ongoingFetchController.signal;
-
     const channelId = currentChannelId;
     const list = document.getElementById('messages');
+
+    // Abort previous fetch for this channel only
+    if (ongoingFetches[channelId]) ongoingFetches[channelId].abort();
+    const controller = new AbortController();
+    ongoingFetches[channelId] = controller;
+    const signal = controller.signal;
 
     try {
         const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
@@ -185,8 +188,15 @@ async function uploadFile() {
     } catch (err) { console.error('Error Uploading File:', err); }
 }
 
-document.getElementById('sendForm').addEventListener('submit', e => { e.preventDefault(); sendMessage(document.getElementById('nameInput').value.trim(), document.getElementById('msgInput').value.trim()); });
-document.getElementById('uploadForm').addEventListener('submit', e => { e.preventDefault(); uploadFile(); });
+document.getElementById('sendForm').addEventListener('submit', e => {
+    e.preventDefault();
+    sendMessage(document.getElementById('nameInput').value.trim(), document.getElementById('msgInput').value.trim());
+});
+
+document.getElementById('uploadForm').addEventListener('submit', e => {
+    e.preventDefault();
+    uploadFile();
+});
 
 fetchMessages();
 setInterval(fetchMessages, 5000);
