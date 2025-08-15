@@ -88,36 +88,67 @@ async function fetchMessages() {
 
             // Attachments handling with blob URLs
             let attachmentsHTML = '';
-if (msg.attachments?.length) {
-    for (const att of msg.attachments) {
-        const url = att.url;
-        const name = att.filename.toLowerCase();
+if (msg.attachments && msg.attachments.length > 0) {
+    msg.attachments.forEach(att => {
+        const fileExt = att.filename.split('.').pop().toLowerCase();
 
-        if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) {
-            attachmentsHTML += `<br><img src="${url}" alt="${name}" style="max-width:300px;">`;
-        } 
-        else if (/\.(mp4|webm|mov)$/.test(name)) {
-            attachmentsHTML += `
-                <br>
-                <video controls style="max-width:300px;">
-                    <source src="${url}" type="video/${name.split('.').pop()}">
-                    Your browser does not support the video tag.
-                </video>
-            `;
-        } 
-        else if (/\.(mp3|wav|ogg)$/.test(name)) {
-            attachmentsHTML += `
-                <br>
-                <audio controls>
-                    <source src="${url}" type="audio/${name.split('.').pop()}">
-                    Your browser does not support the audio element.
-                </audio>
-            `;
-        } 
-        else {
-            attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
+        // Create container for attachment
+        const attachmentEl = document.createElement("div");
+        attachmentEl.className = "attachment";
+
+        // IMAGE
+        if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileExt)) {
+            const img = document.createElement("img");
+            img.src = att.url; // direct Discord CDN URL
+            img.alt = att.filename;
+            img.loading = "lazy";
+            img.style.maxWidth = "400px";
+            img.style.borderRadius = "8px";
+            attachmentEl.appendChild(img);
         }
-    }
+
+        // VIDEO
+        else if (["mp4", "mov", "webm"].includes(fileExt)) {
+            const video = document.createElement("video");
+            video.controls = true;
+            video.preload = "metadata"; // so it doesn't block page load
+            video.style.maxWidth = "400px";
+            video.style.borderRadius = "8px";
+
+            const source = document.createElement("source");
+            source.src = att.url; // Fresh URL from backend
+            source.type = fileExt === "mov" ? "video/quicktime" : `video/${fileExt}`;
+            video.appendChild(source);
+
+            attachmentEl.appendChild(video);
+        }
+
+        // AUDIO
+        else if (["mp3", "wav", "ogg", "flac"].includes(fileExt)) {
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.preload = "metadata";
+
+            const source = document.createElement("source");
+            source.src = att.url;
+            source.type = `audio/${fileExt}`;
+            audio.appendChild(source);
+
+            attachmentEl.appendChild(audio);
+        }
+
+        // OTHER FILES
+        else {
+            const link = document.createElement("a");
+            link.href = att.url;
+            link.download = att.filename;
+            link.textContent = `Download ${att.filename}`;
+            link.target = "_blank";
+            attachmentEl.appendChild(link);
+        }
+
+        messageContent.appendChild(attachmentEl);
+    });
 }
 
             let replyHTML = '';
