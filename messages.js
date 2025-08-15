@@ -92,64 +92,36 @@ if (msg.attachments && msg.attachments.length > 0) {
     msg.attachments.forEach(att => {
         const fileExt = att.filename.split('.').pop().toLowerCase();
 
-        // Create container for attachment
-        const attachmentEl = document.createElement("div");
-        attachmentEl.className = "attachment";
-
         // IMAGE
         if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileExt)) {
-            const img = document.createElement("img");
-            img.src = att.url; // direct Discord CDN URL
-            img.alt = att.filename;
-            img.loading = "lazy";
-            img.style.maxWidth = "400px";
-            img.style.borderRadius = "8px";
-            attachmentEl.appendChild(img);
+            attachmentsHTML += `<div class="attachment"><img src="${att.url}" 
+                alt="${att.filename}" loading="lazy" style="max-width:400px;border-radius:8px;"></div>`;
         }
 
         // VIDEO
         else if (["mp4", "mov", "webm"].includes(fileExt)) {
-            const video = document.createElement("video");
-            video.controls = true;
-            video.preload = "metadata"; // so it doesn't block page load
-            video.style.maxWidth = "400px";
-            video.style.borderRadius = "8px";
-
-            const source = document.createElement("source");
-            source.src = att.url; // Fresh URL from backend
-            source.type = fileExt === "mov" ? "video/quicktime" : `video/${fileExt}`;
-            video.appendChild(source);
-
-            attachmentEl.appendChild(video);
+            const type = fileExt === "mov" ? "video/quicktime" : `video/${fileExt}`;
+            attachmentsHTML += `<div class="attachment"><video controls preload="metadata" 
+                style="max-width:400px;border-radius:8px;">
+                <source src="${att.url}" type="${type}">
+            </video></div>`;
         }
 
         // AUDIO
         else if (["mp3", "wav", "ogg", "flac"].includes(fileExt)) {
-            const audio = document.createElement("audio");
-            audio.controls = true;
-            audio.preload = "metadata";
-
-            const source = document.createElement("source");
-            source.src = att.url;
-            source.type = `audio/${fileExt}`;
-            audio.appendChild(source);
-
-            attachmentEl.appendChild(audio);
+            attachmentsHTML += `<div class="attachment"><audio controls preload="metadata">
+                <source src="${att.url}" type="audio/${fileExt}">
+            </audio></div>`;
         }
 
         // OTHER FILES
         else {
-            const link = document.createElement("a");
-            link.href = att.url;
-            link.download = att.filename;
-            link.textContent = `Download ${att.filename}`;
-            link.target = "_blank";
-            attachmentEl.appendChild(link);
+            attachmentsHTML += `<div class="attachment"><a href="${att.url}" download="${att.filename}" target="_blank">
+                Download ${att.filename}</a></div>`;
         }
-
-        messageContent.appendChild(attachmentEl);
     });
 }
+
 
             let replyHTML = '';
             if (msg.referenced_message) {
