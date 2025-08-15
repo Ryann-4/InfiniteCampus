@@ -33,7 +33,7 @@ function getStatusFromWidget(globalName) {
 let currentChannelId = getSelectedChannelId();
 const messageIdsByChannel = {};
 async function fetchMessages() {
-    const channelId = getSelectedChannelId();
+    const channelId = currentChannelId;
     const list = document.getElementById('messages');
     try {
         const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
@@ -123,14 +123,14 @@ async function fetchMessages() {
     }
 }
 document.getElementById('channelSelector').addEventListener('change', () => {
-    const channelId = getSelectedChannelId();
+    currentChannelId = getSelectedChannelId();
     const list = document.getElementById('messages');
     list.innerHTML = '';
-    if (!messageIdsByChannel[channelId]) messageIdsByChannel[channelId] = new Set();
+    if (!messageIdsByChannel[currentChannelId]) messageIdsByChannel[currentChannelId] = new Set();
     fetchMessages();
 });
 async function sendMessage(name, content) {
-    const channelId = getSelectedChannelId();
+    const channelId = currentChannelId;
     try {
         await fetch(`${backendUrl}/send`, {
             method: 'POST',
@@ -143,7 +143,7 @@ async function sendMessage(name, content) {
     } catch (err) { console.error('Error Sending Message:', err); }
 }
 async function uploadFile() {
-    const channelId = getSelectedChannelId();
+    const channelId = currentChannelId;
     const file = document.getElementById('fileInput').files[0];
     if (!file) return;
     const formData = new FormData();
