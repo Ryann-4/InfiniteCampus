@@ -18,10 +18,10 @@ function getSelectedChannelId() {
 }
 function getStatusImage(status) {
     switch (status) {
-        case 'online': return 'https://codehs.com/uploads/32492fbd9c7975781bec905cc80efbde';       // green circle
-        case 'idle': return 'https://codehs.com/uploads/366cef0d856f621ae394ef8ca02c0807';           // yellow quarter moon
-        case 'dnd': return 'https://codehs.com/uploads/ad7edef57db7e5c9eab58f45b9b8d7a4';             // do not enter sign
-        default: return 'https://codehs.com/uploads/1837fc15433ac1289c3b36ec975fbc56';            // hollow grey circle
+        case 'online': return 'https://codehs.com/uploads/32492fbd9c7975781bec905cc80efbde';
+        case 'idle': return 'https://codehs.com/uploads/366cef0d856f621ae394ef8ca02c0807';
+        case 'dnd': return 'https://codehs.com/uploads/ad7edef57db7e5c9eab58f45b9b8d7a4';
+        default: return 'https://codehs.com/uploads/1837fc15433ac1289c3b36ec975fbc56';
     }
 }
 function getStatusFromWidget(globalName) {
