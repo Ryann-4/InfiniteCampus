@@ -3,42 +3,44 @@ const apiMessagesUrl = `${backendUrl}/api/messages`;
 function getSelectedChannelId() {
   return document.getElementById('channelSelector').value;
 }
-let currentChannelId = getSelectedChannelId();
+let currentChannelId = null; // Track current channel
+function switchChannel(channelId) {
+  if (currentChannelId !== channelId) {
+    currentChannelId = channelId;
+    const list = document.getElementById('messages');
+    list.innerHTML = ''; // Clear only when channel changes
+    fetchMessages(); // Fetch fresh messages for new channel
+  }
+}
 
 async function fetchMessages() {
-  const channelId = getSelectedChannelId();
+  if (!currentChannelId) return; // No channel selected yet
+
   try {
-    const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
+    const res = await fetch(`${apiMessagesUrl}?channelId=${currentChannelId}`, {
       headers: { 'ngrok-skip-browser-warning': 'true' }
     });
     const data = await res.json();
     const list = document.getElementById('messages');
 
-    // Store IDs of messages currently in the DOM
+    // Get IDs already in DOM
     const existingMessageIds = new Set(
       [...list.children].map(li => li.dataset.id)
     );
 
-    // Go through messages in reverse order (oldest first)
+    // Render oldest first so prepend keeps order correct
     for (const msg of data.reverse()) {
-      if (existingMessageIds.has(msg.id)) continue; // Skip duplicates
+      if (existingMessageIds.has(msg.id)) continue;
 
       const li = document.createElement('li');
-      li.dataset.id = msg.id; // Store ID for future duplicate checks
+      li.dataset.id = msg.id;
 
-      // Display name and server tag
       const displayName = msg.member?.nick || msg.author.username;
       const serverTag = msg.member?.guild_tag ? ` [${msg.member.guild_tag}]` : '';
-      const displayNameWithTag = displayName + serverTag;
-
-      // Avatar
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
 
-      const timestamp = new Date(msg.timestamp).toLocaleString();
-
-      // Mentions replacement
       let contentWithMentions = msg.content || '';
       if (msg.mentions?.length) {
         msg.mentions.forEach(u => {
@@ -50,7 +52,7 @@ async function fetchMessages() {
         });
       }
 
-      // Images from message content
+      // Images in content
       let imagesHTML = '';
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let match;
@@ -63,27 +65,26 @@ async function fetchMessages() {
       if (msg.attachments?.length) {
         msg.attachments.forEach(att => {
           const url = att.url;
-          const name = att.filename;
-          const lowerName = name.toLowerCase();
-          if (/\.(png|jpg|jpeg|gif|webp)$/.test(lowerName)) {
-            attachmentsHTML += `<br><img class="message-img" src="${url}" alt="${name}" style="max-width:300px;">`;
-          } else if (/\.(mp4|webm|mov)$/.test(lowerName)) {
-            attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}" type="video/${lowerName.split('.').pop()}"></video>`;
-          } else if (/\.(mp3|wav|ogg)$/.test(lowerName)) {
-            attachmentsHTML += `<br><audio controls><source src="${url}" type="audio/${lowerName.split('.').pop()}"></audio>`;
+          const name = att.filename.toLowerCase();
+          if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) {
+            attachmentsHTML += `<br><img src="${url}" style="max-width:300px;">`;
+          } else if (/\.(mp4|webm|mov)$/.test(name)) {
+            attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}"></video>`;
+          } else if (/\.(mp3|wav|ogg)$/.test(name)) {
+            attachmentsHTML += `<br><audio controls><source src="${url}"></audio>`;
           } else {
-            attachmentsHTML += `<br><a href="${url}" download>${name}</a>`;
+            attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
           }
         });
       }
 
-      // Reply display
+      // Reply
       let replyHTML = '';
       if (msg.referenced_message) {
         const replyAuthor = msg.referenced_message.author?.username || 'Unknown';
         const replyContent = msg.referenced_message.content || '[no content]';
         replyHTML = `
-          <div class="reply" style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
+          <div style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
             Replying to <strong>${replyAuthor}</strong>: ${replyContent}
           </div>
         `;
@@ -92,7 +93,7 @@ async function fetchMessages() {
       // Reactions
       let reactionsHTML = '';
       if (msg.reactions?.length) {
-        reactionsHTML = `<div class="reactions" style="margin-top:4px;">` +
+        reactionsHTML = `<div style="margin-top:4px;">` +
           msg.reactions.map(r => 
             `<span style="border:1px solid #ccc;border-radius:4px;padding:2px 4px;margin-right:2px;">${r.emoji.name} ${r.count}</span>`
           ).join('') +
@@ -100,23 +101,24 @@ async function fetchMessages() {
       }
 
       li.innerHTML = `
-        <img src="${avatarUrl}" class="avatar" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
-        <div class="content" style="display:inline-block;vertical-align:middle;margin-left:10px;">
-          <strong>${displayNameWithTag}</strong>
+        <img src="${avatarUrl}" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;">
+        <div style="display:inline-block;vertical-align:middle;margin-left:10px;">
+          <strong>${displayName}${serverTag}</strong>
           ${replyHTML}
           <div>${contentWithMentions}${imagesHTML}</div>
           ${attachmentsHTML}
           ${reactionsHTML}
-          <div class="timestamp" style="font-size:0.8em;color:#888;">${timestamp}</div>
+          <div style="font-size:0.8em;color:#888;">${new Date(msg.timestamp).toLocaleString()}</div>
         </div>
       `;
 
-      list.prepend(li); // Add new message without clearing old ones
+      list.prepend(li);
     }
   } catch (err) {
     console.error('Error Fetching Messages:', err);
   }
 }
+
 
 document.getElementById('channelSelector').addEventListener('change', () => {
   currentChannelId = getSelectedChannelId();
