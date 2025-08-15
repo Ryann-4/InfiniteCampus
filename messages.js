@@ -48,6 +48,7 @@ async function fetchMessages() {
         });
         const data = await res.json();
 
+        // Ignore results if user switched channels mid-fetch
         if (channelId !== currentChannelId) return;
 
         [...list.children].forEach(li => {
@@ -58,7 +59,6 @@ async function fetchMessages() {
 
         for (const msg of data.reverse()) {
             if (existingMessageIds.has(msg.id)) continue;
-
             const li = document.createElement('li');
             li.dataset.id = msg.id;
             li.dataset.channelId = channelId;
@@ -86,37 +86,15 @@ async function fetchMessages() {
                 imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
             }
 
-            // Attachments handling with blob URLs
             let attachmentsHTML = '';
-            if (msg.attachments && msg.attachments.length > 0) {
+            if (msg.attachments?.length) {
                 msg.attachments.forEach(att => {
-                    const fileExt = att.filename.split('.').pop().toLowerCase();
-
-                    // IMAGE
-                    if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileExt)) {
-                        attachmentsHTML += `<div class="attachment"><img src="${att.url}" 
-                            alt="${att.filename}" loading="lazy" style="max-width:400px;border-radius:8px;"></div>`;
-                    }
-
-                    // VIDEO as link
-                    else if (["mp4", "mov", "webm"].includes(fileExt)) {
-                        attachmentsHTML += `<div class="attachment">
-                            <a href="${att.url}" target="_blank">View Video: ${att.filename}</a>
-                        </div>`;
-                    }
-
-                    // AUDIO
-                    else if (["mp3", "wav", "ogg", "flac"].includes(fileExt)) {
-                        attachmentsHTML += `<div class="attachment"><audio controls preload="metadata">
-                            <source src="${att.url}" type="audio/${fileExt}">
-                        </audio></div>`;
-                    }
-
-                    // OTHER FILES
-                    else {
-                        attachmentsHTML += `<div class="attachment"><a href="${att.url}" download="${att.filename}" target="_blank">
-                            Download ${att.filename}</a></div>`;
-                    }
+                    const url = att.url;
+                    const name = att.filename.toLowerCase();
+                    if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) attachmentsHTML += `<br><img src="${url}" alt="${name}" style="max-width:300px;">`;
+                    else if (/\.(mp4|webm|mov)$/.test(name)) attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}" type="video/${name.split('.').pop()}"></video>`;
+                    else if (/\.(mp3|wav|ogg)$/.test(name)) attachmentsHTML += `<br><audio controls><source src="${url}" type="audio/${name.split('.').pop()}"></audio>`;
+                    else attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
                 });
             }
 
@@ -151,7 +129,8 @@ async function fetchMessages() {
                     <span style="margin-left:5px;color:#888;${serverTag ? 'border:1px solid white;border-radius:5px;padding:0 4px;' : ''}">${serverTag}</span>
                     <img src="${getStatusImage(statusColor)}" style="width:16px;height:16px;margin-left:5px;vertical-align:middle;">
                     ${replyHTML}
-                    <div>${contentWithMentions}${imagesHTML}${attachmentsHTML}</div>
+                    <div>${contentWithMentions}${imagesHTML}</div>
+                    ${attachmentsHTML}
                     ${reactionsHTML}
                     <div class="timestamp" style="font-size:0.8em;color:#888;">${timestamp}</div>
                 </div>
