@@ -13,30 +13,30 @@ async function fetchMessages() {
   const channelId = getSelectedChannelId();
   const list = document.getElementById('messages');
 
-  // Clear old messages if we switched channels
-  if (channelId !== currentChannelId) {
-    list.innerHTML = '';
-    currentChannelId = channelId;
-  }
-
   try {
     const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
       headers: { 'ngrok-skip-browser-warning': 'true' }
     });
     const data = await res.json();
 
+    // Remove messages that belong to another channel
+    [...list.children].forEach(li => {
+      if (li.dataset.channelId && li.dataset.channelId !== channelId) {
+        li.remove();
+      }
+    });
+
     // Store IDs of messages currently in the DOM
-    const existingMessageIds = new Set(
-      [...list.children].map(li => li.dataset.id)
-    );
+    const existingMessageIds = new Set([...list.children].map(li => li.dataset.id));
 
     for (const msg of data.reverse()) {
-      if (existingMessageIds.has(msg.id)) continue;
+      if (existingMessageIds.has(msg.id)) continue; // Skip duplicates
 
       const li = document.createElement('li');
       li.dataset.id = msg.id;
+      li.dataset.channelId = channelId; // Track which channel it belongs to
 
-      // ✅ Prefer server nickname if available
+      // Prefer server nickname if available
       const displayName = msg.member?.nick || msg.author.username;
       const serverTag = msg.member?.guild_tag ? ` [${msg.member.guild_tag}]` : '';
       const displayNameWithTag = displayName + serverTag;
@@ -58,6 +58,7 @@ async function fetchMessages() {
         });
       }
 
+      // Images
       let imagesHTML = '';
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let match;
@@ -65,6 +66,7 @@ async function fetchMessages() {
         imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
       }
 
+      // Attachments
       let attachmentsHTML = '';
       if (msg.attachments?.length) {
         msg.attachments.forEach(att => {
@@ -82,9 +84,10 @@ async function fetchMessages() {
         });
       }
 
+      // Replies
       let replyHTML = '';
       if (msg.referenced_message) {
-        const replyAuthor = msg.referenced_message.author?.username || 'Unknown';
+        const replyAuthor = msg.referenced_message.member?.nick || msg.referenced_message.author?.username || 'Unknown';
         const replyContent = msg.referenced_message.content || '[no content]';
         replyHTML = `
           <div class="reply" style="font-size:0.85em;color:#666;border-left:3px solid #ccc;padding-left:5px;margin-bottom:4px;">
@@ -93,6 +96,7 @@ async function fetchMessages() {
         `;
       }
 
+      // Reactions
       let reactionsHTML = '';
       if (msg.reactions?.length) {
         reactionsHTML = `<div class="reactions" style="margin-top:4px;">` +
