@@ -12,8 +12,10 @@ async function fetchMessages() {
   const channelId = getSelectedChannelId();
   const list = document.getElementById('messages');
 
-  if (!messageIdsByChannel[channelId]) {
-    messageIdsByChannel[channelId] = new Set();
+  // Clear old messages if we switched channels
+  if (channelId !== currentChannelId) {
+    list.innerHTML = '';
+    currentChannelId = channelId;
   }
 
   try {
@@ -22,27 +24,28 @@ async function fetchMessages() {
     });
     const data = await res.json();
 
-    // Reverse so oldest messages first
+    // Store IDs of messages currently in the DOM
+    const existingMessageIds = new Set(
+      [...list.children].map(li => li.dataset.id)
+    );
+
     for (const msg of data.reverse()) {
-      if (messageIdsByChannel[channelId].has(msg.id)) continue;
-      messageIdsByChannel[channelId].add(msg.id);
+      if (existingMessageIds.has(msg.id)) continue;
 
       const li = document.createElement('li');
       li.dataset.id = msg.id;
 
-      // Display name and server tag
+      // ✅ Prefer server nickname if available
       const displayName = msg.member?.nick || msg.author.username;
       const serverTag = msg.member?.guild_tag ? ` [${msg.member.guild_tag}]` : '';
       const displayNameWithTag = displayName + serverTag;
 
-      // Avatar
       const avatarUrl = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
 
       const timestamp = new Date(msg.timestamp).toLocaleString();
 
-      // Mentions
       let contentWithMentions = msg.content || '';
       if (msg.mentions?.length) {
         msg.mentions.forEach(u => {
@@ -54,7 +57,6 @@ async function fetchMessages() {
         });
       }
 
-      // Images in content
       let imagesHTML = '';
       const imageRegex = /(https?:\/\/[^\s]+\.(png|jpg|jpeg|gif|webp))/gi;
       let match;
@@ -62,26 +64,23 @@ async function fetchMessages() {
         imagesHTML += `<br><img class="message-img" src="${match[1]}" style="max-width:300px;">`;
       }
 
-      // Attachments
       let attachmentsHTML = '';
       if (msg.attachments?.length) {
         msg.attachments.forEach(att => {
           const url = att.url;
-          const name = att.filename;
-          const lowerName = name.toLowerCase();
-          if (/\.(png|jpg|jpeg|gif|webp)$/.test(lowerName)) {
+          const name = att.filename.toLowerCase();
+          if (/\.(png|jpg|jpeg|gif|webp)$/.test(name)) {
             attachmentsHTML += `<br><img class="message-img" src="${url}" alt="${name}" style="max-width:300px;">`;
-          } else if (/\.(mp4|webm|mov)$/.test(lowerName)) {
-            attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}" type="video/${lowerName.split('.').pop()}"></video>`;
-          } else if (/\.(mp3|wav|ogg)$/.test(lowerName)) {
-            attachmentsHTML += `<br><audio controls><source src="${url}" type="audio/${lowerName.split('.').pop()}"></audio>`;
+          } else if (/\.(mp4|webm|mov)$/.test(name)) {
+            attachmentsHTML += `<br><video controls style="max-width:300px;"><source src="${url}" type="video/${name.split('.').pop()}"></video>`;
+          } else if (/\.(mp3|wav|ogg)$/.test(name)) {
+            attachmentsHTML += `<br><audio controls><source src="${url}" type="audio/${name.split('.').pop()}"></audio>`;
           } else {
-            attachmentsHTML += `<br><a href="${url}" download>${name}</a>`;
+            attachmentsHTML += `<br><a href="${url}" download>${att.filename}</a>`;
           }
         });
       }
 
-      // Reply display
       let replyHTML = '';
       if (msg.referenced_message) {
         const replyAuthor = msg.referenced_message.author?.username || 'Unknown';
@@ -93,7 +92,6 @@ async function fetchMessages() {
         `;
       }
 
-      // Reactions
       let reactionsHTML = '';
       if (msg.reactions?.length) {
         reactionsHTML = `<div class="reactions" style="margin-top:4px;">` +
@@ -121,6 +119,7 @@ async function fetchMessages() {
     console.error('Error Fetching Messages:', err);
   }
 }
+
 
 // Switch channels
 document.getElementById('channelSelector').addEventListener('change', () => {
