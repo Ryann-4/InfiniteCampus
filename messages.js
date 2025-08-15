@@ -7,21 +7,24 @@ let currentChannelId = getSelectedChannelId();
 
 async function fetchMessages() {
   const channelId = getSelectedChannelId();
-  currentChannelId = channelId; // Update the active channel
   try {
     const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
       headers: { 'ngrok-skip-browser-warning': 'true' }
     });
     const data = await res.json();
-
-    // If the channel changed before the fetch finished, ignore this result
-    if (channelId !== currentChannelId) return;
-
     const list = document.getElementById('messages');
-    list.innerHTML = '';
 
+    // Store IDs of messages currently in the DOM
+    const existingMessageIds = new Set(
+      [...list.children].map(li => li.dataset.id)
+    );
+
+    // Go through messages in reverse order (oldest first)
     for (const msg of data.reverse()) {
+      if (existingMessageIds.has(msg.id)) continue; // Skip duplicates
+
       const li = document.createElement('li');
+      li.dataset.id = msg.id; // Store ID for future duplicate checks
 
       // Display name and server tag
       const displayName = msg.member?.nick || msg.author.username;
@@ -108,7 +111,7 @@ async function fetchMessages() {
         </div>
       `;
 
-      list.prepend(li);
+      list.prepend(li); // Add new message without clearing old ones
     }
   } catch (err) {
     console.error('Error Fetching Messages:', err);
