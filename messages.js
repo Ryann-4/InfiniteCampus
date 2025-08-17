@@ -119,7 +119,9 @@ function updateReactions(msg){
 async function fetchMessages(token=currentChannelToken){
     const channelId = currentChannelId;
     try{
-        const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`);
+        const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
         const data = await res.json();
         const sorted = data.sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
         for(const msg of sorted){
