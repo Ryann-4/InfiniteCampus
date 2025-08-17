@@ -97,7 +97,7 @@ async function renderMessage(msg, list){
         contentHTML += `</div>`;
     }
     contentHTML += `<div class="timestamp">${timestamp}</div>
-                    <span class="reaction-trigger" data-id="${msg.id}">React</span>`;
+                    <br><span class="reaction-trigger" data-id="${msg.id}">React</span>`;
     contentDiv.innerHTML = contentHTML;
     displayedMessageIds.add(msg.id);
 }
