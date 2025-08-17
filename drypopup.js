@@ -136,6 +136,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const betterWeatherToggle = document.getElementById('betterWeatherToggle');
     betterWeatherToggle.addEventListener('change', function () {
         localStorage.setItem('betterWeather', this.checked ? 'true' : 'false');
+        sessionStorage.setItem('betterWeatherSession', this.checked ? 'true' : 'false');
     });
     const button = document.getElementById('trigger');
     const popup = document.getElementById('popup');
