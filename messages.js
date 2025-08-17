@@ -1,6 +1,7 @@
 const backendUrl = 'https://included-touched-joey.ngrok-free.app';
 const apiMessagesUrl = `${backendUrl}/api/messages`;
 const widgetUrl = 'https://discord.com/api/guilds/1002698920809463808/widget.json';
+
 let widgetData = null;
 let displayedMessageIds = new Set();
 let currentChannelId = getSelectedChannelId();
@@ -9,6 +10,7 @@ let currentReactMessageId = null;
 const requestQueue = [];
 let isProcessingQueue = false;
 const RATE_LIMIT_DELAY = 3000;
+
 async function processQueue() {
     if (isProcessingQueue || requestQueue.length === 0) return;
     isProcessingQueue = true;
@@ -19,13 +21,17 @@ async function processQueue() {
     }
     isProcessingQueue = false;
 }
+
 function enqueueRequest(fn){ requestQueue.push(fn); processQueue(); }
+
 async function fetchWidget() {
     try { widgetData = await (await fetch(widgetUrl)).json(); } catch { widgetData = null; }
 }
 fetchWidget();
 setInterval(fetchWidget, 30000);
+
 function getSelectedChannelId(){ return document.getElementById('channelSelector').value; }
+
 function getStatusImage(status){
     switch(status){
         case 'online': return 'https://codehs.com/uploads/32492fbd9c7975781bec905cc80efbde';
@@ -34,12 +40,23 @@ function getStatusImage(status){
         default: return 'https://codehs.com/uploads/1837fc15433ac1289c3b36ec975fbc56';
     }
 }
+
+function getStatusTitle(status){
+    switch(status){
+        case 'online': return 'Online';
+        case 'idle': return 'Idle';
+        case 'dnd': return 'Do Not Disturb';
+        default: return 'Offline';
+    }
+}
+
 function getStatusFromWidget(globalName){
     if(globalName==='Dad Bot') return 'online';
     if(!widgetData?.members) return 'offline';
     const member = widgetData.members.find(m=>m.username===globalName||m.nick===globalName);
     return member?.status||'offline';
 }
+
 function renderTempMessage(content, type='text'){
     const list = document.getElementById('messages');
     const li = document.createElement('li');
@@ -48,34 +65,44 @@ function renderTempMessage(content, type='text'){
     list.prepend(li);
     return li;
 }
+
 async function renderMessage(msg, list){
     if(displayedMessageIds.has(msg.id)) return updateReactions(msg);
+
     const li = document.createElement('li');
     list.prepend(li);
+
     const avatarImg = document.createElement('img');
     avatarImg.classList.add('avatar');
     avatarImg.src = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
     li.appendChild(avatarImg);
+
     const contentDiv = document.createElement('div');
     contentDiv.classList.add('content');
     li.appendChild(contentDiv);
+
     const serverTag = msg.author.clan?.tag || '';
     const displayName = msg.author.global_name || msg.author.username;
     const statusColor = getStatusFromWidget(displayName);
+    const statusTitle = getStatusTitle(statusColor);
+
     const timestamp = new Date(msg.timestamp).toLocaleString();
     let contentWithMentions = msg.content || '';
+
     if(msg.mentions?.length){
         msg.mentions.forEach(u=>{
             const name = u.global_name || u.username;
             contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`,'g'),`@${name}`);
         });
     }
+
     let contentHTML = `<strong>${displayName}</strong>
         <span style="margin-left:5px;color:#888;${serverTag?'border:1px solid white;border-radius:5px;padding:0 4px;':''}">${serverTag}</span>
-        <img src="${getStatusImage(statusColor)}" title="${status}" style="width:16px;height:16px;margin-left:5px;vertical-align:middle;">
+        <img src="${getStatusImage(statusColor)}" title="${statusTitle}" style="width:16px;height:16px;margin-left:5px;vertical-align:middle;">
         <div>${contentWithMentions}</div>`;
+
     if(msg.attachments?.length){
         msg.attachments.forEach(att=>{
             const url = att.url, name = att.filename.toLowerCase();
@@ -83,12 +110,14 @@ async function renderMessage(msg, list){
             else contentHTML += `<br><a href="${url}" target="_blank" rel="noopener">${att.filename}</a>`;
         });
     }
+
     if(msg.referenced_message){
         const replyAuthor = msg.referenced_message.author;
         const replyDisplayName = replyAuthor.global_name || replyAuthor.username;
         const replyContent = msg.referenced_message.content || 'Attachment';
         contentHTML += `<div class="reply-box">Replying To <strong>${replyDisplayName}</strong>: ${replyContent}</div>`;
     }
+
     if(msg.reactions?.length){
         contentHTML += `<div class="reactions" style="margin-top:5px;">`;
         msg.reactions.forEach(r=>{
@@ -96,14 +125,18 @@ async function renderMessage(msg, list){
         });
         contentHTML += `</div>`;
     }
+
     contentHTML += `<div class="timestamp">${timestamp}</div>
                     <br><span class="reaction-trigger" data-id="${msg.id}">React</span>`;
+
     contentDiv.innerHTML = contentHTML;
     displayedMessageIds.add(msg.id);
 }
+
 function updateReactions(msg){
     const li = document.querySelector(`.reaction-trigger[data-id="${msg.id}"]`)?.closest('li');
     if(!li) return;
+
     let reactionsHTML = '';
     if(msg.reactions?.length){
         reactionsHTML = `<div class="reactions" style="margin-top:5px;">`;
@@ -112,10 +145,12 @@ function updateReactions(msg){
         });
         reactionsHTML += `</div>`;
     }
+
     const oldReactions = li.querySelector('.reactions');
     if(oldReactions) oldReactions.replaceWith(new DOMParser().parseFromString(reactionsHTML,'text/html').body.firstChild);
     else li.querySelector('.content').insertAdjacentHTML('beforeend', reactionsHTML);
 }
+
 async function fetchMessages(token=currentChannelToken){
     const channelId = currentChannelId;
     try{
@@ -130,7 +165,9 @@ async function fetchMessages(token=currentChannelToken){
         }
     } catch(err){ console.error(err); }
 }
+
 setInterval(()=>enqueueRequest(()=>fetchMessages(currentChannelToken)),3000);
+
 document.getElementById('channelSelector').addEventListener('change',()=>{
     currentChannelId = getSelectedChannelId();
     currentChannelToken = Symbol();
@@ -138,7 +175,11 @@ document.getElementById('channelSelector').addEventListener('change',()=>{
     document.getElementById('messages').innerHTML='';
     enqueueRequest(()=>fetchMessages(currentChannelToken));
 });
+
 const emojiPicker = document.getElementById('emojiPicker');
+// Discord-valid emoji regex (unicode + custom)
+const discordEmojiRegex = /^(<a?:\w+:\d+>|[\p{Emoji_Presentation}\u200d]+)$/u;
+
 document.body.addEventListener('click', e => {
     if (e.target.classList.contains('reaction-trigger')) {
         currentReactMessageId = e.target.dataset.id;
@@ -152,6 +193,10 @@ document.body.addEventListener('click', e => {
         btn.dataset.clicked = 'true';
         const messageId = btn.dataset.id;
         const emoji = btn.dataset.emoji;
+        if(!discordEmojiRegex.test(emoji)){
+            alert('This emoji is not valid for Discord.');
+            return;
+        }
         fetch(`${backendUrl}/react`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -159,8 +204,13 @@ document.body.addEventListener('click', e => {
         }).catch(err => console.error(err));
     } else if (!emojiPicker.contains(e.target)) emojiPicker.style.display = 'none';
 });
+
 emojiPicker.addEventListener('emoji-click', event => {
     const emoji = event.detail.unicode;
+    if(!discordEmojiRegex.test(emoji)){
+        alert('This emoji is not valid for Discord.');
+        return;
+    }
     const messageId = currentReactMessageId;
     const triggerBtn = document.querySelector(`.reaction-trigger[data-id="${messageId}"]`);
     if (triggerBtn.dataset.clicked) return;
@@ -172,6 +222,7 @@ emojiPicker.addEventListener('emoji-click', event => {
     }).catch(err => console.error(err));
     emojiPicker.style.display = 'none';
 });
+
 document.getElementById('sendForm').addEventListener('submit', e=>{
     e.preventDefault();
     const name = document.getElementById('nameInput').value.trim();
@@ -186,10 +237,15 @@ document.getElementById('sendForm').addEventListener('submit', e=>{
     }).then(()=>tempLi.remove())
       .catch(err=>{ tempLi.remove(); console.error(err); });
 });
+
 const uploadForm = document.getElementById('uploadForm');
 const fileInput = document.getElementById('fileInput');
 const fileLabel = document.getElementById('fileLabel');
-fileInput.addEventListener('change',()=>{ fileLabel.textContent = fileInput.files.length>0 ? fileInput.files[0].name : 'Select A File'; });
+
+fileInput.addEventListener('change',()=>{ 
+    fileLabel.textContent = fileInput.files.length>0 ? fileInput.files[0].name : 'Select A File'; 
+});
+
 uploadForm.addEventListener('submit', e=>{
     e.preventDefault();
     if(!fileInput.files.length) return alert('No File Selected');
@@ -206,4 +262,5 @@ uploadForm.addEventListener('submit', e=>{
         fileInput.value=''; fileLabel.textContent='Select A File';
     }).catch(err=>{ tempLi.remove(); console.error(err); });
 });
+
 enqueueRequest(()=>fetchMessages(currentChannelToken));
