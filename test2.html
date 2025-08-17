@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Viewer (Live)</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUdhMpGKx5wgTGChO5y6lD6Hj3j1JKVUM",
+      authDomain: "websitestats-b7d1a.firebaseapp.com",
+      projectId: "websitestats-b7d1a",
+      storageBucket: "websitestats-b7d1a.firebasestorage.app",
+      messagingSenderId: "379238712007",
+      appId: "1:379238712007:web:cf481fbade6d1f60f5f4e2"
+    };
+
+    // Init
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Helper: get most common item in an array
+    function getMostCommon(arr) {
+      const counts = {};
+      arr.forEach(v => {
+        if (!v) return;
+        counts[v] = (counts[v] || 0) + 1;
+      });
+      let maxKey = null;
+      let maxCount = 0;
+      for (const [key, count] of Object.entries(counts)) {
+        if (count > maxCount) {
+          maxCount = count;
+          maxKey = key;
+        }
+      }
+      return { value: maxKey, count: maxCount };
+    }
+
+    function renderData(dataList) {
+      // Clear table
+      const tableBody = document.getElementById("data-body");
+      tableBody.innerHTML = "";
+
+      // Fill table
+      dataList.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.savedInput || ""}</td>
+          <td>${item.chatLoggedIn || ""}</td>
+          <td>${item.useGradient || ""}</td>
+          <td>${item.city || ""}</td>
+          <td>${item.state || ""}</td>
+          <td>${item.timestamp?.toDate ? item.timestamp.toDate().toLocaleString() : item.timestamp}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      // Compute most common values
+      const savedInputs = dataList.map(d => d.savedInput);
+      const cities = dataList.map(d => d.city);
+      const states = dataList.map(d => d.state);
+      const gradients = dataList.map(d => d.useGradient);
+
+      document.getElementById("common-savedInput").textContent = JSON.stringify(getMostCommon(savedInputs));
+      document.getElementById("common-city").textContent = JSON.stringify(getMostCommon(cities));
+      document.getElementById("common-state").textContent = JSON.stringify(getMostCommon(states));
+      document.getElementById("common-gradient").textContent = JSON.stringify(getMostCommon(gradients));
+    }
+
+    // Live listener
+    window.addEventListener("DOMContentLoaded", () => {
+      const dataRef = collection(db, "collectedData");
+      onSnapshot(dataRef, snapshot => {
+        const dataList = [];
+        snapshot.forEach(doc => dataList.push(doc.data()));
+        renderData(dataList);
+      });
+    });
+  </script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #eee; }
+    .summary { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Collected Data Viewer (Live)</h1>
+
+  <h2>Most Common Values (updates live)</h2>
+  <div class="summary">
+    <p><b>Saved Input:</b> <span id="common-savedInput"></span></p>
+    <p><b>City:</b> <span id="common-city"></span></p>
+    <p><b>State:</b> <span id="common-state"></span></p>
+    <p><b>Use Gradient:</b> <span id="common-gradient"></span></p>
+  </div>
+
+  <h2>All Entries</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Saved Input</th>
+        <th>Chat Logged In</th>
+        <th>Use Gradient</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody id="data-body"></tbody>
+  </table>
+</body>
+</html>
