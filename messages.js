@@ -127,17 +127,27 @@ function updateReactions(msg){
 }
 async function fetchMessages(token=currentChannelToken){
     const channelId = currentChannelId;
-    try{
+    const messagesList = document.getElementById('messages');
+    try {
         const res = await fetch(`${apiMessagesUrl}?channelId=${channelId}`, {
             headers: { 'ngrok-skip-browser-warning': 'true' }
         });
+        if (!res.ok) throw new Error('Backend Unreachable');
         const data = await res.json();
         const sorted = data.sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
         for(const msg of sorted){
             if(token !== currentChannelToken) return;
-            await renderMessage(msg, document.getElementById('messages'));
+            await renderMessage(msg, messagesList);
         }
-    } catch(err){ console.error(err); }
+    } catch(err){
+        console.error(err);
+        messagesList.innerHTML = '';
+        const li = document.createElement('li');
+        li.textContent = "Live Discord Chat Is Down Please Come Back Later";
+        li.style.color = 'red';
+        li.style.fontWeight = 'bold';
+        messagesList.appendChild(li);
+    }
 }
 setInterval(()=>enqueueRequest(()=>fetchMessages(currentChannelToken)),3000);
 document.getElementById('channelSelector').addEventListener('change',()=>{
