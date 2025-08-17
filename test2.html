@@ -2,40 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Data Viewer (Live)</title>
+  <title>Realtime Data Viewer</title>
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyCUdhMpGKx5wgTGChO5y6lD6Hj3j1JKVUM",
-    authDomain: "websitestats-b7d1a.firebaseapp.com",
-    databaseURL: "https://websitestats-b7d1a-default-rtdb.firebaseio.com",
-    projectId: "websitestats-b7d1a",
-    storageBucket: "websitestats-b7d1a.firebasestorage.app",
-    messagingSenderId: "379238712007",
-    appId: "1:379238712007:web:cf481fbade6d1f60f5f4e2"
-  };
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUdhMpGKx5wgTGChO5y6lD6Hj3j1JKVUM",
+      authDomain: "websitestats-b7d1a.firebaseapp.com",
+      databaseURL: "https://websitestats-b7d1a-default-rtdb.firebaseio.com", <!-- 🔑 -->
+      projectId: "websitestats-b7d1a",
+      storageBucket: "websitestats-b7d1a.firebasestorage.app",
+      messagingSenderId: "379238712007",
+      appId: "1:379238712007:web:cf481fbade6d1f60f5f4e2"
+    };
+
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const db = getDatabase(app);
+
+    // Helper
     function getMostCommon(arr) {
       const counts = {};
       arr.forEach(v => {
         if (!v) return;
         counts[v] = (counts[v] || 0) + 1;
       });
-      let maxKey = null;
-      let maxCount = 0;
-      for (const [key, count] of Object.entries(counts)) {
-        if (count > maxCount) {
-          maxCount = count;
-          maxKey = key;
-        }
+      let maxKey = null, maxCount = 0;
+      for (const [k, c] of Object.entries(counts)) {
+        if (c > maxCount) { maxCount = c; maxKey = k; }
       }
       return { value: maxKey, count: maxCount };
     }
-    function renderData(dataList) {      const tableBody = document.getElementById("data-body");
+
+    function renderData(dataObj) {
+      const tableBody = document.getElementById("data-body");
       tableBody.innerHTML = "";
 
-      // Fill table
+      const dataList = Object.values(dataObj || {});
       dataList.forEach(item => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -44,30 +47,21 @@
           <td>${item.useGradient || ""}</td>
           <td>${item.city || ""}</td>
           <td>${item.state || ""}</td>
-          <td>${item.timestamp?.toDate ? item.timestamp.toDate().toLocaleString() : item.timestamp}</td>
+          <td>${item.timestamp ? new Date(item.timestamp).toLocaleString() : ""}</td>
         `;
         tableBody.appendChild(row);
       });
 
-      // Compute most common values
-      const savedInputs = dataList.map(d => d.savedInput);
-      const cities = dataList.map(d => d.city);
-      const states = dataList.map(d => d.state);
-      const gradients = dataList.map(d => d.useGradient);
-
-      document.getElementById("common-savedInput").textContent = JSON.stringify(getMostCommon(savedInputs));
-      document.getElementById("common-city").textContent = JSON.stringify(getMostCommon(cities));
-      document.getElementById("common-state").textContent = JSON.stringify(getMostCommon(states));
-      document.getElementById("common-gradient").textContent = JSON.stringify(getMostCommon(gradients));
+      document.getElementById("common-savedInput").textContent = JSON.stringify(getMostCommon(dataList.map(d => d.savedInput)));
+      document.getElementById("common-city").textContent = JSON.stringify(getMostCommon(dataList.map(d => d.city)));
+      document.getElementById("common-state").textContent = JSON.stringify(getMostCommon(dataList.map(d => d.state)));
+      document.getElementById("common-gradient").textContent = JSON.stringify(getMostCommon(dataList.map(d => d.useGradient)));
     }
 
-    // Live listener
     window.addEventListener("DOMContentLoaded", () => {
-      const dataRef = collection(db, "collectedData");
-      onSnapshot(dataRef, snapshot => {
-        const dataList = [];
-        snapshot.forEach(doc => dataList.push(doc.data()));
-        renderData(dataList);
+      const dataRef = ref(db, "collectedData");
+      onValue(dataRef, snapshot => {
+        renderData(snapshot.val());
       });
     });
   </script>
@@ -80,9 +74,9 @@
   </style>
 </head>
 <body>
-  <h1>Collected Data Viewer (Live)</h1>
+  <h1>Realtime Collected Data Viewer</h1>
 
-  <h2>Most Common Values (updates live)</h2>
+  <h2>Most Common Values (Live)</h2>
   <div class="summary">
     <p><b>Saved Input:</b> <span id="common-savedInput"></span></p>
     <p><b>City:</b> <span id="common-city"></span></p>

@@ -40,22 +40,25 @@
         </center>
         <script src="frame.js">
         </script>
-            <script type="module">
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+
+  // Config (Realtime DB requires databaseURL)
   const firebaseConfig = {
     apiKey: "AIzaSyCUdhMpGKx5wgTGChO5y6lD6Hj3j1JKVUM",
     authDomain: "websitestats-b7d1a.firebaseapp.com",
-    databaseURL: "https://websitestats-b7d1a-default-rtdb.firebaseio.com",
+    databaseURL: "https://websitestats-b7d1a-default-rtdb.firebaseio.com",  <!-- 🔑 add this from Firebase console -->
     projectId: "websitestats-b7d1a",
     storageBucket: "websitestats-b7d1a.firebasestorage.app",
     messagingSenderId: "379238712007",
     appId: "1:379238712007:web:cf481fbade6d1f60f5f4e2"
   };
-    const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
 
-  // Function to send data to Firestore
-  async function sendDataToFirestore() {
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  function sendDataToRealtimeDB() {
     const savedInput   = localStorage.getItem('savedInput') || null;
     const chatLoggedIn = localStorage.getItem('chat_logged_in') || null;
     const useGradient  = localStorage.getItem('useGradient') || null;
@@ -68,19 +71,16 @@
       useGradient,
       city,
       state,
-      timestamp: new Date()
+      timestamp: Date.now()
     };
 
-    try {
-      await addDoc(collection(db, "collectedData"), data);
-      console.log("Data sent:", data);
-    } catch (error) {
-      console.error("Error writing document:", error);
-    }
+    push(ref(db, "collectedData"), data)
+      .then(() => console.log("Data sent:", data))
+      .catch(err => console.error("Error sending:", err));
   }
 
-  // Run automatically on page load
-  window.addEventListener("DOMContentLoaded", sendDataToFirestore);
-        </script>
+  window.addEventListener("DOMContentLoaded", sendDataToRealtimeDB);
+</script>
+
     </body>
 </html>
