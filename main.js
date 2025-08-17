@@ -156,13 +156,6 @@ async function fallbackToIP(resolve) {
     }
     if (resolve) resolve();
 }
-
-    async function fallbackToIP() {
-        const locRes = await fetch("https://ipapi.co/json/");
-        if (!locRes.ok) throw new Error("Weather Unavailable");
-        const loc = await locRes.json();
-        currentCity = loc.city;
-    }
     async function getWeather(city, useFahrenheit) {
         city = city.replace(/\+/g, "");
         const unit = useFahrenheit ? "u" : "m";
