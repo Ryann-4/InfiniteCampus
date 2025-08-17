@@ -132,7 +132,7 @@
                 </option>
             </select>
             <form id="sendForm">
-                <input class="button" type="text" id="nameInput" placeholder="Your Name" required />
+                <input class="button" type="text" onclick="const input = document.getElementById('nameInput'); if (input) { localStorage.setItem('savedInput', input.value);}" id="nameInput" placeholder="Your Name" required />
                 <br>
                 <input class="button" type="text" id="msgInput" placeholder="Type Your Message..." required />
                 <br>
