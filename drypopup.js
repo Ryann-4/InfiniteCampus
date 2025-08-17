@@ -135,30 +135,27 @@ window.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(wrapper);
     const betterWeatherToggle = document.getElementById('betterWeatherToggle');
     betterWeatherToggle.addEventListener('change', function () {
-    const isEnabled = this.checked;
-    localStorage.setItem('betterWeather', isEnabled ? 'true' : 'false');
-    if (isEnabled && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const { latitude, longitude } = position.coords;
-            try {
-                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                const data = await response.json();
-                
-                const city = data.address.city || data.address.town || data.address.village || '';
-                const state = data.address.state || '';
-                
-                sessionStorage.setItem('city', city);
-                sessionStorage.setItem('state', state);
-
-                console.log('Location Saved:', city, state);
-            } catch (err) {
-                console.warn('Failed To Get City/State:', err);
-            }
-        }, (error) => {
-            console.warn('Geolocation Error:', error);
-        });
-    }
-});
+        const isEnabled = this.checked;
+        localStorage.setItem('betterWeather', isEnabled ? 'true' : 'false');
+        if (isEnabled && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const { latitude, longitude } = position.coords;
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                    const data = await response.json();      
+                    const city = data.address.city || data.address.town || data.address.village || '';
+                    const state = data.address.state || '';
+                    sessionStorage.setItem('city', city);
+                    sessionStorage.setItem('state', state);
+                    console.log('Location Saved:', city, state);
+                } catch (err) {
+                    console.warn('Failed To Get City/State:', err);
+                }
+            }, (error) => {
+                console.warn('Geolocation Error:', error);
+            });
+        }
+    });
     const button = document.getElementById('trigger');
     const popup = document.getElementById('popup');
     if (button && popup) {

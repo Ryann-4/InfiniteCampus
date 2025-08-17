@@ -88,38 +88,75 @@ window.addEventListener('DOMContentLoaded', () => {
         setPopup2Color(isDark);
     });
     observer.observe(document.body, { childList: true, subtree: true });
-    async function getLocation() {
-        try {
-            if (safeGetItem("betterWeather") === "true") {
-                return new Promise((resolve) => {
-                    navigator.geolocation.getCurrentPosition(async (pos) => {
-                        const lat = pos.coords.latitude;
-                        const lon = pos.coords.longitude;
-                        try {
-                            const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                            const revData = await revRes.json();
-                            currentCity = revData.address.city || revData.address.town || revData.address.village || "";
-                            resolve();
-                        } catch (err) {
-                            console.error("Reverse Geocode Failed", err);
-                            currentCity = "";
-                            resolve();
-                        }
-                    }, async (err) => {
-                        console.warn("Geolocation Failed, Fallback To IP", err);
-                        await fallbackToIP();
-                        resolve();
-                    });
-                });
-            } else {
-                await fallbackToIP();
-            }
-        } catch (error) {
-            const weatherEl = document.getElementById("weather");
-            if (weatherEl) weatherEl.innerText = "Weather Unavailable";
-            currentCity = "";
+   async function getLocation() {
+    try {
+        // First check sessionStorage
+        let city = sessionStorage.getItem('city');
+        let state = sessionStorage.getItem('state');
+
+        if (city && state) {
+            currentCity = city;
+            console.log("Loaded location from sessionStorage:", city, state);
+            return;
         }
+
+        // If betterWeather toggle is on, try geolocation
+        if (safeGetItem("betterWeather") === "true" && navigator.geolocation) {
+            await new Promise((resolve) => {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    try {
+                        const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                        const revData = await revRes.json();
+                        currentCity = revData.address.city || revData.address.town || revData.address.village || "";
+                        state = revData.address.state || "";
+
+                        // Save to sessionStorage
+                        sessionStorage.setItem('city', currentCity);
+                        sessionStorage.setItem('state', state);
+
+                        console.log("Location saved to sessionStorage:", currentCity, state);
+                        resolve();
+                    } catch (err) {
+                        console.warn("Reverse Geocode Failed, fallback to IP:", err);
+                        await fallbackToIP(resolve);
+                    }
+                }, async (err) => {
+                    console.warn("Geolocation Failed, fallback to IP:", err);
+                    await fallbackToIP(resolve);
+                });
+            });
+        } else {
+            await fallbackToIP();
+        }
+    } catch (error) {
+        console.error("Failed to get location:", error);
+        currentCity = "";
     }
+}
+
+async function fallbackToIP(resolve) {
+    try {
+        const locRes = await fetch("https://ipapi.co/json/");
+        if (!locRes.ok) throw new Error("IP location unavailable");
+        const loc = await locRes.json();
+
+        currentCity = loc.city || "";
+        const state = loc.region || "";
+
+        // Save to sessionStorage
+        sessionStorage.setItem('city', currentCity);
+        sessionStorage.setItem('state', state);
+
+        console.log("Location (IP) saved to sessionStorage:", currentCity, state);
+    } catch (err) {
+        console.error("IP fallback failed:", err);
+        currentCity = "";
+    }
+    if (resolve) resolve();
+}
+
     async function fallbackToIP() {
         const locRes = await fetch("https://ipapi.co/json/");
         if (!locRes.ok) throw new Error("Weather Unavailable");
