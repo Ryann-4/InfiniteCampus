@@ -27,6 +27,8 @@
         </script>
         <script src="theme.js">
         </script>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js">
+        </script>
         <style>
             form {
                 margin-bottom: 20px;
@@ -85,6 +87,32 @@
                 margin-top: 5px;
                 font-style: italic;
                 min-height: 1.2em;
+                display:block;
+            }
+            .reaction-btn { 
+                cursor: pointer; 
+                border: 1px solid #ccc; 
+                border-radius: 4px; 
+                padding: 2px 6px; 
+                margin-right: 4px; 
+                background: #2f3136; 
+                font-size: 0.9em; 
+            }
+            .reaction-trigger { 
+                background-color: rgb(60, 130, 153); 
+                border:1px solid white; 
+                font-size: 1.2em; 
+                cursor: pointer; 
+                margin-left: 8px; 
+            }
+            emoji-picker {
+                position: absolute;
+                background: #2f3136;
+                border: 1px solid #555;
+                border-radius: 8px;
+                max-height: 300px;
+                display: none;
+                z-index: 1000;
             }
         </style>
     </head>
@@ -168,19 +196,20 @@
                 </option>
             </select>
             <form id="sendForm">
-                <input class="button" type="text" id="nameInput" placeholder="Your name" required />
+                <input class="button" type="text" id="nameInput" placeholder="Your Name" required />
                 <br>
-                <input class="button" type="text" id="msgInput" placeholder="Type your message..." required />
+                <input class="button" type="text" id="msgInput" placeholder="Type Your Message..." required />
                 <br>
                 <button class="button" type="submit">
                     Send
                 </button>
             </form>
-            <form id="uploadForm" enctype="multipart/form-data" style="margin-top:10px;">
-                <label for="fileInput" class="custom-file-upload">
+            <form id="uploadForm" enctype="multipart/form-data">
+                <label class="custom-file-upload" for="fileInput" id="fileLabel">
                     Select A File
                 </label>
-                <input type="file" id="fileInput" name="file" accept="image/*" required />
+                <br>
+                <input type="file" id="fileInput" name="file" accept="image/*,video/*,audio/*"/>
                 <br>
                 <button class="button" type="submit">
                     Upload
@@ -189,6 +218,7 @@
             <ul id="messages"></ul>
             <br>
             <br>
+            <emoji-picker id="emojiPicker"></emoji-picker>
         </center>
         <script src="online.js">
         </script>
