@@ -41,22 +41,17 @@
         <script src="frame.js">
         </script>
             <script type="module">
-  // Import the functions you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-  // Your Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyCUdhMpGKx5wgTGChO5y6lD6Hj3j1JKVUM",
     authDomain: "websitestats-b7d1a.firebaseapp.com",
+    databaseURL: "https://websitestats-b7d1a-default-rtdb.firebaseio.com",
     projectId: "websitestats-b7d1a",
     storageBucket: "websitestats-b7d1a.firebasestorage.app",
     messagingSenderId: "379238712007",
     appId: "1:379238712007:web:cf481fbade6d1f60f5f4e2"
   };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
   // Function to send data to Firestore
