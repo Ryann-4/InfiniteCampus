@@ -147,7 +147,6 @@ window.addEventListener('DOMContentLoaded', () => {
                     const state = data.address.state || '';
                     sessionStorage.setItem('city', city);
                     sessionStorage.setItem('state', state);
-                    console.log('Location Saved:', city, state);
                 } catch (err) {
                     console.warn('Failed To Get City/State:', err);
                 }
