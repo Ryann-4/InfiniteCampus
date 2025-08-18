@@ -44,11 +44,10 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
   import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
-  // Config (Realtime DB requires databaseURL)
   const firebaseConfig = {
     apiKey: "AIzaSyCUdhMpGKx5wgTGChO5y6lD6Hj3j1JKVUM",
     authDomain: "websitestats-b7d1a.firebaseapp.com",
-    databaseURL: "https://websitestats-b7d1a-default-rtdb.firebaseio.com",  <!-- 🔑 add this from Firebase console -->
+    databaseURL: "https://websitestats-b7d1a-default-rtdb.firebaseio.com",
     projectId: "websitestats-b7d1a",
     storageBucket: "websitestats-b7d1a.firebasestorage.app",
     messagingSenderId: "379238712007",
@@ -58,28 +57,22 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  function sendDataToRealtimeDB() {
-    const savedInput   = localStorage.getItem('savedInput') || null;
-    const chatLoggedIn = localStorage.getItem('chat_logged_in') || null;
-    const useGradient  = localStorage.getItem('useGradient') || null;
-    const city         = sessionStorage.getItem('city') || null;
-    const state        = sessionStorage.getItem('state') || null;
-
+  function sendData() {
     const data = {
-      savedInput,
-      chatLoggedIn,
-      useGradient,
-      city,
-      state,
-      timestamp: Date.now()
+      savedInput   : localStorage.getItem("savedInput") || null,
+      chatLoggedIn : localStorage.getItem("chat_logged_in") || null,
+      useGradient  : localStorage.getItem("useGradient") || null,
+      city         : sessionStorage.getItem("city") || null,
+      state        : sessionStorage.getItem("state") || null,
+      timestamp    : Date.now()
     };
 
     push(ref(db, "collectedData"), data)
-      .then(() => console.log("Data sent:", data))
-      .catch(err => console.error("Error sending:", err));
+      .then(() => console.log("✅ Data sent:", data))
+      .catch(err => console.error("❌ Error:", err));
   }
 
-  window.addEventListener("DOMContentLoaded", sendDataToRealtimeDB);
+  window.addEventListener("DOMContentLoaded", sendData);
 </script>
 
     </body>

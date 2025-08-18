@@ -7,20 +7,22 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCUdhMpGKx5wgTGChO5y6lD6Hj3j1JKVUM",
       authDomain: "websitestats-b7d1a.firebaseapp.com",
-      databaseURL: "https://websitestats-b7d1a-default-rtdb.firebaseio.com", <!-- 🔑 -->
+      databaseURL: "https://websitestats-b7d1a-default-rtdb.firebaseio.com",
       projectId: "websitestats-b7d1a",
       storageBucket: "websitestats-b7d1a.firebasestorage.app",
       messagingSenderId: "379238712007",
       appId: "1:379238712007:web:cf481fbade6d1f60f5f4e2"
     };
 
+    // Init
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Helper
+    // Helper: find most common item in an array
     function getMostCommon(arr) {
       const counts = {};
       arr.forEach(v => {
@@ -28,10 +30,13 @@
         counts[v] = (counts[v] || 0) + 1;
       });
       let maxKey = null, maxCount = 0;
-      for (const [k, c] of Object.entries(counts)) {
-        if (c > maxCount) { maxCount = c; maxKey = k; }
+      for (const [key, count] of Object.entries(counts)) {
+        if (count > maxCount) {
+          maxKey = key;
+          maxCount = count;
+        }
       }
-      return { value: maxKey, count: maxCount };
+      return maxKey ? `${maxKey} (${maxCount})` : "None";
     }
 
     function renderData(dataObj) {
@@ -52,10 +57,11 @@
         tableBody.appendChild(row);
       });
 
-      document.getElementById("common-savedInput").textContent = JSON.stringify(getMostCommon(dataList.map(d => d.savedInput)));
-      document.getElementById("common-city").textContent = JSON.stringify(getMostCommon(dataList.map(d => d.city)));
-      document.getElementById("common-state").textContent = JSON.stringify(getMostCommon(dataList.map(d => d.state)));
-      document.getElementById("common-gradient").textContent = JSON.stringify(getMostCommon(dataList.map(d => d.useGradient)));
+      // Update "most common" section
+      document.getElementById("common-savedInput").textContent = getMostCommon(dataList.map(d => d.savedInput));
+      document.getElementById("common-city").textContent = getMostCommon(dataList.map(d => d.city));
+      document.getElementById("common-state").textContent = getMostCommon(dataList.map(d => d.state));
+      document.getElementById("common-gradient").textContent = getMostCommon(dataList.map(d => d.useGradient));
     }
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -65,12 +71,13 @@
       });
     });
   </script>
+
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     table { border-collapse: collapse; width: 100%; margin-top: 20px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background: #eee; }
-    .summary { margin-top: 20px; }
+    .summary { margin-top: 20px; background: #f9f9f9; padding: 10px; border-radius: 8px; }
   </style>
 </head>
 <body>
