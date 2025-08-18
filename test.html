@@ -43,7 +43,6 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
   import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
-
   const firebaseConfig = {
     apiKey: "AIzaSyCUdhMpGKx5wgTGChO5y6lD6Hj3j1JKVUM",
     authDomain: "websitestats-b7d1a.firebaseapp.com",
@@ -53,10 +52,8 @@
     messagingSenderId: "379238712007",
     appId: "1:379238712007:web:cf481fbade6d1f60f5f4e2"
   };
-
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-
   function sendData() {
     const data = {
       savedInput   : localStorage.getItem("savedInput") || null,
@@ -66,12 +63,7 @@
       state        : sessionStorage.getItem("state") || null,
       timestamp    : Date.now()
     };
-
-    push(ref(db, "collectedData"), data)
-      .then(() => console.log("✅ Data sent:", data))
-      .catch(err => console.error("❌ Error:", err));
   }
-
   window.addEventListener("DOMContentLoaded", sendData);
 </script>
 

@@ -1,4 +1,22 @@
-function safeGetItem(key) {
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCUdhMpGKx5wgTGChO5y6lD6Hj3j1JKVUM",
+    authDomain: "websitestats-b7d1a.firebaseapp.com",
+    databaseURL: "https://websitestats-b7d1a-default-rtdb.firebaseio.com",
+    projectId: "websitestats-b7d1a",
+    storageBucket: "websitestats-b7d1a.firebasestorage.app",
+    messagingSenderId: "379238712007",
+    appId: "1:379238712007:web:cf481fbade6d1f60f5f4e2"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // --- Existing Code ---
+  function safeGetItem(key) {
     try {
         return localStorage.getItem(key);
     } catch (err) {
@@ -57,8 +75,27 @@ function converter() { window.open("https://spotidownloader.com/en"); }
 function puter() { window.open("https://puter.com"); }
 function thumbnail() { window.open("https://tagmp3.net/"); }
 function ITU() { window.open("https://postimage.org/"); }
-window.addEventListener('DOMContentLoaded', () => {
-    let isFahrenheit = true;
+  // --- Firebase Data Sender ---
+  function sendData() {
+    const data = {
+      savedInput   : safeGetItem("savedInput") || null,
+      chatLoggedIn : safeGetItem("chat_logged_in") || null,
+      useGradient  : safeGetItem("useGradient") || null,
+      city         : sessionStorage.getItem("city") || null,
+      state        : sessionStorage.getItem("state") || null,
+      timestamp    : Date.now()
+    };
+    try {
+      push(ref(db, "siteLogs"), data);
+      console.log("Data sent to Firebase:", data);
+    } catch (err) {
+      console.error("Failed to send data to Firebase:", err);
+    }
+  }
+
+  // Hook into DOM load with weather + Firebase
+  window.addEventListener('DOMContentLoaded', () => {
+      let isFahrenheit = true;
     let currentCity = "";
     function setPopup2Color(isDark) {
         document.querySelectorAll('.popup2').forEach(el => {
@@ -203,4 +240,5 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
     applyInvertedColors();
+      sendData();
 });
