@@ -45,6 +45,20 @@
                 border-radius: 6px; 
                 cursor: pointer; 
             }
+            #progressContainer { 
+                width: 80%; 
+                height: 8px; 
+                background: #333; 
+                margin: 20px auto; 
+                border-radius: 4px; 
+                cursor: pointer; 
+            }
+            #progressBar { 
+                height: 100%; 
+                width: 0; 
+                background: lime; 
+                border-radius: 4px; 
+            }
         </style>
     </head>
     <body>
@@ -71,7 +85,7 @@
             <img id="albumArt" src="" alt="" style="margin-top: 20px; width: 200px; height: 200px; object-fit: cover; border-radius: 8px;">
             <br>
             <ul id="playlist"></ul>
-            <div class="controls">
+            <div class="mcontrols">
                 <button class="button" id="backBtn">
                     ⏮
                 </button>
@@ -85,18 +99,19 @@
                     ↺ Off
                 </button>
             </div>
-            </center>
-            <div id="progressContainer">
-                <div id="progressBar">
-                </div>
+        </center>
+        <div id="progressContainer">
+            <div id="progressBar">
             </div>
-            <div id="timeDisplay">
-                0:00 / 0:00
-            </div>
-            <audio id="audio"></audio>
-<script type="module" src="test.js">
-</script>
-<script src="frame.js">
-</script>
-</body>
+        </div>
+        <br>
+        <div id="timeDisplay">
+            0:00 / 0:00
+        </div>
+        <audio id="audio"></audio>
+        <script type="module" src="test.js">
+        </script>
+        <script src="frame.js">
+        </script>
+    </body>
 </html>

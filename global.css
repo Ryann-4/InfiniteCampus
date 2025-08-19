@@ -87,17 +87,23 @@ html {
     list-style: none;
     padding: 0;
     margin-top: 10px;
-    text-align: left;
 }
 #playlist li {
     padding: 5px 10px;
     border-bottom: 1px solid #444;
     cursor: pointer;
 }
+#playlist li.active {
+    background-color: transparent;
+    font-weight: bold;
+}
 #playlist li.playlist-item {
-    display: flex;
+    display: block;
     justify-content: space-between;
     align-items: center;
+    text-align:left;
+    max-width:600px;
+    
 }
 #playlist li .duration {
     margin-left: auto;
