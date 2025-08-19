@@ -38,7 +38,7 @@ function addSongToDB(name, file, thumbnail) {
         const songData = {
             name,
             fileData: reader.result,
-            thumbnail: thumbnail || null
+            thumbnail: thumbnail || "https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d"
         };
 
         const transaction = db.transaction("songs", "readwrite");
@@ -48,6 +48,7 @@ function addSongToDB(name, file, thumbnail) {
         transaction.oncomplete = () => {
             console.log("Song added:", name);
             loadPlaylistFromDB();
+            location.reload(); // reload after upload
         };
         transaction.onerror = e => console.error("DB Insert Error:", e.target.error);
     };
@@ -115,6 +116,31 @@ function renderPlaylistUI() {
     });
 
     enableReorder(list, playlist);
+
+    // --- Submit Button ---
+    let submitBtn = document.getElementById("playlistSubmit");
+    if (!submitBtn) {
+        submitBtn = document.createElement("button");
+        submitBtn.id = "playlistSubmit";
+        submitBtn.textContent = "Submit Playlist";
+        Object.assign(submitBtn.style, {
+            marginTop: "6px",
+            padding: "4px 8px",
+            cursor: "pointer",
+            borderRadius: "6px",
+            border: "none",
+            backgroundColor: "#0f0",
+            color: "#000",
+            fontWeight: "bold"
+        });
+        playerPopup.appendChild(submitBtn);
+
+        submitBtn.addEventListener("click", () => {
+            const newOrder = [...list.querySelectorAll("li")].map(li => playlist[li.dataset.index]);
+            resetPlaylistOrder(newOrder);
+            alert("Playlist order saved!");
+        });
+    }
 }
 
 function enableReorder(list, songs) {
@@ -129,15 +155,11 @@ function enableReorder(list, songs) {
 
     list.addEventListener("dragover", e => {
         e.preventDefault();
-        if (e.target.tagName === "LI") {
-            e.target.style.borderTop = "2px solid #0f0";
-        }
+        if (e.target.tagName === "LI") e.target.style.borderTop = "2px solid #0f0";
     });
 
     list.addEventListener("dragleave", e => {
-        if (e.target.tagName === "LI") {
-            e.target.style.borderTop = "";
-        }
+        if (e.target.tagName === "LI") e.target.style.borderTop = "";
     });
 
     list.addEventListener("drop", e => {
@@ -154,14 +176,11 @@ function enableReorder(list, songs) {
             } else {
                 list.insertBefore(dragSrcEl, e.target);
             }
-
-            // Rebuild song order from DOM
-            const newOrder = [...list.querySelectorAll("li")].map(li => songs[li.dataset.index]);
-
-            resetPlaylistOrder(newOrder);
         }
     });
 }
+
+// --- Remaining popup, track loader, playback controls, progress bar, and addDrySong functions remain unchanged ---
 
 // --- Popup Creation ---
 function createPopup() {
