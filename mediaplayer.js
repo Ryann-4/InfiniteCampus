@@ -41,18 +41,15 @@ function addSongToDB(name, file, thumbnail) {
             thumbnail: thumbnail || null
         };
 
-        // Open transaction AFTER file has been read
         const transaction = db.transaction("songs", "readwrite");
         const store = transaction.objectStore("songs");
         store.add(songData);
 
         transaction.oncomplete = () => {
             console.log("Song added:", name);
-            loadPlaylistFromDB(); // refresh playlist immediately
+            loadPlaylistFromDB();
         };
-        transaction.onerror = e => {
-            console.error("DB Insert Error:", e.target.error);
-        };
+        transaction.onerror = e => console.error("DB Insert Error:", e.target.error);
     };
     reader.readAsArrayBuffer(file);
 }
@@ -67,8 +64,103 @@ function loadPlaylistFromDB() {
         if (playlist.length) {
             currentTrack = 0;
             loadTrack(currentTrack);
+            renderPlaylistUI();
         }
     };
+}
+
+// --- Reset Playlist Order ---
+function resetPlaylistOrder(newSongs) {
+    const tx = db.transaction("songs", "readwrite");
+    const store = tx.objectStore("songs");
+    store.clear();
+    tx.oncomplete = () => {
+        const tx2 = db.transaction("songs", "readwrite");
+        const store2 = tx2.objectStore("songs");
+        newSongs.forEach(song => store2.add(song));
+        tx2.oncomplete = () => {
+            console.log("Playlist reordered and saved.");
+            loadPlaylistFromDB();
+        };
+    };
+}
+
+// --- Playlist UI + Drag Reorder ---
+function renderPlaylistUI() {
+    let list = document.getElementById("playlistUI");
+    if (!list) {
+        list = document.createElement("ul");
+        list.id = "playlistUI";
+        Object.assign(list.style, {
+            maxHeight: "200px",
+            overflowY: "auto",
+            marginTop: "8px",
+            padding: "0",
+            listStyle: "none",
+            fontSize: "14px",
+            color: "white"
+        });
+        playerPopup.appendChild(list);
+    }
+    list.innerHTML = "";
+
+    playlist.forEach((song, i) => {
+        const li = document.createElement("li");
+        li.textContent = song.name;
+        li.dataset.index = i;
+        li.draggable = true;
+        li.style.padding = "4px";
+        li.style.borderBottom = "1px solid rgba(255,255,255,0.2)";
+        list.appendChild(li);
+    });
+
+    enableReorder(list, playlist);
+}
+
+function enableReorder(list, songs) {
+    let dragSrcEl = null;
+
+    list.addEventListener("dragstart", e => {
+        if (e.target.tagName === "LI") {
+            dragSrcEl = e.target;
+            e.dataTransfer.effectAllowed = "move";
+        }
+    });
+
+    list.addEventListener("dragover", e => {
+        e.preventDefault();
+        if (e.target.tagName === "LI") {
+            e.target.style.borderTop = "2px solid #0f0";
+        }
+    });
+
+    list.addEventListener("dragleave", e => {
+        if (e.target.tagName === "LI") {
+            e.target.style.borderTop = "";
+        }
+    });
+
+    list.addEventListener("drop", e => {
+        e.preventDefault();
+        if (e.target.tagName === "LI" && dragSrcEl !== e.target) {
+            e.target.style.borderTop = "";
+
+            const items = [...list.querySelectorAll("li")];
+            const oldIndex = items.indexOf(dragSrcEl);
+            const newIndex = items.indexOf(e.target);
+
+            if (oldIndex < newIndex) {
+                list.insertBefore(dragSrcEl, e.target.nextSibling);
+            } else {
+                list.insertBefore(dragSrcEl, e.target);
+            }
+
+            // Rebuild song order from DOM
+            const newOrder = [...list.querySelectorAll("li")].map(li => songs[li.dataset.index]);
+
+            resetPlaylistOrder(newOrder);
+        }
+    });
 }
 
 // --- Popup Creation ---
@@ -105,17 +197,15 @@ function createPopup() {
         backgroundPosition: "center",
         boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
         fontFamily: "sans-serif",
-        zIndex: "9999",
-        cursor: "move"
+        zIndex: "9999"
     });
 
     document.getElementById("popupBarFill").style.height = "6px";
     document.getElementById("popupBarFill").style.background = "lime";
 
-    // --- Dragging ---
+    // Dragging
     const header = document.getElementById("popupHeader");
     let offsetX = 0, offsetY = 0, isDown = false;
-
     header.addEventListener("mousedown", e => {
         isDown = true;
         offsetX = e.clientX - playerPopup.offsetLeft;
@@ -128,7 +218,7 @@ function createPopup() {
         playerPopup.style.top = e.clientY - offsetY + "px";
     });
 
-    // --- Close Button ---
+    // Close Button
     document.getElementById("popupClose").addEventListener("click", () => {
         audio.pause();
         audio.src = "";
@@ -136,7 +226,7 @@ function createPopup() {
         playerPopup = null;
     });
 
-    // --- Popup Button Events ---
+    // Controls
     document.getElementById("popupPlay").addEventListener("click", togglePlay);
     document.getElementById("popupNext").addEventListener("click", nextTrack);
     document.getElementById("popupBack").addEventListener("click", () => {
@@ -165,7 +255,6 @@ async function loadTrack(index) {
     const cleanName = track.name.replace(/\.mp3$/i, '');
     document.getElementById("popupFileName").textContent = cleanName;
 
-    // Album art background
     let artworkURL = track.thumbnail || "https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d";
     document.getElementById("playerPopup").style.backgroundImage = `url("${artworkURL}")`;
 
@@ -220,11 +309,10 @@ function formatTime(sec=0) {
     return `${m}:${s}`;
 }
 
-// --- Adding a New Song (call this on upload page) ---
+// --- Adding a New Song ---
 async function addDrySong(name, file, thumbnail) {
     let thumbURL = thumbnail;
 
-    // Step 1: Try to extract embedded album art
     try {
         const mm = await import('https://cdn.jsdelivr.net/npm/music-metadata@10.8.3/+esm');
         const { common } = await mm.parseBlob(file);
@@ -237,17 +325,10 @@ async function addDrySong(name, file, thumbnail) {
         console.warn("Thumbnail extract failed:", e);
     }
 
-    // Step 2: Read file fully into ArrayBuffer
     const fileBuffer = await file.arrayBuffer();
-
-    // Step 3: Store into IndexedDB
     const transaction = db.transaction("songs", "readwrite");
     const store = transaction.objectStore("songs");
-    store.add({
-        name,
-        fileData: fileBuffer,
-        thumbnail: thumbURL || null
-    });
+    store.add({ name, fileData: fileBuffer, thumbnail: thumbURL || null });
 
     transaction.oncomplete = () => {
         console.log("Song added:", name);
