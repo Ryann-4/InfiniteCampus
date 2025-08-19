@@ -38,7 +38,7 @@ function initPopup() {
         <div style="width:90%; height:6px; background:#333; margin:10px auto; border-radius:3px; position:relative; z-index:1;">
             <div id="popupBarFill" style="height:100%; width:0%; background:lime; border-radius:3px;"></div>
         </div>
-        <div id="popupTime" style="text-align:center; margin-bottom:10px; position:relative; z-index:1;">0:00 / 0:00</div>
+        <div id="popupTime" style="background-color:black; text-align:center; margin-bottom:10px; position:relative; z-index:1;">0:00 / 0:00</div>
     `;
     popup.appendChild(content);
     Object.assign(popup.style, {
