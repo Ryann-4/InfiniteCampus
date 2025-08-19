@@ -32,31 +32,40 @@ document.body.appendChild(audio);
 let playerPopup;
 
 // --- IndexedDB Functions ---
-function addSongToDB(name, file, thumbnail) {
-    const reader = new FileReader();
-    reader.onload = () => {
-        const songData = {
-            name,
-            fileData: reader.result,
-            thumbnail: thumbnail || null
-        };
+async function addDrySong(name, file, thumbnail) {
+    let thumbURL = thumbnail;
 
-        // Open transaction AFTER file has been read
-        const transaction = db.transaction("songs", "readwrite");
-        const store = transaction.objectStore("songs");
-        store.add(songData);
+    // Step 1: Try to extract embedded album art
+    try {
+        const mm = await import('https://cdn.jsdelivr.net/npm/music-metadata@10.8.3/+esm');
+        const { common } = await mm.parseBlob(file);
+        if (common.picture?.length) {
+            const picture = common.picture[0];
+            const base64String = btoa(String.fromCharCode(...new Uint8Array(picture.data)));
+            thumbURL = `data:${picture.format};base64,${base64String}`;
+        }
+    } catch (e) {
+        console.warn("Thumbnail extract failed:", e);
+    }
 
-        transaction.oncomplete = () => {
-            console.log("Song added:", name);
-            loadPlaylistFromDB(); // refresh playlist immediately
-        };
-        transaction.onerror = e => {
-            console.error("DB Insert Error:", e.target.error);
-        };
+    // Step 2: Read file fully into ArrayBuffer
+    const fileBuffer = await file.arrayBuffer();
+
+    // Step 3: Store into IndexedDB
+    const transaction = db.transaction("songs", "readwrite");
+    const store = transaction.objectStore("songs");
+    store.add({
+        name,
+        fileData: fileBuffer,
+        thumbnail: thumbURL || null
+    });
+
+    transaction.oncomplete = () => {
+        console.log("Song added:", name);
+        loadPlaylistFromDB();
     };
-    reader.readAsArrayBuffer(file);
+    transaction.onerror = e => console.error("DB Insert Error:", e.target.error);
 }
-
 function loadPlaylistFromDB() {
     const transaction = db.transaction("songs", "readonly");
     const store = transaction.objectStore("songs");
