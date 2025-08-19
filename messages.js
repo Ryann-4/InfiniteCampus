@@ -60,20 +60,24 @@ async function renderMessage(msg, list){
     if(displayedMessageIds.has(msg.id)) return updateReactions(msg);
     const li = document.createElement('li');
     list.prepend(li);
+
     const avatarImg = document.createElement('img');
     avatarImg.classList.add('avatar');
     avatarImg.src = msg.author.avatar
         ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
         : `https://cdn.discordapp.com/embed/avatars/0.png`;
     li.appendChild(avatarImg);
+
     const contentDiv = document.createElement('div');
     contentDiv.classList.add('content');
     li.appendChild(contentDiv);
+
     const serverTag = msg.author.clan?.tag || '';
     const displayName = msg.author.global_name || msg.author.username;
     const statusColor = getStatusFromWidget(displayName);
     const statusTitle = getStatusTitle(statusColor);
     const timestamp = new Date(msg.timestamp).toLocaleString();
+
     let contentWithMentions = msg.content || '';
     if(msg.mentions?.length){
         msg.mentions.forEach(u=>{
@@ -81,10 +85,27 @@ async function renderMessage(msg, list){
             contentWithMentions = contentWithMentions.replace(new RegExp(`<@!?${u.id}>`,'g'),`@${name}`);
         });
     }
-    let contentHTML = `<strong>${displayName}</strong>
+
+    // build reply block first (goes ABOVE the main content)
+    let replyHTML = '';
+    if(msg.referenced_message){
+        const replyAuthor = msg.referenced_message.author;
+        const replyDisplayName = replyAuthor.global_name || replyAuthor.username;
+        const replyContent = msg.referenced_message.content || 'Attachment';
+        replyHTML = `<div class="reply-box" 
+                        style="font-size:90%; color:grey; margin-bottom:3px;">
+                        Replying to <strong>${replyDisplayName}</strong>: ${replyContent}
+                     </div>`;
+    }
+
+    let contentHTML = `
+        ${replyHTML}
+        <strong>${displayName}</strong>
         <span style="margin-left:5px;color:#888;${serverTag?'border:1px solid white;border-radius:5px;padding:0 4px;':''}">${serverTag}</span>
         <img src="${getStatusImage(statusColor)}" title="${statusTitle}" style="width:16px;height:16px;margin-left:5px;vertical-align:middle;">
-        <div>${contentWithMentions}</div>`;
+        <div>${contentWithMentions}</div>
+    `;
+
     if(msg.attachments?.length){
         msg.attachments.forEach(att=>{
             const url = att.url, name = att.filename.toLowerCase();
@@ -92,12 +113,7 @@ async function renderMessage(msg, list){
             else contentHTML += `<br><a href="${url}" target="_blank" rel="noopener">${att.filename}</a>`;
         });
     }
-    if(msg.referenced_message){
-        const replyAuthor = msg.referenced_message.author;
-        const replyDisplayName = replyAuthor.global_name || replyAuthor.username;
-        const replyContent = msg.referenced_message.content || 'Attachment';
-        contentHTML += `<div class="reply-box">Replying To <strong>${replyDisplayName}</strong>: ${replyContent}</div>`;
-    }
+
     if(msg.reactions?.length){
         contentHTML += `<div class="reactions" style="margin-top:5px;">`;
         msg.reactions.forEach(r=>{
@@ -105,11 +121,14 @@ async function renderMessage(msg, list){
         });
         contentHTML += `</div>`;
     }
+
     contentHTML += `<div class="timestamp">${timestamp}</div>
                     <br><span class="reaction-trigger" data-id="${msg.id}">React</span>`;
+
     contentDiv.innerHTML = contentHTML;
     displayedMessageIds.add(msg.id);
 }
+
 function updateReactions(msg){
     const li = document.querySelector(`.reaction-trigger[data-id="${msg.id}"]`)?.closest('li');
     if(!li) return;
