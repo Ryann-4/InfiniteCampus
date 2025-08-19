@@ -6,6 +6,8 @@ const timeDisplay = document.getElementById('time');
 const volumeSlider = document.getElementById('volume');
 const fullscreenBtn = document.getElementById('fullscreen');
 const captionsBtn = document.getElementById('captionsToggle');
+const downloadBtn = document.getElementById('downloadBtn');
+const playbackRateSelect = document.getElementById('playbackRate');
 const textTracks = video.textTracks[0];
 let captionSize = 1;
 function updateCaptionStyle() {
@@ -65,6 +67,18 @@ function toggleCaptions() {
         captionsBtn.style.opacity = 1;
     }
 }
+downloadBtn.addEventListener('click', () => {
+    const source = video.querySelector('source').src;
+    const a = document.createElement('a');
+    a.href = source;
+    a.download = source.split('/').pop();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+});
+playbackRateSelect.addEventListener('change', () => {
+    video.playbackRate = parseFloat(playbackRateSelect.value);
+});
 playPauseBtn.addEventListener('click', togglePlay);
 video.addEventListener('click', togglePlay);
 video.addEventListener('timeupdate', updateProgress);
@@ -84,9 +98,6 @@ document.addEventListener('keydown', function (e) {
     switch (e.key.toLowerCase()) {
         case ' ':
         case 'spacebar':
-            e.preventDefault();
-            togglePlay();
-            break;
         case 'k':
             e.preventDefault();
             togglePlay();
@@ -101,14 +112,10 @@ document.addEventListener('keydown', function (e) {
             video.muted = !video.muted;
             break;
         case 'arrowright':
-            video.currentTime = Math.min(video.duration, video.currentTime + 5);
-            break;
         case 'l':
             video.currentTime = Math.min(video.duration, video.currentTime + 5);
             break;
         case 'arrowleft':
-            video.currentTime = Math.max(0, video.currentTime - 5);
-            break;
         case 'j':
             video.currentTime = Math.max(0, video.currentTime - 5);
             break;

@@ -29,7 +29,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     </span>
                 </label>
                 <br>
-                <input style="width:auto !important;" class="button" type="text" id="titleInput" placeholder="Enter page title" value="${savedTitle}"/>
+                <input style="width:auto !important;" class="button" type="text" id="titleInput" placeholder="Enter Page Title" value="${savedTitle}"/>
                 <button class="button" id="saveTitleBtn">
                     Save Title
                 </button>
