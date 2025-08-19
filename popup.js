@@ -11,22 +11,44 @@ function initPopup() {
 
     popup = document.createElement("div");
     popup.id = "playerPopup";
-    popup.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; cursor:move; padding:4px 8px; background:rgba(0,0,0,0.5);">
+
+    // Create a blurred background overlay
+    const bgOverlay = document.createElement("div");
+    bgOverlay.id = "popupBgOverlay";
+    Object.assign(bgOverlay.style, {
+        position: "absolute",
+        top: "0",
+        left: "0",
+        width: "100%",
+        height: "100%",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        filter: "blur(10px)",
+        zIndex: "0",
+        borderRadius: "12px"
+    });
+    popup.appendChild(bgOverlay);
+
+    // Popup content container
+    const content = document.createElement("div");
+    content.id = "popupContent";
+    content.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; cursor:move; padding:4px 8px; background:rgba(0,0,0,0.5); z-index:1; position:relative;">
             <span id="popupTitle"></span>
-            <button id="closePopup" class="mediabtns">X</button>
+            <button id="closePopup" class="closepopup">X</button>
         </div>
-        <div style="text-align:center; margin:10px 0;">
+        <div style="text-align:center; margin:10px 0; z-index:1; position:relative;">
             <button id="popupBack" class="mediabtns">⏮</button>
             <button id="popupPlay" class="mediabtns">▶</button>
             <button id="popupNext" class="mediabtns">⏭</button>
-            <button id="popupLoop" class="mediabtns">🔁 Off</button>
+            <button id="popupLoop" class="mediabtns">↺ Off</button>
         </div>
-        <div style="width:90%; height:6px; background:#333; margin:10px auto; border-radius:3px;">
+        <div style="width:90%; height:6px; background:#333; margin:10px auto; border-radius:3px; position:relative; z-index:1;">
             <div id="popupBarFill" style="height:100%; width:0%; background:lime; border-radius:3px;"></div>
         </div>
-        <div id="popupTime" style="text-align:center; margin-bottom:10px;">0:00 / 0:00</div>
+        <div id="popupTime" style="text-align:center; margin-bottom:10px; position:relative; z-index:1;">0:00 / 0:00</div>
     `;
+    popup.appendChild(content);
 
     Object.assign(popup.style, {
         position: "fixed",
@@ -36,8 +58,7 @@ function initPopup() {
         borderRadius: "12px",
         boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
         color: "white",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        overflow: "hidden",
         zIndex: 9999,
         userSelect: "none"
     });
@@ -49,7 +70,8 @@ function initPopup() {
     playBtn = document.getElementById("popupPlay");
     loopBtn = document.getElementById("popupLoop");
 
-    // Draggable
+    // Save overlay reference for updating background later
+    popup.bgOverlay = bgOverlay;
     let isDragging = false, offsetX, offsetY;
     const header = popup.querySelector("div:first-child");
     header.addEventListener("mousedown", e => {
@@ -82,7 +104,7 @@ function initPopup() {
     });
     loopBtn.addEventListener("click", () => {
         loopPlaylist = !loopPlaylist;
-        loopBtn.textContent = loopPlaylist ? "🔁 On" : "🔁 Off";
+        loopBtn.textContent = loopPlaylist ? "↺ On" : "↺ Off";
     });
 
     // Progress
@@ -156,6 +178,26 @@ function nextTrack() {
     audio.play();
     updatePlayButton();
 }
-
+audio.addEventListener('ended', () => {
+    // If not the last track, move to next
+    if (currentTrack < playlist.length - 1) {
+        currentTrack++;
+        loadTrack(currentTrack);
+        audio.play();
+        playBtn.textContent = "⏸"; // update popup play button
+    } 
+    // If last track and loop is ON, go to first track
+    else if (loopPlaylist) {
+        currentTrack = 0;
+        loadTrack(currentTrack);
+        audio.play();
+        playBtn.textContent = "⏸";
+    } 
+    // If last track and loop is OFF, just pause
+    else {
+        audio.pause();
+        playBtn.textContent = "▶";
+    }
+});
 // Auto-run on page load
 loadPlaylistFromDB();

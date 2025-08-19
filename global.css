@@ -654,3 +654,21 @@ emoji-picker {
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+.mediabtns {
+    background-color:black;
+    border:1px solid white;
+    border-radius:9px;
+    color:white;
+    cursor:pointer;
+}
+.mediabtns:hover {
+    background-color:white;
+    border:1px solid white;
+    color:black;
+}
+.closepopup {
+    color:white;
+    border:1px solid white;
+    cursor:pointer;
+    padding:3px;
+}
