@@ -1,0 +1,101 @@
+<html>
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.css">
+        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+        <meta property="og:title" content="Infinite Campus">
+        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+        <meta name="theme-color" content="#8cbe37">
+        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+        <script src="main.js">
+        </script>
+        <script src="drypopup.js">
+        </script>
+        <script src="theme.js">
+        </script>
+    </head>
+    <body>
+        <center>
+            <br>
+            <br>
+            <br>
+            <br>
+            <label for="fileInput" class="custom-file-upload">
+                Choose Up To 20 MP3s
+            </label>
+            <input type="file" id="fileInput" accept=".mp3" multiple>
+            <br>
+            <br>
+            <a class="button" onclick="converter()">
+                Convert Spotify Songs To Mp3
+            </a>
+            <br>
+            <br>
+            <br>
+            <a class="button" onclick="thumbnail()">
+                Add Thumbnails To Your Files (No Plus Sign)
+            </a>
+        </center>
+        <br>
+        <div class="media-container">
+            <div class="player" id="mediaPlayer">
+                <p class="txt">
+                    Currently Playing:
+                </p>
+                <div class="txt" style="font-size:125%;"id="filenameDisplay">
+                </div>
+                <center>
+                    <div id="albumArtContainer">
+                        <img id="albumArt" src="https://codehs.com/uploads/67b85c646e9557e427ce0ad9f5af5169" style="width: 150px; height:150px; border-radius:25px; margin: 10px;" />
+                    </div>
+                </center>
+                <ul id="playlist">
+                </ul>
+                <audio id="audio">
+                </audio>
+                <div class="controls">
+                    <button id="backBtn">
+                        |◁
+                    </button>
+                    <button id="playPauseBtn">
+                        ||
+                    </button>
+                    <button id="forwardBtn">
+                        ▷|
+                    </button>
+                    <button id="loopBtn">
+                        ↺ Off
+                    </button>
+                    <div class="progress" id="progressContainer">
+                        <div class="progress-bar" id="progressBar">
+                        </div>
+                    </div>
+                    <div class="time" id="timeDisplay">
+                        0:00 / 0:00
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <script src="oldmediaplayer.js">
+        </script>
+        <script src="frame.js">
+        </script>
+    </body>
+</html>

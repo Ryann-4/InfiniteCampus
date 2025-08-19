@@ -27,17 +27,57 @@
         </script>
         <script src="theme.js">
         </script>
+        <style>
+            .playlist-item img { 
+                width: 40px; 
+                height: 40px; 
+                object-fit: cover; 
+                margin-right: 10px; 
+                border-radius: 9px; 
+            }
+            .playlist-item { 
+                display: flex; 
+                align-items: center; 
+                justify-content: space-between; 
+                margin: 4px 0; 
+                padding: 6px; 
+                background: transparent; 
+                border-radius: 6px; 
+                cursor: pointer; 
+            }
+            #progressContainer { 
+                width:80%; 
+                height: 8px; 
+                background: #333; 
+                border-radius: 4px; 
+                cursor: pointer; 
+                max-width:37%;
+                margin-left:20%;
+                margin-top:2%;
+            }
+            #progressBar { 
+                height: 100%; 
+                width: 0; 
+                background: lime; 
+                border-radius: 4px; 
+            }
+        </style>
     </head>
     <body>
+        <br>
+        <br>
+        <br>
+        <br>
         <center>
-            <br>
-            <br>
+            <h1 class="tptxt">
+                20 file MP3 Player
+            </h1>
             <br>
             <br>
             <label for="fileInput" class="custom-file-upload">
-                Choose Up To 20 MP3s
+                Choose A File
             </label>
-            <input type="file" id="fileInput" accept=".mp3" multiple>
+            <br>
             <br>
             <br>
             <a class="button" onclick="converter()">
@@ -49,51 +89,45 @@
             <a class="button" onclick="thumbnail()">
                 Add Thumbnails To Your Files (No Plus Sign)
             </a>
+            <br> 
+            <input style="display:none;" type="file" id="fileInput" multiple accept="audio/*">
+            <br>
+            <button class="button" id="clearBtn">
+                Clear Playlist
+            </button>
+            <br>
+            <img id="albumArt" src="" alt="" style="margin-top: 20px; width: 200px; height: 200px; object-fit: cover; border-radius: 8px;">
+            <br>
+            <ul id="playlist"></ul>
         </center>
-        <br>
-        <div class="media-container">
-            <div class="player" id="mediaPlayer">
-                <p class="txt">
-                    Currently Playing:
-                </p>
-                <div class="txt" style="font-size:125%;"id="filenameDisplay">
-                </div>
-                <center>
-                    <div id="albumArtContainer">
-                        <img id="albumArt" src="https://codehs.com/uploads/67b85c646e9557e427ce0ad9f5af5169" style="width: 150px; height:150px; border-radius:25px; margin: 10px;" />
-                    </div>
-                </center>
-                <ul id="playlist">
-                </ul>
-                <audio id="audio">
-                </audio>
-                <div class="controls">
-                    <button id="backBtn">
-                        |◁
-                    </button>
-                    <button id="playPauseBtn">
-                        ||
-                    </button>
-                    <button id="forwardBtn">
-                        ▷|
-                    </button>
-                    <button id="loopBtn">
-                        ↺ Off
-                    </button>
-                    <div class="progress" id="progressContainer">
-                        <div class="progress-bar" id="progressBar">
-                        </div>
-                    </div>
-                    <div class="time" id="timeDisplay">
-                        0:00 / 0:00
-                    </div>
-                </div>
+        <div id="progressContainer">
+            <div id="progressBar">
             </div>
+        </div>
+        <div style="margin-top:-1%; position:relative; text-align:right; right: 20%;" id="timeDisplay">
+            0:00 / 0:00
+        </div>
+        <div style="text-align:center; position:relative; left:15%; margin-top: -3%;">
+            <button class="button" id="backBtn">
+                ⏮
+            </button>
+            <button class="button" id="playPauseBtn">
+                ▶
+            </button>
+            <button class="button" id="forwardBtn">
+                ⏭
+            </button>
+            <button class="button" id="loopBtn">
+                ↺ Off
+            </button>
         </div>
         <br>
         <br>
         <br>
-        <script src="mediaplayer.js">
+        <br>
+        <br>
+        <audio id="audio"></audio>
+        <script type="module" src="test.js">
         </script>
         <script src="frame.js">
         </script>
