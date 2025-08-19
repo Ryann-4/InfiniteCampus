@@ -668,6 +668,7 @@ emoji-picker {
 }
 .closepopup {
     color:white;
+    background-color:transparent;
     border:1px solid white;
     cursor:pointer;
     padding:3px;

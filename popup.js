@@ -1,18 +1,12 @@
-// drypopup.js
-
 let playlist = [];
 let currentTrack = 0;
 let loopPlaylist = false;
 let audio = new Audio();
 let popup, progressFill, titleElem, playBtn, loopBtn;
-
 function initPopup() {
     if (document.getElementById("playerPopup")) return;
-
     popup = document.createElement("div");
     popup.id = "playerPopup";
-
-    // Create a blurred background overlay
     const bgOverlay = document.createElement("div");
     bgOverlay.id = "popupBgOverlay";
     Object.assign(bgOverlay.style, {
@@ -23,17 +17,15 @@ function initPopup() {
         height: "100%",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        filter: "blur(10px)",
+        filter: "blur(2px)",
         zIndex: "0",
         borderRadius: "12px"
     });
     popup.appendChild(bgOverlay);
-
-    // Popup content container
     const content = document.createElement("div");
     content.id = "popupContent";
     content.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; cursor:move; padding:4px 8px; background:rgba(0,0,0,0.5); z-index:1; position:relative;">
+        <div style="display:flex; border-radius:inherit; justify-content:space-between; align-items:center; cursor:move; padding:4px 8px; background:rgba(0,0,0,0.5); z-index:1; position:relative;">
             <span id="popupTitle"></span>
             <button id="closePopup" class="closepopup">X</button>
         </div>
@@ -49,7 +41,6 @@ function initPopup() {
         <div id="popupTime" style="text-align:center; margin-bottom:10px; position:relative; z-index:1;">0:00 / 0:00</div>
     `;
     popup.appendChild(content);
-
     Object.assign(popup.style, {
         position: "fixed",
         top: "20px",
@@ -62,18 +53,14 @@ function initPopup() {
         zIndex: 9999,
         userSelect: "none"
     });
-
     document.body.appendChild(popup);
-
     progressFill = document.getElementById("popupBarFill");
     titleElem = document.getElementById("popupTitle");
     playBtn = document.getElementById("popupPlay");
     loopBtn = document.getElementById("popupLoop");
-
-    // Save overlay reference for updating background later
     popup.bgOverlay = bgOverlay;
     let isDragging = false, offsetX, offsetY;
-    const header = popup.querySelector("div:first-child");
+    const header = document.querySelector("#popupContent > div:first-child");
     header.addEventListener("mousedown", e => {
         isDragging = true;
         offsetX = e.clientX - popup.getBoundingClientRect().left;
@@ -86,14 +73,10 @@ function initPopup() {
         }
     });
     window.addEventListener("mouseup", () => isDragging = false);
-
-    // Close
     document.getElementById("closePopup").addEventListener("click", () => {
         audio.pause();
         popup.remove();
     });
-
-    // Controls
     playBtn.addEventListener("click", togglePlay);
     document.getElementById("popupNext").addEventListener("click", nextTrack);
     document.getElementById("popupBack").addEventListener("click", () => {
@@ -106,8 +89,6 @@ function initPopup() {
         loopPlaylist = !loopPlaylist;
         loopBtn.textContent = loopPlaylist ? "↺ On" : "↺ Off";
     });
-
-    // Progress
     audio.addEventListener("timeupdate", () => {
         const pct = (audio.currentTime / (audio.duration || 1)) * 100;
         progressFill.style.width = pct + "%";
@@ -118,14 +99,11 @@ function initPopup() {
         audio.currentTime = pct * audio.duration;
     });
 }
-
 function formatTime(sec=0){
     const m = Math.floor(sec/60);
     const s = Math.floor(sec%60).toString().padStart(2,"0");
     return `${m}:${s}`;
 }
-
-// --- Load songs from IndexedDB ---
 function loadPlaylistFromDB() {
     const request = indexedDB.open("MusicDB", 1);
     request.onsuccess = e => {
@@ -147,19 +125,13 @@ function loadPlaylistFromDB() {
         };
     };
 }
-
-// --- Load Track ---
 async function loadTrack(index) {
     const file = playlist[index];
     if (!file) return;
-
     audio.src = URL.createObjectURL(file);
     audio.load();
-
     const title = file.name.replace(/\.mp3$/i,"");
     titleElem.textContent = title;
-
-    // Set blurred background on overlay
     if (popup.bgOverlay) {
         if (file.thumbnail) {
             popup.bgOverlay.style.backgroundImage = `url(${file.thumbnail})`;
@@ -167,11 +139,8 @@ async function loadTrack(index) {
             popup.bgOverlay.style.backgroundImage = "";
         }
     }
-
     updatePlayButton();
 }
-
-// --- Play / Pause ---
 function togglePlay() {
     if (audio.paused) { audio.play(); } 
     else { audio.pause(); }
@@ -180,8 +149,6 @@ function togglePlay() {
 function updatePlayButton() {
     playBtn.textContent = audio.paused ? "▶" : "⏸";
 }
-
-// --- Next Track ---
 function nextTrack() {
     if (currentTrack < playlist.length - 1) currentTrack++;
     else if (loopPlaylist) currentTrack = 0;
@@ -191,25 +158,21 @@ function nextTrack() {
     updatePlayButton();
 }
 audio.addEventListener('ended', () => {
-    // If not the last track, move to next
     if (currentTrack < playlist.length - 1) {
         currentTrack++;
         loadTrack(currentTrack);
         audio.play();
-        playBtn.textContent = "⏸"; // update popup play button
+        playBtn.textContent = "⏸";
     } 
-    // If last track and loop is ON, go to first track
     else if (loopPlaylist) {
         currentTrack = 0;
         loadTrack(currentTrack);
         audio.play();
         playBtn.textContent = "⏸";
     } 
-    // If last track and loop is OFF, just pause
     else {
         audio.pause();
         playBtn.textContent = "▶";
     }
 });
-// Auto-run on page load
 loadPlaylistFromDB();
