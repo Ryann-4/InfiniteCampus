@@ -1,469 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Universal Metadata & Thumbnail Editor</title>
-  <style>
-    :root {
-      --bg: #0b0f14; --card: #121821; --muted: #7e8a9a; --text: #e8eef6; --accent: #6ea8fe; --accent-2: #22d3ee;
-      --ok: #16a34a; --warn: #d97706; --err: #dc2626; --border: #1f2937;
-    }
-    html,body{height:100%}
-    body{margin:0;font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, "Apple Color Emoji","Segoe UI Emoji"; background:linear-gradient(120deg,#0b0f14,#0f1722); color:var(--text)}
-    .container{max-width:1100px;margin:0 auto;padding:24px}
-    h1{font-size:28px;margin:12px 0 16px}
-    p.sub{color:var(--muted);margin-top:0}
-    .grid{display:grid;gap:16px;grid-template-columns: 1.2fr .8fr}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 10px 22px rgba(0,0,0,.25)}
-    .card h2{font-size:18px;margin:0 0 12px}
-    .row{display:flex;gap:10px}
-    .row > *{flex:1}
-    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="text"], input[type="date"], textarea, select{
-      width:100%;background:#0e141d;border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:12px;outline:none
-    }
-    textarea{min-height:84px;resize:vertical}
-    input[type="file"]{width:100%}
-    .btn{appearance:none;border:none;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#03112b;padding:10px 14px;border-radius:12px;font-weight:600;cursor:pointer}
-    .btn.secondary{background:#0e141d;color:var(--text);border:1px solid var(--border)}
-    .btn.warn{background:var(--warn);color:#fff}
-    .btn:disabled{opacity:.5;cursor:not-allowed}
-    .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid var(--border);color:var(--muted)}
-    .drop{border:2px dashed #243244;border-radius:16px;padding:18px;text-align:center;color:var(--muted)}
-    .thumb{width:100%;aspect-ratio:1/1;background:#0e141d;border:1px dashed #334155;border-radius:16px;display:grid;place-items:center;overflow:hidden}
-    .thumb img{max-width:100%;height:auto}
-    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;background:#0e141d;border:1px solid #1f2a37;padding:2px 6px;border-radius:6px}
-    .status{font-size:13px;color:var(--muted);min-height:18px}
-    .hint{font-size:12px;color:var(--muted)}
-    .footer{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .kv{display:grid;grid-template-columns: 1fr 1fr auto;gap:8px;margin-bottom:8px}
-    .muted{color:var(--muted)}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    @media (max-width: 960px){.grid{grid-template-columns:1fr}}
-  </style>
-  
-  <!-- Optional libraries for in-browser metadata writing (loaded if available) -->
-  <!-- JPEG EXIF helper (piexifjs) -->
-  <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.js"></script>
-  <!-- MP3 ID3 helper (browser-id3-writer) -->
-  <script src="https://cdn.jsdelivr.net/npm/browser-id3-writer@4.4.0/dist/browser-id3-writer.min.js"></script>
-</head>
-<body>
-  <div class="container">
-    <h1>Universal Metadata & Thumbnail Editor</h1>
-    <p class="sub">Edit common metadata for files. For formats that support in-file tags (e.g., <span class="pill">.mp3</span>, <span class="pill">.jpg</span>), this app can write tags client‑side. For others, export a sidecar <span class="pill">.json</span> and a thumbnail <span class="pill">.png</span>.</p>
-
-    <div class="grid">
-      <section class="card">
-        <h2>1) Pick a file</h2>
-        <div class="row">
-          <div class="drop" id="dropZone">
-            Drop a file here or
-            <label for="fileInput" class="btn secondary" style="margin-left:8px">Browse</label>
-            <input id="fileInput" class="sr-only" type="file" />
-            <div id="fileInfo" class="status" style="margin-top:8px"></div>
-          </div>
-        </div>
-
-        <h2 style="margin-top:18px">2) Edit metadata</h2>
-        <div class="row">
-          <div>
-            <label>Title</label>
-            <input type="text" id="title" placeholder="e.g., Ocean Waves" />
-          </div>
-          <div>
-            <label>Author/Artist</label>
-            <input type="text" id="author" placeholder="e.g., Jane Doe" />
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Album / Collection</label>
-            <input type="text" id="album" placeholder="Optional" />
-          </div>
-          <div>
-            <label>Genre / Category</label>
-            <input type="text" id="genre" placeholder="Optional" />
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Tags (comma separated)</label>
-            <input type="text" id="tags" placeholder="tag1, tag2, tag3" />
-          </div>
-          <div>
-            <label>Date</label>
-            <input type="date" id="date" />
-          </div>
-        </div>
-        <div>
-          <label>Description</label>
-          <textarea id="description" placeholder="Short description or notes"></textarea>
-        </div>
-
-        <details style="margin-top:10px">
-          <summary class="muted">Custom key/value fields</summary>
-          <div id="kvList"></div>
-          <button class="btn secondary" id="addKv" type="button">+ Add field</button>
-        </details>
-
-        <h2 style="margin-top:18px">3) Choose a thumbnail</h2>
-        <div class="row">
-          <div>
-            <label>Thumbnail source image</label>
-            <input type="file" id="thumbInput" accept="image/*" />
-            <div class="hint">Will be resized to square (default 512×512). For MP3 this becomes cover art. For other files it's exported as a PNG.</div>
-          </div>
-          <div>
-            <label>Size (px)</label>
-            <input type="text" id="thumbSize" value="512" />
-          </div>
-        </div>
-        <div class="row" style="margin-top:10px">
-          <div class="thumb"><canvas id="thumbCanvas" width="512" height="512"></canvas></div>
-          <div>
-            <label>Preview</label>
-            <div class="thumb"><img id="thumbPreview" alt="Thumbnail preview" /></div>
-          </div>
-        </div>
-
-        <div class="footer">
-          <button class="btn" id="writeBtn" type="button">Write into file (when supported)</button>
-          <button class="btn secondary" id="exportSidecar" type="button">Export .json sidecar</button>
-          <button class="btn secondary" id="downloadThumb" type="button">Download thumbnail .png</button>
-          <button class="btn warn" id="resetBtn" type="button">Reset</button>
-        </div>
-        <div id="status" class="status" style="margin-top:8px"></div>
-      </section>
-
-      <aside class="card">
-        <h2>What can this write?</h2>
-        <ul>
-          <li><strong>MP3 (.mp3):</strong> ID3v2 frames (Title, Artist, Album, Genre, Year/Date, Comment) + Cover Art (APIC).</li>
-          <li><strong>JPEG (.jpg, .jpeg):</strong> Basic EXIF/IPTC fields (Description, User Comment, some XP* tags). Thumbnail export provided; in-file EXIF thumbnail attempted when possible.</li>
-          <li><strong>Other formats:</strong> Export <span class="pill">filename.meta.json</span> and a <span class="pill">filename.thumb.png</span>.</li>
-        </ul>
-        <p class="hint">Note: Writing to PNG, MP4, PDF, etc., in-browser is limited. Use sidecar metadata for those. Always verify results with a dedicated tag viewer.</p>
-        <hr style="border-color:#203047" />
-        <h2>Tips</h2>
-        <ul>
-          <li>Drag & drop a file into the drop area.</li>
-          <li>Use <span class="kbd">Ctrl/⌘ + S</span> to save modified files when prompted by your browser.</li>
-          <li>If a format isn't supported for in-place editing, use the sidecar JSON and keep it next to the file.</li>
-        </ul>
-      </aside>
-    </div>
-  </div>
-
-<script>
-(function(){
-  const $ = (sel)=>document.querySelector(sel);
-  const $$ = (sel)=>Array.from(document.querySelectorAll(sel));
-
-  const fileInput = $('#fileInput');
-  const dropZone = $('#dropZone');
-  const fileInfo = $('#fileInfo');
-  const status = $('#status');
-  const writeBtn = $('#writeBtn');
-  const exportSidecarBtn = $('#exportSidecar');
-  const downloadThumbBtn = $('#downloadThumb');
-  const resetBtn = $('#resetBtn');
-
-  const fields = {
-    title: $('#title'), author: $('#author'), album: $('#album'), genre: $('#genre'),
-    tags: $('#tags'), date: $('#date'), description: $('#description')
-  };
-
-  // Key/Value custom fields
-  const kvList = $('#kvList');
-  $('#addKv').addEventListener('click', ()=> addKvRow());
-  function addKvRow(k="", v=""){
-    const row = document.createElement('div');
-    row.className = 'kv';
-    row.innerHTML = `
-      <input type="text" placeholder="Key" value="${escapeHtml(k)}" />
-      <input type="text" placeholder="Value" value="${escapeHtml(v)}" />
-      <button class="btn secondary" type="button">Delete</button>
-    `;
-    row.lastElementChild.addEventListener('click', ()=> row.remove());
-    kvList.appendChild(row);
-  }
-  function readCustomFields(){
-    const out = {};
-    kvList.querySelectorAll('.kv').forEach(kv=>{
-      const [k,v] = kv.querySelectorAll('input');
-      if(k.value.trim()) out[k.value.trim()] = v.value;
-    });
-    return out;
-  }
-
-  function escapeHtml(s){return (s+"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]))}
-
-  // Thumbnail handling
-  const thumbInput = $('#thumbInput');
-  const thumbCanvas = $('#thumbCanvas');
-  const thumbCtx = thumbCanvas.getContext('2d', { willReadFrequently:true });
-  const thumbPreview = $('#thumbPreview');
-  const thumbSizeInput = $('#thumbSize');
-
-  thumbInput.addEventListener('change', ()=>{
-    const f = thumbInput.files && thumbInput.files[0];
-    if(!f) return;
-    const size = parseInt(thumbSizeInput.value)||512;
-    const img = new Image();
-    img.onload = ()=>{
-      // center-crop to square
-      const side = Math.min(img.naturalWidth, img.naturalHeight);
-      const sx = (img.naturalWidth - side)/2;
-      const sy = (img.naturalHeight - side)/2;
-      thumbCanvas.width = size; thumbCanvas.height = size;
-      thumbCtx.clearRect(0,0,size,size);
-      thumbCtx.imageSmoothingEnabled = true;
-      thumbCtx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
-      thumbCanvas.toBlob(b=>{
-        if(b){
-          const url = URL.createObjectURL(b);
-          thumbPreview.src = url;
-          thumbPreview.onload = ()=> URL.revokeObjectURL(url);
-        }
-      }, 'image/png');
-    };
-    img.src = URL.createObjectURL(f);
-  });
-
-  downloadThumbBtn.addEventListener('click', ()=>{
-    thumbCanvas.toBlob(b=>{
-      if(!b) return toast('Could not render thumbnail', 'err');
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(b);
-      a.download = (currentFile ? baseName(currentFile.name) : 'thumbnail') + '.thumb.png';
-      a.click();
-      setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
-    }, 'image/png');
-  });
-
-  // File selection & drag-drop
-  let currentFile = null;
-  dropZone.addEventListener('dragover', e=>{e.preventDefault(); dropZone.style.borderColor = '#3b82f6'});
-  dropZone.addEventListener('dragleave', ()=> dropZone.style.borderColor = '#243244');
-  dropZone.addEventListener('drop', e=>{
-    e.preventDefault(); dropZone.style.borderColor = '#243244';
-    const f = e.dataTransfer.files && e.dataTransfer.files[0];
-    if(f) loadFile(f);
-  });
-  fileInput.addEventListener('change', ()=>{
-    const f = fileInput.files && fileInput.files[0];
-    if(f) loadFile(f);
-  });
-
-  function loadFile(file){
-    currentFile = file;
-    fileInfo.textContent = `${file.name} — ${file.type || 'unknown type'} — ${(file.size/1024).toFixed(1)} KB`;
-    status.textContent = 'Ready.';
-  }
-
-  // Helpers
-  function toast(msg, kind='info'){
-    status.textContent = msg;
-    status.style.color = kind==='err'? '#fecaca' : kind==='warn'? '#fde68a' : '#93c5fd';
-  }
-  function baseName(name){return name.replace(/\.[^/.]+$/, '')}
-  function ext(name){const m = /(\.[^.]+)$/.exec(name); return m? m[1].toLowerCase():''}
-
-  // Collect form data
-  function collectMeta(){
-    return {
-      title: fields.title.value.trim(),
-      author: fields.author.value.trim(),
-      album: fields.album.value.trim(),
-      genre: fields.genre.value.trim(),
-      tags: fields.tags.value.split(',').map(s=>s.trim()).filter(Boolean),
-      date: fields.date.value, // ISO date
-      description: fields.description.value.trim(),
-      custom: readCustomFields()
-    };
-  }
-
-  // Sidecar export
-  exportSidecarBtn.addEventListener('click', ()=>{
-    const meta = collectMeta();
-    thumbCanvas.toBlob(b=>{
-      const out = { ...meta, hasThumbnail: !!b };
-      const blob = new Blob([JSON.stringify(out, null, 2)], {type:'application/json'});
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = (currentFile ? baseName(currentFile.name) : 'metadata') + '.meta.json';
-      a.click();
-      setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
-    })
-  });
-
-  // Main write button
-  writeBtn.addEventListener('click', async ()=>{
-    if(!currentFile){ toast('Pick a file first.', 'warn'); return; }
-    const e = ext(currentFile.name);
-    const meta = collectMeta();
-
-    try{
-      if(e === '.mp3'){
-        await writeMp3(meta);
-      } else if(e === '.jpg' || e === '.jpeg'){
-        await writeJpeg(meta);
-      } else {
-        toast('Format not supported for in-file writing. Use sidecar JSON.', 'warn');
-      }
-    } catch(err){
-      console.error(err);
-      toast('Write failed: ' + (err?.message || err), 'err');
-    }
-  });
-
-  // --- MP3 (ID3v2) writing ---
-  async function writeMp3(meta){
-    if(!window['ID3Writer']){ toast('ID3 library not loaded.', 'err'); return; }
-    const arrBuf = await currentFile.arrayBuffer();
-    const writer = new ID3Writer(new Uint8Array(arrBuf));
-    if(meta.title) writer.setFrame('TIT2', meta.title);
-    if(meta.author) writer.setFrame('TPE1', [meta.author]);
-    if(meta.album) writer.setFrame('TALB', meta.album);
-    if(meta.genre) writer.setFrame('TCON', meta.genre);
-    if(meta.description) writer.setFrame('COMM', { description: 'Comment', text: meta.description });
-    if(meta.date) writer.setFrame('TDRC', meta.date);
-
-    // Tags as TXXX user field
-    if(meta.tags?.length){
-      writer.setFrame('TXXX', { description: 'TAGS', value: meta.tags.join(', ') });
-    }
-    // Custom fields as TXXX (multiple)
-    for(const [k,v] of Object.entries(meta.custom||{})){
-      writer.setFrame('TXXX', { description: k, value: String(v) });
-    }
-
-    // Cover art from thumbnail canvas if present
-    const coverArrayBuffer = await new Promise(res=> thumbCanvas.toBlob(b=>{
-      if(!b) return res(null);
-      const fr = new FileReader();
-      fr.onload = ()=> res(fr.result);
-      fr.readAsArrayBuffer(b);
-    }, 'image/png'));
-
-    if(coverArrayBuffer){
-      writer.setFrame('APIC', {
-        type: 3, // front cover
-        data: new Uint8Array(coverArrayBuffer),
-        description: 'Cover',
-        mime: 'image/png'
-      });
-    }
-
-    writer.addTag();
-    const tagged = writer.getBlob();
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(tagged);
-    a.download = baseName(currentFile.name) + '.tagged.mp3';
-    a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
-    toast('Wrote ID3 tags into MP3 (downloaded).', 'ok');
-  }
-
-  // --- JPEG (EXIF) writing ---
-  async function writeJpeg(meta){
-    if(!window['piexif']){ toast('piexifjs library not loaded.', 'err'); return; }
-    const dataUrl = await fileToDataURL(currentFile);
-    const exifObj = { '0th': {}, 'Exif': {}, 'GPS': {}, '1st': {} };
-
-    // Basic fields
-    if(meta.title) exifObj['0th'][piexif.ImageIFD.ImageDescription] = meta.title;
-    if(meta.author) exifObj['0th'][piexif.ImageIFD.Artist] = meta.author;
-    if(meta.description) exifObj['Exif'][piexif.ExifIFD.UserComment] = toExifUnicode(meta.description);
-
-    // XP* tags (UTF-16LE, often used by Windows)
-    if(meta.title) exifObj['0th'][piexif.ImageIFD.XPTitle] = toXP(meta.title);
-    if(meta.author) exifObj['0th'][piexif.ImageIFD.XPAuthor] = toXP(meta.author);
-    if(meta.tags?.length) exifObj['0th'][piexif.ImageIFD.XPKeywords] = toXP(meta.tags.join('; '));
-
-    if(meta.date){
-      const dt = meta.date.replace(/-/g,':') + ' 00:00:00';
-      exifObj['0th'][piexif.ImageIFD.DateTime] = dt;
-      exifObj['Exif'][piexif.ExifIFD.DateTimeOriginal] = dt;
-    }
-
-    // Attempt to embed thumbnail into IFD1
-    const thumbBuf = await canvasToJpegArrayBuffer(thumbCanvas);
-    if(thumbBuf){
-      exifObj['thumbnail'] = new Uint8Array(thumbBuf);
-    }
-
-    const exifBytes = piexif.dump(exifObj);
-    const newDataUrl = piexif.insert(exifBytes, dataUrl);
-
-    // download
-    const a = document.createElement('a');
-    a.href = newDataUrl;
-    a.download = baseName(currentFile.name) + '.tagged.jpg';
-    a.click();
-    toast('Wrote EXIF into JPEG (downloaded).', 'ok');
-  }
-
-  function toXP(str){
-    // UTF-16LE bytes plus null terminator, then stored as array of byte values
-    const enc = new TextEncoder('utf-16le');
-    const bytes = enc.encode(str + '\u0000');
-    return Array.from(bytes);
-  }
-  function toExifUnicode(str){
-    // EXIF UserComment: undefined with an 8-byte code prefix. Use Unicode prefix.
-    // Prefix for Unicode: 0x55 0x4E 0x49 0x43 0x4F 0x44 0x45 0x00 ("UNICODE\0") followed by UTF-16BE
-    const prefix = [0x55,0x4E,0x49,0x43,0x4F,0x44,0x45,0x00];
-    const be = new TextEncoder(); // default utf-8; we'll manually convert
-    // naive UTF-16BE conversion
-    const utf16be = [];
-    for(const ch of str){
-      const code = ch.codePointAt(0);
-      if(code <= 0xFFFF){ utf16be.push(code>>8, code&0xFF); }
-      else {
-        const cp = code - 0x10000;
-        const hi = 0xD800 + (cp>>10);
-        const lo = 0xDC00 + (cp & 0x3FF);
-        utf16be.push(hi>>8, hi&0xFF, lo>>8, lo&0xFF);
-      }
-    }
-    return new Uint8Array([...prefix, ...utf16be]);
-  }
-
-  function fileToDataURL(file){
-    return new Promise((res,rej)=>{
-      const fr = new FileReader();
-      fr.onload = ()=> res(fr.result);
-      fr.onerror = rej;
-      fr.readAsDataURL(file);
-    });
-  }
-
-  function canvasToJpegArrayBuffer(canvas){
-    return new Promise(res=>{
-      canvas.toBlob(b=>{
-        if(!b) return res(null);
-        const fr = new FileReader();
-        fr.onload = ()=> res(fr.result);
-        fr.readAsArrayBuffer(b);
-      }, 'image/jpeg', 0.9);
-    });
-  }
-
-  resetBtn.addEventListener('click', ()=>{
-    // clear fields
-    Object.values(fields).forEach(input=> input.value = '');
-    kvList.innerHTML = '';
-    thumbCtx.clearRect(0,0,thumbCanvas.width, thumbCanvas.height);
-    thumbPreview.removeAttribute('src');
-    fileInput.value = '';
-    currentFile = null;
-    fileInfo.textContent = '';
-    toast('Reset.');
-  });
-})();
-</script>
-</body>
+<html>
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
+        </script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7SV03ZXJ9R');
+        </script>
+        <title>
+            Infinite Campus
+        </title>
+        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
+        <link rel="stylesheet" href="global.css">
+        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
+        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
+        <meta property="og:title" content="Infinite Campus">
+        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
+        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
+        <meta name="theme-color" content="#8cbe37">
+        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
+        <script src="main.js">
+        </script>
+        <script src="theme.js">
+        </script>
+    </head>
+    <body>
+        <center> 
+            <br>
+            <br>
+            <br>
+            <br>
+            <h1 class="tptxt">
+                About This Site
+            </h1>
+            <br>
+            <h2 class="mtxt">
+                This Site, Infinite Campus, Was Founded On December 19th, 2024.
+                <br>
+                <br>
+                We Offer Games, Proxies, Chat, And Much More Here.
+                <br>
+                <br>
+                To Contact The Owner, Click The "Contact Me" Button In The Upper Right Corner
+                <br>
+                <br>
+                To Report A Bug, Go To The Report A Bug Section Under The Help/Support Section
+                <br>
+                <br>
+                To View Recent Updates To The Site, Go To The Updates Tab
+                <br>
+                <br>
+                Please Leave Your Feedback On This Site
+                <br>
+                <a class="discord" href="https://docs.google.com/forms/d/e/1FAIpQLSf1yKpc7CTWPz6oQfEnzOS_fbPJh5y0g9qHiahgR_4XD1k4SQ/viewform?usp=header">
+                    Here
+                </a>
+                <br>
+                <br>
+            </h2>
+            <a class="button" href="InfiniteNavigators">
+                Site Navigation
+            </a>
+            <br>
+            <br>
+            <br>
+            <a class="button" href="https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&su=Become%20A%20Developer&to=infinitecodehs@gmail.com">
+                Become A Developer
+            </a>
+            <br>
+        </center>
+        <script src="frame.js">
+        </script>
+        <script src="popup.js">
+        </script>
+        <script src="mediaplayer.js">
+        </script>
+    </body>
 </html>
