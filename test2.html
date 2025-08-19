@@ -27,6 +27,25 @@
         </script>
         <script src="theme.js">
         </script>
+        <style>
+            .playlist-item img { 
+                width: 40px; 
+                height: 40px; 
+                object-fit: cover; 
+                margin-right: 10px; 
+                border-radius: 9px; 
+            }
+            .playlist-item { 
+                display: flex; 
+                align-items: center; 
+                justify-content: space-between; 
+                margin: 4px 0; 
+                padding: 6px; 
+                background: transparent; 
+                border-radius: 6px; 
+                cursor: pointer; 
+            }
+        </style>
     </head>
     <body>
         <br>
@@ -66,6 +85,7 @@
                     ↺ Off
                 </button>
             </div>
+            </center>
             <div id="progressContainer">
                 <div id="progressBar">
                 </div>
@@ -75,6 +95,8 @@
             </div>
             <audio id="audio"></audio>
 <script type="module" src="test.js">
+</script>
+<script src="frame.js">
 </script>
 </body>
 </html>
