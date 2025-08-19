@@ -152,10 +152,22 @@ function loadPlaylistFromDB() {
 async function loadTrack(index) {
     const file = playlist[index];
     if (!file) return;
+
     audio.src = URL.createObjectURL(file);
     audio.load();
-    popup.style.backgroundImage = file.thumbnail ? `url(${file.thumbnail})` : "";
-    titleElem.textContent = file.name.replace(/\.mp3$/i,"");
+
+    const title = file.name.replace(/\.mp3$/i,"");
+    titleElem.textContent = title;
+
+    // Set blurred background on overlay
+    if (popup.bgOverlay) {
+        if (file.thumbnail) {
+            popup.bgOverlay.style.backgroundImage = `url(${file.thumbnail})`;
+        } else {
+            popup.bgOverlay.style.backgroundImage = "";
+        }
+    }
+
     updatePlayButton();
 }
 
