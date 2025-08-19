@@ -90,6 +90,7 @@ function updatePlaylistUI() {
         const li = document.createElement("li");
         li.className = "playlist-item" + (index === currentTrack ? " active" : "");
         li.dataset.index = index;
+        li.draggable = true;
         const img = document.createElement("img");
         img.src = file.thumbnail || "https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d";
         const span = document.createElement("span");
@@ -102,7 +103,44 @@ function updatePlaylistUI() {
             audio.play();
             playPauseBtn.textContent = "||";
         });
+        li.addEventListener("dragstart", e => {
+            e.dataTransfer.setData("text/plain", index);
+        });
+        li.addEventListener("dragover", e => {
+            e.preventDefault();
+            li.style.borderTop = "2px solid #00f"; // highlight drop area
+        });
+        li.addEventListener("dragleave", () => {
+            li.style.borderTop = "";
+        });
+        li.addEventListener("drop", e => {
+            e.preventDefault();
+            li.style.borderTop = "";
+            const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+            const toIndex = index;
+            reorderPlaylist(fromIndex, toIndex);
+        });
         playlistElement.appendChild(li);
+    });
+}
+function reorderPlaylist(fromIndex, toIndex) {
+    if (fromIndex === toIndex) return;
+    const moved = playlist.splice(fromIndex, 1)[0];
+    playlist.splice(toIndex, 0, moved);
+    updatePlaylistUI();
+    savePlaylistOrderToDB();
+}
+function savePlaylistOrderToDB() {
+    const transaction = db.transaction("songs", "readwrite");
+    const store = transaction.objectStore("songs");
+    store.clear();
+    playlist.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const data = new Uint8Array(reader.result);
+            store.add({ name: file.name, data: data, thumbnail: file.thumbnail || "" });
+        };
+        reader.readAsArrayBuffer(file);
     });
 }
 async function loadTrack(index) {

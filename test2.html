@@ -46,12 +46,14 @@
                 cursor: pointer; 
             }
             #progressContainer { 
-                width: 80%; 
+                width:80%; 
                 height: 8px; 
                 background: #333; 
-                margin: 20px auto; 
                 border-radius: 4px; 
                 cursor: pointer; 
+                max-width:37%;
+                margin-left:20%;
+                margin-top:2%;
             }
             #progressBar { 
                 height: 100%; 
@@ -76,6 +78,18 @@
                 Choose A File
             </label>
             <br>
+            <br>
+            <br>
+            <a class="button" onclick="converter()">
+                Convert Spotify Songs To Mp3
+            </a>
+            <br>
+            <br>
+            <br>
+            <a class="button" onclick="thumbnail()">
+                Add Thumbnails To Your Files (No Plus Sign)
+            </a>
+            <br> 
             <input style="display:none;" type="file" id="fileInput" multiple accept="audio/*">
             <br>
             <button class="button" id="clearBtn">
@@ -85,29 +99,33 @@
             <img id="albumArt" src="" alt="" style="margin-top: 20px; width: 200px; height: 200px; object-fit: cover; border-radius: 8px;">
             <br>
             <ul id="playlist"></ul>
-            <div class="mcontrols">
-                <button class="button" id="backBtn">
-                    ⏮
-                </button>
-                <button class="button" id="playPauseBtn">
-                    ▶
-                </button>
-                <button class="button" id="forwardBtn">
-                    ⏭
-                </button>
-                <button class="button" id="loopBtn">
-                    ↺ Off
-                </button>
-            </div>
         </center>
         <div id="progressContainer">
             <div id="progressBar">
             </div>
         </div>
-        <br>
-        <div id="timeDisplay">
+        <div style="margin-top:-1%; position:relative; text-align:right; right: 20%;" id="timeDisplay">
             0:00 / 0:00
         </div>
+        <div style="text-align:center; position:relative; left:15%; margin-top: -3%;">
+            <button class="button" id="backBtn">
+                ⏮
+            </button>
+            <button class="button" id="playPauseBtn">
+                ▶
+            </button>
+            <button class="button" id="forwardBtn">
+                ⏭
+            </button>
+            <button class="button" id="loopBtn">
+                ↺ Off
+            </button>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
         <audio id="audio"></audio>
         <script type="module" src="test.js">
         </script>

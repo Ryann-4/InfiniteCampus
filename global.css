@@ -103,7 +103,7 @@ html {
     align-items: center;
     text-align:left;
     max-width:600px;
-    
+
 }
 #playlist li .duration {
     margin-left: auto;
@@ -657,16 +657,16 @@ emoji-picker {
     100% { background-position: 0% 50%; }
 }
 .mediabtns {
-    background-color:black;
-    border:1px solid white;
+    background-color:black !important;
+    border:1px solid white !important;
     border-radius:9px;
-    color:white;
+    color:white !important;
     cursor:pointer;
 }
 .mediabtns:hover {
-    background-color:white;
-    border:1px solid white;
-    color:black;
+    background-color:white !important;
+    border:1px solid white !important;
+    color:black !important;
 }
 .closepopup {
     color:white;
@@ -674,4 +674,5 @@ emoji-picker {
     border:1px solid white;
     cursor:pointer;
     padding:3px;
+    border-radius:5px;
 }
