@@ -78,7 +78,10 @@
         <script src="mediaplayer.js">
         </script>
         <script>
-            addDrySong("My Song", "song.mp3", "thumbnail.jpg");
+            // Add uploaded file
+const file = document.getElementById("fileInput").files[0];
+const thumb = "thumbnail.jpg"; // optional
+addDrySong(file.name, file, thumb);
         </script>
     </body>
 </html>
