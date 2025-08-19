@@ -33,10 +33,6 @@ let playerPopup;
 
 // --- IndexedDB Functions ---
 function addSongToDB(name, file, thumbnail) {
-    const transaction = db.transaction("songs", "readwrite");
-    const store = transaction.objectStore("songs");
-
-    // Convert file to arrayBuffer for storage
     const reader = new FileReader();
     reader.onload = () => {
         const songData = {
@@ -44,7 +40,19 @@ function addSongToDB(name, file, thumbnail) {
             fileData: reader.result,
             thumbnail: thumbnail || null
         };
+
+        // Open transaction AFTER file has been read
+        const transaction = db.transaction("songs", "readwrite");
+        const store = transaction.objectStore("songs");
         store.add(songData);
+
+        transaction.oncomplete = () => {
+            console.log("Song added:", name);
+            loadPlaylistFromDB(); // refresh playlist immediately
+        };
+        transaction.onerror = e => {
+            console.error("DB Insert Error:", e.target.error);
+        };
     };
     reader.readAsArrayBuffer(file);
 }
