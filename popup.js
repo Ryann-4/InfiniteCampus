@@ -1,4 +1,6 @@
 let playlist = [];
+audio.controls = true; // this adds the browser's default play/pause/skip UI
+document.body.appendChild(audio); // optional: add to DOM if you want it visible
 let currentTrack = 0;
 let loopPlaylist = false;
 let audio = new Audio();
