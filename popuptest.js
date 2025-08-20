@@ -191,7 +191,32 @@
     }
     function onUp(){dragging=false;document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);}
   })();
+  // ------------------- Events -------------------
 
+// Play/Pause toggle
+btnPlay.addEventListener('click', () => {
+    if (audio.paused) {
+        audio.play().then(() => setPlayButtons(true));
+    } else {
+        audio.pause();
+        setPlayButtons(false);
+    }
+});
+
+// Loop toggle
+btnLoop.addEventListener('click', () => {
+    isLooping = !isLooping;
+    btnLoop.textContent = isLooping ? 'Loop On' : 'Loop Off';
+    btnLoop.style.outline = isLooping ? '2px solid #4c9aff' : 'none';
+});
+
+// Update play/pause button automatically when audio state changes
+audio.addEventListener('play', () => setPlayButtons(true));
+audio.addEventListener('pause', () => setPlayButtons(false));
+
+function setPlayButtons(playing) {
+    btnPlay.textContent = playing ? 'Pause' : 'Play';
+}
   // ------------------- Init -------------------
   (async()=>{
     await openDB();
