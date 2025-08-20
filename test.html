@@ -31,56 +31,21 @@
             img {
                 padding:0px;
             }
-            :root {
-                --bg: #0b0e14;
-                --panel: #131722;
-                --text: #e8ecf1;
-                --muted: #9aa4b2;
-                --accent: #4c9aff;
-                --accent-2: #7c4cff;
-                --border: #232838;
-                --danger: #ff6565;
-                --radius: 14px;
-                --shadow: 0 10px 30px rgba(0,0,0,.35);
-            }
             .wrap { 
                 max-width: 980px; 
                 margin: 32px auto; 
                 padding: 0 16px; 
             }
-            .topbar {
-                display:flex; 
-                gap:14px; 
-                align-items:center; 
-                justify-content:space-between; 
-                margin-bottom:16px;
-            }
-            .filebox {
-                display:flex; 
-                align-items:center; 
-                gap:10px; 
-                background:var(--panel); 
-                border:1px solid var(--border);
-                padding:10px 12px; 
-                border-radius: var(--radius);
-            }
             input[type="file"] {
                 appearance: none; 
                 background:#0f1320; 
-                border:1px dashed var(--border); 
-                color:var(--muted);
                 padding:8px 10px; 
                 border-radius:10px; 
                 width:100%;
             }
-            .hint { 
-                color: var(--muted); 
-                font-size: 12px; 
-            }
             .player {
-                border-radius: var(--radius);
+                border-radius: 10px;
                 padding: 16px; 
-                box-shadow: var(--shadow);
             }
             .now {
                 display:flex; 
@@ -95,7 +60,7 @@
                 border-radius: 12px; 
                 overflow:hidden; 
                 background:#0f1320; 
-                border:1px solid var(--border);
+                border:1px solid white;
             }
             .art img { 
                 width:100%; 
@@ -110,7 +75,7 @@
             .nowtext h2 { 
                 margin:0; 
                 font-size:16px; 
-                color:var(--muted); 
+                color: white; 
                 font-weight:600; 
                 letter-spacing:.3px; 
             }
@@ -137,7 +102,7 @@
                 width:90px; 
                 text-align:right; 
                 font-variant-numeric: tabular-nums; 
-                color:var(--muted); 
+                color: white; 
             }
             input[type="range"] {
                 width:100%;
@@ -145,21 +110,20 @@
                 height:6px; 
                 border-radius:999px; 
                 outline:none; 
-                border:1px solid var(--border);
             }
             input[type="range"]::-webkit-slider-thumb { 
                 appearance:none; 
                 width:14px; 
                 height:14px; 
                 border-radius:50%; 
-                background:var(--accent); 
+                background:green; 
                 cursor:pointer; 
             }
             input[type="range"]::-moz-range-thumb { 
                 width:14px; 
                 height:14px; 
                 border-radius:50%; 
-                background:var(--accent); 
+                background:lime; 
                 border:none; 
                 cursor:pointer; 
             }
@@ -167,8 +131,7 @@
                 appearance:none; 
                 border:none; 
                 background:#0f1320; 
-                border:1px solid var(--border);
-                color:var(--text); 
+                color:white; 
                 padding:10px 12px; 
                 border-radius:12px; 
                 cursor:pointer;
@@ -180,7 +143,7 @@
                 transform: translateY(1px); 
             }
             .btn.toggled { 
-                outline: 2px solid var(--accent); 
+                outline: 2px solid blue; 
             }
             .listwrap {
                 margin-top: 16px; 
@@ -190,7 +153,7 @@
                 display:flex; 
                 justify-content:space-between; 
                 align-items:center; 
-                color:var(--muted); 
+                color:white; 
                 font-size:13px; 
                 padding:0 6px 8px;
             }
@@ -218,7 +181,7 @@
             .index { 
                 width:28px; 
                 text-align:right; 
-                color:var(--muted); 
+                color:white; 
                 font-variant-numeric: tabular-nums; 
             }
             .track-title { 
@@ -241,7 +204,6 @@
                 border-radius: 16px; 
                 overflow: hidden;
                 border:1px solid rgba(255,255,255,.15); 
-                box-shadow: var(--shadow); 
                 backdrop-filter: blur(6px);
                 background: #1116;
             }
@@ -312,7 +274,7 @@
                 display:flex; 
                 justify-content:space-between; 
                 align-items:center; 
-                color:var(--muted); 
+                color:white; 
                 font-size:12px;
             }
             @media (max-width: 640px) {
@@ -324,17 +286,20 @@
     </head>
     <body>
         <div class="wrap">
-            <div class="topbar">
-                <div class="filebox" title="Add up to 20 audio files">
-                    <strong>
-                        Upload Files
-                    </strong>
-                    <label for="fileinput" class="custom-file-upload">
-                        Choose Up To 20 Files
-                    </label>
-                    <input id="fileInput" type="file" accept="audio/*" multiple />
-                </div>
-            </div>
+            <center>
+                <br>
+                <br>
+                <br>
+                <br>
+                <h1 class="tptxt">
+                    20 File MP3 Player (New)
+                </h1>
+                <br>
+                <label for="fileInput" class="custom-file-upload">
+                    Choose Up To 20 Files
+                </label>
+                <input id="fileInput" type="file" accept="audio/*" multiple />
+            </center>
             <section class="player">
                 <div class="now">
                     <div class="art">
@@ -579,7 +544,7 @@ function loadAll() {
 
 function showSaved(msg, error=false) {
   els.saveStatus.textContent = msg;
-  els.saveStatus.style.color = error ? 'var(--danger)' : 'var(--muted)';
+  els.saveStatus.style.color = error ? 'red' : 'white';
   setTimeout(() => { els.saveStatus.textContent = " "; }, 1800);
 }
 
@@ -1017,6 +982,8 @@ document.addEventListener('keydown', (e) => {
 window.addEventListener('beforeunload', () => {
   revokeAllObjectURLs();
 });
+</script>
+<script src="frame.js">
 </script>
 </body>
 </html>
