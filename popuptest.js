@@ -11,8 +11,10 @@
       const req = indexedDB.open(DB_NAME, DB_VERSION);
       req.onupgradeneeded = e => {
         db = e.target.result;
-        if (!db.objectStoreNames.contains('songs')) db.createObjectStore('songs', { keyPath: 'id', autoIncrement: true });
-        if (!db.objectStoreNames.contains('state')) db.createObjectStore('state', { keyPath: 'key' });
+        if (!db.objectStoreNames.contains('songs'))
+          db.createObjectStore('songs', { keyPath: 'id', autoIncrement: true });
+        if (!db.objectStoreNames.contains('state'))
+          db.createObjectStore('state', { keyPath: 'key' });
       };
       req.onsuccess = e => { db = e.target.result; resolve(db); };
       req.onerror = e => reject(e);
@@ -27,7 +29,7 @@
       req.onsuccess = () => {
         const allTracks = req.result || [];
         // Sort by 'position' field to maintain playlist order
-        allTracks.sort((a,b) => (a.position || 0) - (b.position || 0));
+        allTracks.sort((a, b) => (a.position || 0) - (b.position || 0));
         resolve(allTracks);
       };
       req.onerror = e => reject(e);
@@ -127,8 +129,8 @@
   const btnPrev = document.createElement('button'); btnPrev.textContent='⏮'; controls.appendChild(btnPrev);
   const btnPlay = document.createElement('button'); btnPlay.textContent='Play'; controls.appendChild(btnPlay);
   const btnNext = document.createElement('button'); btnNext.textContent='⏭'; controls.appendChild(btnNext);
-  const btnLoop = document.createElement('button'); btnLoop.textContent='Loop'; controls.appendChild(btnLoop);
-  [btnPrev,btnPlay,btnNext,btnLoop].forEach(b=>{
+  const btnLoop = document.createElement('button'); btnLoop.textContent='Loop Off'; controls.appendChild(btnLoop);
+  [btnPrev, btnPlay, btnNext, btnLoop].forEach(b=>{
     b.style.background='#0007';
     b.style.border='1px solid #ffffff33';
     b.style.color='white';
@@ -138,90 +140,78 @@
   content.appendChild(controls);
 
   // ------------------- Functions -------------------
-  function fmtTime(s){s=Math.floor(s||0);return Math.floor(s/60)+":"+String(s%60).padStart(2,'0');}
+  function fmtTime(s){ s=Math.floor(s||0); return Math.floor(s/60)+":"+String(s%60).padStart(2,'0'); }
   function setTrackUI(){
     const t = tracks[currentIndex];
     if(!t) return;
     title.textContent=t.title||'Untitled';
     bg.style.backgroundImage=`url("${(t.artworkDataUrl||FALLBACK_ART).replace(/"/g,'\\"')}")`;
   }
-  function setPlayButtons(playing){btnPlay.textContent=playing?'Pause':'Play';}
-  function nextTrack(){currentIndex=(currentIndex+1)%tracks.length;loadTrack(true);}
-  function prevTrack(){audio.currentTime>10?audio.currentTime=0:(currentIndex=(currentIndex-1+tracks.length)%tracks.length,loadTrack(true));}
+  function nextTrack(){ currentIndex=(currentIndex+1)%tracks.length; loadTrack(true); }
+  function prevTrack(){ audio.currentTime>10?audio.currentTime=0:(currentIndex=(currentIndex-1+tracks.length)%tracks.length,loadTrack(true)); }
   function loadTrack(autoplay=false){
     if(tracks.length===0) return;
     const t = tracks[currentIndex];
-    audio.src=URL.createObjectURL(t.blob);
+    audio.src = URL.createObjectURL(t.blob);
     setTrackUI();
-    if(autoplay) audio.play().catch(()=>{}),setPlayButtons(true); else setPlayButtons(false);
+    if(autoplay) audio.play().catch(()=>{}), btnPlay.textContent='Pause';
+    else btnPlay.textContent='Play';
   }
 
   // ------------------- Events -------------------
-  audio.addEventListener('timeupdate',()=>{
-    const cur=audio.currentTime||0;
-    const dur=audio.duration||0;
-    seek.value=Math.round(cur/dur*1000)||0;
-    miniTimes.textContent=fmtTime(cur)+' / '+fmtTime(dur);
+  audio.addEventListener('timeupdate', ()=>{
+    const cur = audio.currentTime||0;
+    const dur = audio.duration||0;
+    seek.value = Math.round(cur/dur*1000)||0;
+    miniTimes.textContent = fmtTime(cur)+' / '+fmtTime(dur);
   });
-  seek.addEventListener('input',()=>{audio.currentTime=seek.value/1000*(audio.duration||0);});
+  seek.addEventListener('input', ()=>{ audio.currentTime = seek.value/1000*(audio.duration||0); });
 
-  btnPlay.addEventListener('click',()=>audio.paused?audio.play().then(()=>setPlayButtons(true)):audio.pause()&&setPlayButtons(false));
-  btnNext.addEventListener('click',()=>nextTrack());
-  btnPrev.addEventListener('click',()=>prevTrack());
-  btnLoop.addEventListener('click',()=>isLooping=!isLooping,btnLoop.style.outline=isLooping?'2px solid #4c9aff':'none');
+  btnPlay.addEventListener('click', ()=>{
+    if(audio.paused) audio.play();
+    else audio.pause();
+  });
 
-  closeBtn.addEventListener('click',()=>{audio.pause();floating.style.display='none';});
+  btnLoop.addEventListener('click', ()=>{
+    isLooping = !isLooping;
+    btnLoop.textContent = isLooping ? 'Loop On' : 'Loop Off';
+    btnLoop.style.outline = isLooping ? '2px solid #4c9aff' : 'none';
+  });
 
-  audio.addEventListener('ended',()=>{
+  // Auto-update button labels
+  audio.addEventListener('play', ()=> btnPlay.textContent='Pause');
+  audio.addEventListener('pause', ()=> btnPlay.textContent='Play');
+
+  btnNext.addEventListener('click', ()=> nextTrack());
+  btnPrev.addEventListener('click', ()=> prevTrack());
+  closeBtn.addEventListener('click', ()=> { audio.pause(); floating.style.display='none'; });
+
+  audio.addEventListener('ended', ()=>{
     if(currentIndex<tracks.length-1) nextTrack();
-    else if(isLooping) currentIndex=0,loadTrack(true);
+    else if(isLooping) currentIndex=0, loadTrack(true);
   });
 
   // Drag floating
   (()=>{
-    let dragging=false,startX=0,startY=0,originX=0,originY=0;
+    let dragging=false, startX=0, startY=0, originX=0, originY=0;
     top.addEventListener('mousedown',(e)=>{
-      dragging=true; const rect=floating.getBoundingClientRect(); originX=rect.left;originY=rect.top;
+      dragging=true;
+      const rect=floating.getBoundingClientRect(); originX=rect.left; originY=rect.top;
       startX=e.clientX; startY=e.clientY;
-      document.addEventListener('mousemove',onMove);
-      document.addEventListener('mouseup',onUp);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
     });
-    function onMove(e){if(!dragging) return; const dx=e.clientX-startX; const dy=e.clientY-startY;
-      floating.style.left=(originX+dx)+'px';floating.style.top=(originY+dy)+'px';floating.style.right='auto';floating.style.bottom='auto';
+    function onMove(e){ if(!dragging) return; const dx=e.clientX-startX; const dy=e.clientY-startY;
+      floating.style.left=(originX+dx)+'px'; floating.style.top=(originY+dy)+'px'; floating.style.right='auto'; floating.style.bottom='auto';
     }
-    function onUp(){dragging=false;document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);}
+    function onUp(){ dragging=false; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
   })();
-  // ------------------- Events -------------------
 
-// Play/Pause toggle
-btnPlay.addEventListener('click', () => {
-    if (audio.paused) {
-        audio.play().then(() => setPlayButtons(true));
-    } else {
-        audio.pause();
-        setPlayButtons(false);
-    }
-});
-
-// Loop toggle
-btnLoop.addEventListener('click', () => {
-    isLooping = !isLooping;
-    btnLoop.textContent = isLooping ? 'Loop On' : 'Loop Off';
-    btnLoop.style.outline = isLooping ? '2px solid #4c9aff' : 'none';
-});
-
-// Update play/pause button automatically when audio state changes
-audio.addEventListener('play', () => setPlayButtons(true));
-audio.addEventListener('pause', () => setPlayButtons(false));
-
-function setPlayButtons(playing) {
-    btnPlay.textContent = playing ? 'Pause' : 'Play';
-}
   // ------------------- Init -------------------
   (async()=>{
     await openDB();
     tracks = await loadAllTracks();
-    if(tracks.length>0){floating.style.display='block';loadTrack(false);}
+    if(tracks.length>0){ floating.style.display='block'; loadTrack(false); }
   })();
 
 })();
