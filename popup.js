@@ -43,6 +43,7 @@
     floating.style.backdropFilter='blur(6px)';
     floating.style.background='#1116';
     floating.style.zIndex='9999';
+    floating.style.display='none';
     document.body.appendChild(floating);
     const bg = document.createElement('div');
     bg.style.position='absolute';
@@ -185,6 +186,9 @@
     (async()=>{
         await openDB();
         tracks = await loadAllTracks();
-        if(tracks.length>0){ floating.style.display='block'; loadTrack(false); }
+        if(tracks.length>0){
+            floating.style.display='block';
+            loadTrack(false);
+        }
     })();
 })();

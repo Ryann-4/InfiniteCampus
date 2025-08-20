@@ -475,6 +475,35 @@ document.addEventListener('keydown', (e) => {
     else { els.audio.pause(); setPlayButtons(false); }
   }
 });
+async function clearPlaylistAndDB() {
+  tracks = [];
+  currentIndex = 0;
+  isLooping = false;
+  revokeAllObjectURLs();
+  refreshListUI();
+  setNowPlayingUI();
+  setLoopUI();
+  els.audio.pause();
+  els.audio.src = '';
+  setPlayButtons(false);
+  return new Promise((resolve, reject) => {
+    const deleteReq = indexedDB.deleteDatabase(DB_NAME);
+    deleteReq.onsuccess = () => {
+      showSaved("Playlist Cleared");
+      resolve();
+    };
+    deleteReq.onerror = (e) => {
+      showSaved("Failed To Clear", true);
+      reject(e);
+    };
+  }).then(() => openDB());
+}
+els.btnClear = document.getElementById('btnClear');
+els.btnClear.addEventListener('click', () => {
+  if (confirm("Are You Sure You Want To Clear The Playlist?")) {
+    clearPlaylistAndDB();
+  }
+});
 (async function init() {
   await openDB();
   const data = await loadAll();
