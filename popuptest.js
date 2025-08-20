@@ -18,19 +18,23 @@
       req.onerror = e => reject(e);
     });
   }
-  function loadAll() {
-    return new Promise((resolve,reject)=>{
-      const tx = db.transaction(['songs','state'],'readonly');
-      const songsStore = tx.objectStore('songs');
-      const idx = songsStore.index ? songsStore.index('position') : null;
-      const tracksOut = [];
-      const req = songsStore.getAll();
-      req.onsuccess = ()=>resolve(req.result || []);
-      req.onerror = e=>reject(e);
+
+  function loadAllTracks() {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('songs', 'readonly');
+      const store = tx.objectStore('songs');
+      const req = store.getAll();
+      req.onsuccess = () => {
+        const allTracks = req.result || [];
+        // Sort by 'position' field to maintain playlist order
+        allTracks.sort((a,b) => (a.position || 0) - (b.position || 0));
+        resolve(allTracks);
+      };
+      req.onerror = e => reject(e);
     });
   }
 
-  // ------------------- Create floating player -------------------
+  // ------------------- DOM: Floating Player -------------------
   const floating = document.createElement('div');
   floating.style.position='fixed';
   floating.style.right='24px';
@@ -124,7 +128,13 @@
   const btnPlay = document.createElement('button'); btnPlay.textContent='Play'; controls.appendChild(btnPlay);
   const btnNext = document.createElement('button'); btnNext.textContent='⏭'; controls.appendChild(btnNext);
   const btnLoop = document.createElement('button'); btnLoop.textContent='Loop'; controls.appendChild(btnLoop);
-  [btnPrev,btnPlay,btnNext,btnLoop].forEach(b=>{b.style.background='#0007';b.style.border='1px solid #ffffff33';b.style.color='white';b.style.padding='6px 12px';b.style.borderRadius='8px';});
+  [btnPrev,btnPlay,btnNext,btnLoop].forEach(b=>{
+    b.style.background='#0007';
+    b.style.border='1px solid #ffffff33';
+    b.style.color='white';
+    b.style.padding='6px 12px';
+    b.style.borderRadius='8px';
+  });
   content.appendChild(controls);
 
   // ------------------- Functions -------------------
@@ -185,8 +195,8 @@
   // ------------------- Init -------------------
   (async()=>{
     await openDB();
-    const loaded=await loadAll();
-    tracks=loaded.map(t=>({...t}));
+    tracks = await loadAllTracks();
     if(tracks.length>0){floating.style.display='block';loadTrack(false);}
   })();
+
 })();
