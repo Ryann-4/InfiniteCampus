@@ -4,8 +4,6 @@
   const DB_VERSION = 1;
   let db;
   let tracks = [], currentIndex = 0, isLooping = false;
-
-  // ------------------- IndexedDB -------------------
   function openDB() {
     return new Promise((resolve, reject) => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
@@ -20,7 +18,6 @@
       req.onerror = e => reject(e);
     });
   }
-
   function loadAllTracks() {
     return new Promise((resolve, reject) => {
       const tx = db.transaction('songs', 'readonly');
@@ -28,15 +25,12 @@
       const req = store.getAll();
       req.onsuccess = () => {
         const allTracks = req.result || [];
-        // Sort by 'position' field to maintain playlist order
         allTracks.sort((a, b) => (a.position || 0) - (b.position || 0));
         resolve(allTracks);
       };
       req.onerror = e => reject(e);
     });
   }
-
-  // ------------------- DOM: Floating Player -------------------
   const floating = document.createElement('div');
   floating.style.position='fixed';
   floating.style.right='24px';
@@ -50,7 +44,6 @@
   floating.style.background='#1116';
   floating.style.zIndex='9999';
   document.body.appendChild(floating);
-
   const bg = document.createElement('div');
   bg.style.position='absolute';
   bg.style.inset='0';
@@ -59,7 +52,6 @@
   bg.style.filter='blur(2px)';
   bg.style.transform='scale(1.05)';
   floating.appendChild(bg);
-
   const content = document.createElement('div');
   content.style.position='relative';
   content.style.padding='12px';
@@ -73,6 +65,9 @@
   top.style.gap='8px';
   top.style.cursor='move';
   top.style.userSelect='none';
+  top.style.background='#0008';
+  top.style.borderRadius='10px';
+  top.style.padding="3px";
   content.appendChild(top);
 
   const title = document.createElement('div');
@@ -88,10 +83,11 @@
   closeBtn.textContent='✕';
   closeBtn.style.appearance='none';
   closeBtn.style.border='none';
-  closeBtn.style.background='#0008';
+  closeBtn.style.background='transparent';
   closeBtn.style.color='#fff';
   closeBtn.style.width='28px';
   closeBtn.style.height='28px';
+  closeBtn.style.padding='3px';
   closeBtn.style.borderRadius='10px';
   closeBtn.style.cursor='pointer';
   top.appendChild(closeBtn);
@@ -127,9 +123,9 @@
   controls.style.gap='8px';
   controls.style.marginTop='10px';
   const btnPrev = document.createElement('button'); btnPrev.textContent='⏮'; controls.appendChild(btnPrev);
-  const btnPlay = document.createElement('button'); btnPlay.textContent='Play'; controls.appendChild(btnPlay);
+  const btnPlay = document.createElement('button'); btnPlay.textContent='▶'; controls.appendChild(btnPlay);
   const btnNext = document.createElement('button'); btnNext.textContent='⏭'; controls.appendChild(btnNext);
-  const btnLoop = document.createElement('button'); btnLoop.textContent='Loop Off'; controls.appendChild(btnLoop);
+  const btnLoop = document.createElement('button'); btnLoop.textContent='↺ Off'; controls.appendChild(btnLoop);
   [btnPrev, btnPlay, btnNext, btnLoop].forEach(b=>{
     b.style.background='#0007';
     b.style.border='1px solid #ffffff33';
@@ -154,8 +150,8 @@
     const t = tracks[currentIndex];
     audio.src = URL.createObjectURL(t.blob);
     setTrackUI();
-    if(autoplay) audio.play().catch(()=>{}), btnPlay.textContent='Pause';
-    else btnPlay.textContent='Play';
+    if(autoplay) audio.play().catch(()=>{}), btnPlay.textContent='||';
+    else btnPlay.textContent='▶';
   }
 
   // ------------------- Events -------------------
@@ -174,13 +170,13 @@
 
   btnLoop.addEventListener('click', ()=>{
     isLooping = !isLooping;
-    btnLoop.textContent = isLooping ? 'Loop On' : 'Loop Off';
+    btnLoop.textContent = isLooping ? '↺ On' : '↺ Off';
     btnLoop.style.outline = isLooping ? '2px solid #4c9aff' : 'none';
   });
 
   // Auto-update button labels
-  audio.addEventListener('play', ()=> btnPlay.textContent='Pause');
-  audio.addEventListener('pause', ()=> btnPlay.textContent='Play');
+  audio.addEventListener('play', ()=> btnPlay.textContent='||');
+  audio.addEventListener('pause', ()=> btnPlay.textContent='▶');
 
   btnNext.addEventListener('click', ()=> nextTrack());
   btnPrev.addEventListener('click', ()=> prevTrack());
