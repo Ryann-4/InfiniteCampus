@@ -1,9 +1,9 @@
 let playlist = [];
-audio.controls = true; // this adds the browser's default play/pause/skip UI
-document.body.appendChild(audio); // optional: add to DOM if you want it visible
+let audio = new Audio();
 let currentTrack = 0;
 let loopPlaylist = false;
-let audio = new Audio();
+audio.controls = true; // this adds the browser's default play/pause/skip UI
+document.body.appendChild(audio); // optional: add to DOM if you want it visible
 let popup, progressFill, titleElem, playBtn, loopBtn;
 function initPopup() {
     if (document.getElementById("playerPopup")) return;
