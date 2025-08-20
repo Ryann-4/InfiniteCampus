@@ -561,16 +561,12 @@ audio {
     gap: 10px;
 }
 .controls button {
-    background: none;
     border: 1px solid #ccc;
     border-radius: 5px;
     color: white;
     padding: 5px 10px;
     cursor: pointer;
     transition: background 0.3s;
-}
-.controls button:hover {
-    background: #333;
 }
 .media-container {
     max-width: 600px;

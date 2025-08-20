@@ -28,112 +28,364 @@
         <script src="theme.js">
         </script>
         <style>
-            .playlist-item img { 
-                width: 40px; 
-                height: 40px; 
-                object-fit: cover; 
-                margin-right: 10px; 
-                border-radius: 9px; 
+            img {
+                padding:0px;
             }
-            .playlist-item { 
-                display: flex; 
-                align-items: center; 
-                justify-content: space-between; 
-                margin: 4px 0; 
-                padding: 6px; 
+            .wrap { 
+                max-width: 980px; 
+                margin: 32px auto; 
+                padding: 0 16px; 
+            }
+            input[type="file"] {
+                appearance: none; 
+                background:#0f1320; 
+                padding:8px 10px; 
+                border-radius:10px; 
+                width:100%;
+            }
+            .player {
+                border-radius: 10px;
+                padding: 16px; 
+            }
+            .now {
+                display:flex; 
+                gap:16px; 
+                align-items:center; 
+                margin-bottom: 14px;
+            }
+            .art {
+                width: 110px; 
+                height:110px; 
+                flex: 0 0 110px; 
+                border-radius: 12px; 
+                overflow:hidden; 
+                background:#0f1320; 
+                border:1px solid white;
+            }
+            .art img { 
+                width:100%; 
+                height:100%; 
+                object-fit:cover; 
+                display:block; 
+            }
+            .nowtext { 
+                flex:1 1 auto; 
+                min-width:0; 
+            }
+            .nowtext h2 { 
+                margin:0; 
+                font-size:16px; 
+                color: white; 
+                font-weight:600; 
+                letter-spacing:.3px; 
+            }
+            .nowtext h3 { 
+                margin:6px 0 0; 
+                font-size:22px; 
+                white-space:nowrap; 
+                overflow:hidden; 
+                text-overflow:ellipsis; 
+            }
+            .controls {
+                display:grid; 
+                grid-template-columns: 1fr auto auto auto auto; 
+                gap:12px; 
+                align-items:center; 
+                margin-top: 10px;
+            }
+            .progress {
+                display:flex; 
+                align-items:center; 
+                gap:10px;
+            }
+            .time { 
+                width:90px; 
+                text-align:right; 
+                font-variant-numeric: tabular-nums; 
+                color: white; 
+            }
+            input[type="range"] {
+                width:100%;
+                background:lime;
+                appearance:none; 
+                height:6px; 
+                border-radius:999px; 
+                outline:none; 
+            }
+            input[type="range"]::-webkit-slider-thumb { 
+                appearance:none; 
+                width:14px; 
+                height:14px; 
+                border-radius:50%; 
+                background:green; 
+                cursor:pointer; 
+            }
+            input[type="range"]::-moz-range-thumb { 
+                width:14px; 
+                height:14px; 
+                border-radius:50%; 
+                background:lime; 
+                border:none; 
+                cursor:pointer; 
+            }
+            .listwrap {
+                margin-top: 16px; 
+                padding: 10px;
+            }
+            .headerline {
+                display:flex; 
+                justify-content:space-between; 
+                align-items:center; 
+                color:white; 
+                font-size:13px; 
+                padding:0 6px 8px;
+            }
+            .playlist {
+                list-style:none; 
+                margin:0; 
+                padding:0; 
+                display:flex; 
+                flex-direction:column; 
+                gap:8px;
+            }
+            .track {
+                display:flex; 
+                align-items:center; 
+                gap:12px; 
+                padding:10px; 
+                border:1px solid white;
+                border-radius:12px;
+            }
+            .drag-handle { 
+                cursor:grab;
+                user-select:none; 
+                opacity:.9; 
+            }
+            .index { 
+                width:28px; 
+                text-align:right; 
+                color:white; 
+                font-variant-numeric: tabular-nums; 
+            }
+            .track-title { 
+                flex:1 1 auto; 
+                white-space:nowrap; 
+                overflow:hidden; 
+                text-overflow:ellipsis; 
+            }
+            .ghost { 
+                opacity:.4; 
+            }
+            .hidden { 
+                display:none !important; 
+            }
+            .floating {
+                position: fixed; 
+                right: 24px; 
+                bottom: 24px; 
+                width: 320px; 
+                border-radius: 16px; 
+                overflow: hidden;
+                border:1px solid rgba(255,255,255,.15); 
+                backdrop-filter: blur(6px);
+                background: #1116;
+            }
+            .floating-bg {
+                position:absolute; 
+                inset:0; 
+                background-size:cover; 
+                background-position:center; 
+                filter: blur(2px);
+                transform: scale(1.05);
+            }
+            .floating-content {
+                position: relative; 
+                padding: 12px; 
+                color: #fff;
+            }
+            .floating-top {
+                display:flex; 
+                background:#0008;
+                padding:3px;
+                border-radius:10px;
+                justify-content:space-between; 
+                align-items:center; 
+                gap:8px;
+                cursor: move; 
+                user-select:none;
+            }
+            .floating-title { 
+                font-size:14px; 
+                font-weight:600; 
+                white-space:nowrap; 
+                overflow:hidden; 
+                text-overflow:ellipsis; 
+            }
+            .closex {
+                appearance:none; 
+                border:none; 
                 background: transparent; 
-                border-radius: 6px; 
-                cursor: pointer; 
+                color:#fff; 
+                padding:3px;
+                width:28px; 
+                height:28px; 
+                border-radius:10px; 
+                cursor:pointer;
             }
-            #progressContainer { 
-                width:80%; 
-                height: 8px; 
-                background: #333; 
-                border-radius: 4px; 
-                cursor: pointer; 
-                max-width:37%;
-                margin-left:20%;
-                margin-top:2%;
+            .floating-progress { 
+                margin-top:10px; 
+                display:flex; 
+                align-items:center; 
+                gap:8px; 
             }
-            #progressBar { 
-                height: 100%; 
-                width: 0; 
-                background: lime; 
-                border-radius: 4px; 
+            .floating-controls { 
+                margin-top:10px; 
+                display:flex; 
+                gap:8px; 
+            }
+            .floating input[type="range"] { 
+                background:#ffffff33; 
+                border-color:#ffffff55; 
+            }
+            .floating .btn { 
+                background:#0007; 
+                border-color:#ffffff33; 
+                color:#fff; 
+            }
+            .footer {
+                margin-top: 14px; 
+                display:flex; 
+                justify-content:space-between; 
+                align-items:center; 
+                color:white; 
+                font-size:12px;
+            }
+            @media (max-width: 640px) {
+                .now { flex-direction: column; align-items:flex-start; }
+                .controls { grid-template-columns: 1fr 1fr 1fr 1fr; }
+                .time { display:none; }
+            }
+            .toggled::after {
+                content: "On"
             }
         </style>
     </head>
     <body>
-        <br>
-        <br>
-        <br>
-        <br>
-        <center>
-            <h1 class="tptxt">
-                20 file MP3 Player
-            </h1>
-            <br>
-            <br>
-            <label for="fileInput" class="custom-file-upload">
-                Choose File(s)
-            </label>
-            <br>
-            <br>
-            <br>
-            <a class="button" href="InfiniteOldPlayers">
-                Old MP3 Player
-            </a>
-            <br>
-            <br>
-            <br>
-            <a class="button" onclick="converter()">
-                Convert Spotify Songs To Mp3
-            </a>
-            <br>
-            <br>
-            <br>
-            <a class="button" onclick="thumbnail()">
-                Add Thumbnails To Your Files (No Plus Sign)
-            </a>
-            <br> 
-            <input style="display:none;" type="file" id="fileInput" multiple accept="audio/*">
-            <br>
-            <button class="button" id="clearBtn">
-                Clear Playlist
-            </button>
-            <br>
-            <img id="albumArt" src="" alt="" style="margin-top: 20px; width: 200px; height: 200px; object-fit: cover; border-radius: 8px;">
-            <br>
-            <ul id="playlist"></ul>
-        </center>
-        <div id="progressContainer">
-            <div id="progressBar">
+        <div class="wrap">
+            <center>
+                <br>
+                <br>
+                <br>
+                <br>
+                <h1 class="tptxt">
+                    20 File MP3 Player (New)
+                </h1>
+                <br>
+                <label for="fileInput" class="custom-file-upload">
+                    Choose Up To 20 MP3s
+                </label>
+                <br>
+                <br>
+                <a class="button" onclick="converter()">
+                    Convert Spotify Songs To Mp3
+                </a>
+                <br>
+                <br>
+                <br>
+                <a class="button" onclick="thumbnail()">
+                    Add Thumbnails To Your Files (No Plus Sign)
+                </a>
+                <br>
+                <input id="fileInput" type="file" accept="audio/*" multiple />
+            </center>
+            <section class="player">
+                <div class="now">
+                    <div class="art">
+                        <img id="artImg" alt="Artwork" />
+                    </div>
+                    <div class="nowtext">
+                        <h2>
+                            Now Playing:
+                        </h2>
+                        <h3 id="nowTitle">–</h3>
+                        <div class="controls">
+                            <div class="progress">
+                                <input id="seek" type="range" min="0" max="1000" value="0" step="1" />
+                                <div class="time">
+                                    <span id="curTime">0:00</span>/<span id="durTime">0:00</span>
+                                </div>
+                            </div>
+                            <button class="button" id="btnPrev" title="Previous (or restart)">
+                                |◁
+                            </button>
+                            <button class="button" id="btnPlay">
+                                ▶
+                            </button>
+                            <button class="button" id="btnNext" title="Next">
+                                ▷|
+                            </button>
+                            <button class="button" id="btnLoop" title="Loop playlist">
+                                ↺ 
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="listwrap">
+                    <div class="headerline">
+                        <div>
+                            <strong>
+                                Playlist
+                            </strong>
+                        </div>
+                        <div id="countInfo">
+                            0 Tracks
+                        </div>
+                    </div>
+                    <ul id="playlist" class="playlist" aria-label="Playlist (draggable)"></ul>
+                </div>
+                <div class="footer">
+                    <div id="saveStatus">
+                        Not saved
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="floating hidden" id="floating">
+            <div class="floating-bg" id="floatingBg">
+            </div>
+            <div class="floating-content">
+                <div class="floating-top" id="floatingDragHandle">
+                    <div class="floating-title" id="floatingTitle">
+                        Now Playing
+                    </div>
+                    <button class="closex" id="floatingClose" aria-label="Close">
+                        ✕
+                    </button>
+                </div>
+                <div class="floating-progress">
+                    <input id="seekMini" type="range" min="0" max="1000" value="0" step="1" />
+                    <div class="time" id="miniTimes">
+                        0:00 / 0:00
+                    </div>
+                </div>
+                <div class="floating-controls">
+                    <button class="button" id="miniPrev">
+                        |◁
+                    </button>
+                    <button class="button" id="miniPlay">
+                        ▶
+                    </button>
+                    <button class="button" id="miniNext">
+                        ▷|
+                    </button>
+                    <button class="button" id="miniLoop">
+                        Loop
+                    </button>
+                </div>
             </div>
         </div>
-        <div style="margin-top:-1%; position:relative; text-align:right; right: 20%;" id="timeDisplay">
-            0:00 / 0:00
-        </div>
-        <div style="text-align:center; position:relative; left:15%; margin-top: -3%;">
-            <button class="button" id="backBtn">
-                ⏮
-            </button>
-            <button class="button" id="playPauseBtn">
-                ▶
-            </button>
-            <button class="button" id="forwardBtn">
-                ⏭
-            </button>
-            <button class="button" id="loopBtn">
-                ↺ Off
-            </button>
-        </div>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <audio id="audio"></audio>
-        <script type="module" src="test.js">
+        <audio id="audio" preload="metadata" crossorigin="anonymous"></audio>
+        <script src="mediaplayer.js">
         </script>
         <script src="frame.js">
         </script>

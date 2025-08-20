@@ -1,180 +1,190 @@
-let playlist = [];
-let audio = new Audio();
-let currentTrack = 0;
-let loopPlaylist = false;
-audio.controls = true; // this adds the browser's default play/pause/skip UI
-document.body.appendChild(audio); // optional: add to DOM if you want it visible
-let popup, progressFill, titleElem, playBtn, loopBtn;
-function initPopup() {
-    if (document.getElementById("playerPopup")) return;
-    popup = document.createElement("div");
-    popup.id = "playerPopup";
-    const bgOverlay = document.createElement("div");
-    bgOverlay.id = "popupBgOverlay";
-    Object.assign(bgOverlay.style, {
-        position: "absolute",
-        top: "0",
-        left: "0",
-        width: "100%",
-        height: "100%",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        filter: "blur(2px)",
-        zIndex: "0",
-        borderRadius: "12px"
-    });
-    popup.appendChild(bgOverlay);
-    const content = document.createElement("div");
-    content.id = "popupContent";
-    content.innerHTML = `
-        <div style="display:flex; border-radius:inherit; justify-content:space-between; align-items:center; cursor:move; padding:4px 8px; background:rgba(0,0,0,0.5); z-index:1; position:relative;">
-            <span id="popupTitle"></span>
-            <button id="closePopup" class="closepopup">X</button>
-        </div>
-        <div style="text-align:center; margin:10px 0; z-index:1; position:relative;">
-            <button id="popupBack" class="mediabtns">⏮</button>
-            <button id="popupPlay" class="mediabtns">▶</button>
-            <button id="popupNext" class="mediabtns">⏭</button>
-            <button id="popupLoop" class="mediabtns">↺ Off</button>
-        </div>
-        <div style="width:90%; height:6px; background:#333; margin:10px auto; border-radius:3px; position:relative; z-index:1;">
-            <div id="popupBarFill" style="height:100%; width:0%; background:lime; border-radius:3px;"></div>
-        </div>
-        <div id="popupTime" style="background-color:black; text-align:center; margin-bottom:10px; position:relative; z-index:1;">0:00 / 0:00</div>
-    `;
-    popup.appendChild(content);
-    Object.assign(popup.style, {
-        position: "fixed",
-        top: "20px",
-        right: "20px",
-        width: "280px",
-        borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-        color: "white",
-        overflow: "hidden",
-        zIndex: 9999,
-        userSelect: "none"
-    });
-    document.body.appendChild(popup);
-    progressFill = document.getElementById("popupBarFill");
-    titleElem = document.getElementById("popupTitle");
-    playBtn = document.getElementById("popupPlay");
-    loopBtn = document.getElementById("popupLoop");
-    popup.bgOverlay = bgOverlay;
-    let isDragging = false, offsetX, offsetY;
-    const header = document.querySelector("#popupContent > div:first-child");
-    header.addEventListener("mousedown", e => {
-        isDragging = true;
-        offsetX = e.clientX - popup.getBoundingClientRect().left;
-        offsetY = e.clientY - popup.getBoundingClientRect().top;
-    });
-    window.addEventListener("mousemove", e => {
-        if (isDragging) {
-            popup.style.left = (e.clientX - offsetX) + "px";
-            popup.style.top  = (e.clientY - offsetY) + "px";
-        }
-    });
-    window.addEventListener("mouseup", () => isDragging = false);
-    document.getElementById("closePopup").addEventListener("click", () => {
-        audio.pause();
-        popup.remove();
-    });
-    playBtn.addEventListener("click", togglePlay);
-    document.getElementById("popupNext").addEventListener("click", nextTrack);
-    document.getElementById("popupBack").addEventListener("click", () => {
-        if (audio.currentTime < 10 && currentTrack > 0) currentTrack--;
-        loadTrack(currentTrack);
-        audio.play();
-        updatePlayButton();
-    });
-    loopBtn.addEventListener("click", () => {
-        loopPlaylist = !loopPlaylist;
-        loopBtn.textContent = loopPlaylist ? "↺ On" : "↺ Off";
-    });
-    audio.addEventListener("timeupdate", () => {
-        const pct = (audio.currentTime / (audio.duration || 1)) * 100;
-        progressFill.style.width = pct + "%";
-        document.getElementById("popupTime").textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration||0)}`;
-    });
-    progressFill.parentElement.addEventListener("click", e => {
-        const pct = (e.clientX - e.currentTarget.getBoundingClientRect().left) / e.currentTarget.clientWidth;
-        audio.currentTime = pct * audio.duration;
-    });
-}
-function formatTime(sec=0){
-    const m = Math.floor(sec/60);
-    const s = Math.floor(sec%60).toString().padStart(2,"0");
-    return `${m}:${s}`;
-}
-function loadPlaylistFromDB() {
-    const request = indexedDB.open("MusicDB", 1);
-    request.onsuccess = e => {
-        const db = e.target.result;
-        const transaction = db.transaction("songs", "readonly");
-        const store = transaction.objectStore("songs");
-        const getAll = store.getAll();
-        getAll.onsuccess = e => {
-            playlist = e.target.result.map(item => {
-                const byteArray = new Uint8Array(item.data);
-                const file = new File([byteArray], item.name, { type: "audio/mp3" });
-                file.thumbnail = item.thumbnail || "";
-                return file;
-            });
-            if (playlist.length) {
-                initPopup();
-                loadTrack(currentTrack);
-            }
-        };
-    };
-}
-async function loadTrack(index) {
-    const file = playlist[index];
-    if (!file) return;
-    audio.src = URL.createObjectURL(file);
-    audio.load();
-    const title = file.name.replace(/\.mp3$/i,"");
-    titleElem.textContent = title;
-    if (popup.bgOverlay) {
-        if (file.thumbnail) {
-            popup.bgOverlay.style.backgroundImage = `url(${file.thumbnail})`;
-        } else {
-            popup.bgOverlay.style.backgroundImage = "";
-        }
+(() => {
+    const FALLBACK_ART = "https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d";
+    const DB_NAME = "dryPlayerDB";
+    const DB_VERSION = 1;
+    let db;
+    let tracks = [], currentIndex = 0, isLooping = false;
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(DB_NAME, DB_VERSION);
+            req.onupgradeneeded = e => {
+                db = e.target.result;
+                if (!db.objectStoreNames.contains('songs'))
+                    db.createObjectStore('songs', { keyPath: 'id', autoIncrement: true });
+                if (!db.objectStoreNames.contains('state'))
+                    db.createObjectStore('state', { keyPath: 'key' });
+            };
+            req.onsuccess = e => { db = e.target.result; resolve(db); };
+            req.onerror = e => reject(e);
+        });
     }
-    updatePlayButton();
-}
-function togglePlay() {
-    if (audio.paused) { audio.play(); } 
-    else { audio.pause(); }
-    updatePlayButton();
-}
-function updatePlayButton() {
-    playBtn.textContent = audio.paused ? "▶" : "⏸";
-}
-function nextTrack() {
-    if (currentTrack < playlist.length - 1) currentTrack++;
-    else if (loopPlaylist) currentTrack = 0;
-    else return;
-    loadTrack(currentTrack);
-    audio.play();
-    updatePlayButton();
-}
-audio.addEventListener('ended', () => {
-    if (currentTrack < playlist.length - 1) {
-        currentTrack++;
-        loadTrack(currentTrack);
-        audio.play();
-        playBtn.textContent = "⏸";
-    } 
-    else if (loopPlaylist) {
-        currentTrack = 0;
-        loadTrack(currentTrack);
-        audio.play();
-        playBtn.textContent = "⏸";
-    } 
-    else {
-        audio.pause();
-        playBtn.textContent = "▶";
+    function loadAllTracks() {
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction('songs', 'readonly');
+            const store = tx.objectStore('songs');
+            const req = store.getAll();
+            req.onsuccess = () => {
+                const allTracks = req.result || [];
+                allTracks.sort((a, b) => (a.position || 0) - (b.position || 0));
+                resolve(allTracks);
+            };
+            req.onerror = e => reject(e);
+        });
     }
-});
-loadPlaylistFromDB();
+    const floating = document.createElement('div');
+    floating.style.position='fixed';
+    floating.style.right='24px';
+    floating.style.bottom='24px';
+    floating.style.width='320px';
+    floating.style.borderRadius='16px';
+    floating.style.overflow='hidden';
+    floating.style.border='1px solid rgba(255,255,255,.15)';
+    floating.style.boxShadow='0 10px 30px rgba(0,0,0,.35)';
+    floating.style.backdropFilter='blur(6px)';
+    floating.style.background='#1116';
+    floating.style.zIndex='9999';
+    document.body.appendChild(floating);
+    const bg = document.createElement('div');
+    bg.style.position='absolute';
+    bg.style.inset='0';
+    bg.style.backgroundSize='cover';
+    bg.style.backgroundPosition='center';
+    bg.style.filter='blur(2px)';
+    bg.style.transform='scale(1.05)';
+    floating.appendChild(bg);
+    const content = document.createElement('div');
+    content.style.position='relative';
+    content.style.padding='12px';
+    content.style.color='#fff';
+    floating.appendChild(content);
+    const top = document.createElement('div');
+    top.style.display='flex';
+    top.style.justifyContent='space-between';
+    top.style.alignItems='center';
+    top.style.gap='8px';
+    top.style.cursor='move';
+    top.style.userSelect='none';
+    top.style.background='#0008';
+    top.style.borderRadius='10px';
+    top.style.padding="3px";
+    content.appendChild(top);
+    const title = document.createElement('div');
+    title.style.fontSize='14px';
+    title.style.fontWeight='600';
+    title.style.whiteSpace='nowrap';
+    title.style.overflow='hidden';
+    title.style.textOverflow='ellipsis';
+    title.textContent='Now Playing';
+    top.appendChild(title);
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent='✕';
+    closeBtn.style.appearance='none';
+    closeBtn.style.border='none';
+    closeBtn.style.background='transparent';
+    closeBtn.style.color='#fff';
+    closeBtn.style.width='28px';
+    closeBtn.style.height='28px';
+    closeBtn.style.padding='3px';
+    closeBtn.style.borderRadius='10px';
+    closeBtn.style.cursor='pointer';
+    top.appendChild(closeBtn);
+    const audio = document.createElement('audio');
+    audio.preload='metadata';
+    audio.crossOrigin='anonymous';
+    document.body.appendChild(audio);
+    const seek = document.createElement('input');
+    seek.type='range';
+    seek.min='0';
+    seek.max='1000';
+    seek.value='0';
+    seek.step='1';
+    const miniTimes = document.createElement('div');
+    miniTimes.style.color='white';
+    miniTimes.style.marginLeft='8px';
+    miniTimes.textContent='0:00 / 0:00';
+    const seekContainer = document.createElement('div');
+    seekContainer.style.display='flex';
+    seekContainer.style.alignItems='center';
+    seekContainer.style.gap='8px';
+    seekContainer.style.marginTop='10px';
+    seekContainer.appendChild(seek);
+    seekContainer.appendChild(miniTimes);
+    content.appendChild(seekContainer);
+    const controls = document.createElement('div');
+    controls.style.display='flex';
+    controls.style.gap='8px';
+    controls.style.marginTop='10px';
+    const btnPrev = document.createElement('button'); btnPrev.textContent='|◁'; controls.appendChild(btnPrev);
+    const btnPlay = document.createElement('button'); btnPlay.textContent='▶'; controls.appendChild(btnPlay);
+    const btnNext = document.createElement('button'); btnNext.textContent='▷|'; controls.appendChild(btnNext);
+    const btnLoop = document.createElement('button'); btnLoop.textContent='↺ Off'; controls.appendChild(btnLoop);
+    [btnPrev, btnPlay, btnNext, btnLoop].forEach(b=>{
+        b.style.background='#0007';
+        b.style.border='1px solid #ffffff33';
+        b.style.color='white';
+        b.style.padding='6px 12px';
+        b.style.borderRadius='8px';
+    });
+    content.appendChild(controls);
+    function fmtTime(s){ s=Math.floor(s||0); return Math.floor(s/60)+":"+String(s%60).padStart(2,'0'); }
+    function setTrackUI(){
+        const t = tracks[currentIndex];
+        if(!t) return;
+        title.textContent=t.title||'Untitled';
+        bg.style.backgroundImage=`url("${(t.artworkDataUrl||FALLBACK_ART).replace(/"/g,'\\"')}")`;
+    }
+    function nextTrack(){ currentIndex=(currentIndex+1)%tracks.length; loadTrack(true); }
+    function prevTrack(){ audio.currentTime>10?audio.currentTime=0:(currentIndex=(currentIndex-1+tracks.length)%tracks.length,loadTrack(true)); }
+    function loadTrack(autoplay=false){
+        if(tracks.length===0) return;
+        const t = tracks[currentIndex];
+        audio.src = URL.createObjectURL(t.blob);
+        setTrackUI();
+        if(autoplay) audio.play().catch(()=>{}), btnPlay.textContent='||';
+        else btnPlay.textContent='▶';
+    }
+    audio.addEventListener('timeupdate', ()=>{
+        const cur = audio.currentTime||0;
+        const dur = audio.duration||0;
+        seek.value = Math.round(cur/dur*1000)||0;
+        miniTimes.textContent = fmtTime(cur)+' / '+fmtTime(dur);
+    });
+    seek.addEventListener('input', ()=>{ audio.currentTime = seek.value/1000*(audio.duration||0); });
+    btnPlay.addEventListener('click', ()=>{
+        if(audio.paused) audio.play();
+        else audio.pause();
+    });
+    btnLoop.addEventListener('click', ()=>{
+        isLooping = !isLooping;
+        btnLoop.textContent = isLooping ? '↺ On' : '↺ Off';
+        btnLoop.style.outline = isLooping ? '2px solid #4c9aff' : 'none';
+    });
+    audio.addEventListener('play', ()=> btnPlay.textContent='||');
+    audio.addEventListener('pause', ()=> btnPlay.textContent='▶');
+    btnNext.addEventListener('click', ()=> nextTrack());
+    btnPrev.addEventListener('click', ()=> prevTrack());
+    closeBtn.addEventListener('click', ()=> { audio.pause(); floating.style.display='none'; });
+    audio.addEventListener('ended', ()=>{
+        if(currentIndex<tracks.length-1) nextTrack();
+        else if(isLooping) currentIndex=0, loadTrack(true);
+    });
+    (()=>{
+        let dragging=false, startX=0, startY=0, originX=0, originY=0;
+        top.addEventListener('mousedown',(e)=>{
+            dragging=true;
+            const rect=floating.getBoundingClientRect(); originX=rect.left; originY=rect.top;
+            startX=e.clientX; startY=e.clientY;
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        });
+        function onMove(e){ if(!dragging) return; const dx=e.clientX-startX; const dy=e.clientY-startY;
+            floating.style.left=(originX+dx)+'px'; floating.style.top=(originY+dy)+'px'; floating.style.right='auto'; floating.style.bottom='auto';
+        }
+        function onUp(){ dragging=false; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); }
+    })();
+    (async()=>{
+        await openDB();
+        tracks = await loadAllTracks();
+        if(tracks.length>0){ floating.style.display='block'; loadTrack(false); }
+    })();
+})();
