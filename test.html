@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Advanced MP3 Player</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #222; color: #fff; }
+  #uploader { margin: 20px; }
+  #nowPlaying { text-align: center; margin: 10px 0; }
+  #thumbnail { width: 200px; height: 200px; object-fit: cover; margin: 0 auto; display: block; }
+  #playlist { list-style: none; padding: 0; margin: 20px auto; max-width: 400px; }
+  #playlist li { padding: 8px; background: #333; margin-bottom: 2px; cursor: move; }
+  #controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px; }
+  .controlBtn { padding: 5px 10px; cursor: pointer; background: #444; border: none; color: #fff; }
+  #progressContainer { display: flex; align-items: center; width: 300px; gap: 5px; }
+  #progress { width: 200px; }
+  /* Popup Player */
+  .playerPopup { position: fixed; top: 50px; left: 50px; width: 300px; padding: 10px; background-size: cover; background-position: center; filter: blur(2px); cursor: move; z-index: 9999; color: #fff; border-radius: 10px; }
+  .playerPopupContent { backdrop-filter: blur(2px); background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; }
+  .closeBtn { position: absolute; top: 5px; right: 5px; background: red; border: none; color: #fff; cursor: pointer; padding: 3px 7px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div id="uploader">
+  <input type="file" id="fileInput" multiple accept="audio/*">
+</div>
+
+<div id="nowPlaying">Now Playing: None</div>
+<img id="thumbnail" src="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d" alt="Thumbnail">
+
+<ul id="playlist"></ul>
+
+<div id="controls">
+  <div id="progressContainer">
+    <span id="currentTime">0:00</span>
+    <input type="range" id="progress" value="0" min="0" max="100">
+    <span id="duration">0:00</span>
+  </div>
+  <button class="controlBtn" id="prevBtn">⏮️</button>
+  <button class="controlBtn" id="playPauseBtn">▶️</button>
+  <button class="controlBtn" id="nextBtn">⏭️</button>
+  <button class="controlBtn" id="loopBtn">🔁</button>
+</div>
+
+<!-- Hidden audio element -->
+<audio id="audio"></audio>
+
+<script>
+const dbName = "dryPlayerDB";
+const dbVersion = 1;
+let db;
+let playlist = [];
+let currentIndex = 0;
+let loop = false;
+
+// IndexedDB setup
+const request = indexedDB.open(dbName, dbVersion);
+request.onupgradeneeded = e => {
+  db = e.target.result;
+  if (!db.objectStoreNames.contains("songs")) {
+    db.createObjectStore("songs", { keyPath: "id", autoIncrement: true });
+  }
+};
+request.onsuccess = e => {
+  db = e.target.result;
+  loadPlaylistFromDB();
+};
+
+const audio = document.getElementById("audio");
+const fileInput = document.getElementById("fileInput");
+const playlistEl = document.getElementById("playlist");
+const thumbnailEl = document.getElementById("thumbnail");
+const nowPlayingEl = document.getElementById("nowPlaying");
+const playPauseBtn = document.getElementById("playPauseBtn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const loopBtn = document.getElementById("loopBtn");
+const progress = document.getElementById("progress");
+const currentTimeEl = document.getElementById("currentTime");
+const durationEl = document.getElementById("duration");
+
+// Helper to strip extension
+function stripExt(name) {
+  return name.replace(/\.[^/.]+$/, "");
+}
+
+// Save playlist to IndexedDB
+function savePlaylistToDB() {
+  const transaction = db.transaction("songs", "readwrite");
+  const store = transaction.objectStore("songs");
+  store.clear();
+  playlist.forEach(file => store.add(file));
+}
+
+// Load playlist from IndexedDB
+function loadPlaylistFromDB() {
+  const transaction = db.transaction("songs", "readonly");
+  const store = transaction.objectStore("songs");
+  const getAll = store.getAll();
+  getAll.onsuccess = e => {
+    playlist = e.target.result;
+    renderPlaylist();
+    if (playlist.length > 0) setCurrentSong(0);
+  };
+}
+
+// Render playlist
+function renderPlaylist() {
+  playlistEl.innerHTML = "";
+  playlist.forEach((file, index) => {
+    const li = document.createElement("li");
+    li.draggable = true;
+    li.textContent = stripExt(file.name);
+    li.addEventListener("click", () => { setCurrentSong(index); playAudio(); });
+    li.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", index); });
+    li.addEventListener("dragover", e => e.preventDefault());
+    li.addEventListener("drop", e => {
+      e.preventDefault();
+      const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+      const toIndex = index;
+      const moved = playlist.splice(fromIndex, 1)[0];
+      playlist.splice(toIndex, 0, moved);
+      renderPlaylist();
+      savePlaylistToDB();
+    });
+    playlistEl.appendChild(li);
+  });
+}
+
+// Set current song
+function setCurrentSong(index) {
+  currentIndex = index;
+  const file = playlist[currentIndex];
+  const fileURL = URL.createObjectURL(file);
+  audio.src = fileURL;
+  nowPlayingEl.textContent = "Now Playing: " + stripExt(file.name);
+  // Try to extract thumbnail from metadata (if not available, use default)
+  getThumbnail(file).then(url => {
+    thumbnailEl.src = url;
+    updatePopupBackground(url);
+  });
+}
+
+// Dummy function for thumbnail (always default for simplicity)
+function getThumbnail(file) {
+  return Promise.resolve("https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d");
+}
+
+// Playback controls
+function playAudio() { audio.play(); playPauseBtn.textContent = "⏸️"; }
+function pauseAudio() { audio.pause(); playPauseBtn.textContent = "▶️"; }
+
+playPauseBtn.addEventListener("click", () => {
+  if (audio.paused) playAudio(); else pauseAudio();
+});
+
+prevBtn.addEventListener("click", () => {
+  if (audio.currentTime > 10) audio.currentTime = 0;
+  else if (currentIndex > 0) setCurrentSong(currentIndex - 1);
+});
+
+nextBtn.addEventListener("click", () => {
+  if (currentIndex < playlist.length - 1) setCurrentSong(currentIndex + 1);
+  else if (loop) setCurrentSong(0);
+});
+
+loopBtn.addEventListener("click", () => { loop = !loop; loopBtn.style.background = loop ? "#666" : "#444"; });
+
+// Update progress
+audio.addEventListener("timeupdate", () => {
+  progress.value = (audio.currentTime / audio.duration) * 100 || 0;
+  currentTimeEl.textContent = formatTime(audio.currentTime);
+  durationEl.textContent = formatTime(audio.duration);
+});
+
+progress.addEventListener("input", () => {
+  audio.currentTime = (progress.value / 100) * audio.duration;
+});
+
+audio.addEventListener("ended", () => {
+  if (currentIndex < playlist.length - 1) setCurrentSong(currentIndex + 1);
+  else if (loop) setCurrentSong(0);
+});
+
+// Format time
+function formatTime(sec) {
+  if (isNaN(sec)) return "0:00";
+  const minutes = Math.floor(sec / 60);
+  const seconds = Math.floor(sec % 60).toString().padStart(2,"0");
+  return `${minutes}:${seconds}`;
+}
+
+// File upload
+fileInput.addEventListener("change", () => {
+  const files = Array.from(fileInput.files).slice(0, 20);
+  playlist = files;
+  savePlaylistToDB();
+  renderPlaylist();
+  if (playlist.length > 0) setCurrentSong(0);
+  createPopupPlayer();
+});
+
+// ----- Popup Player -----
+let popup;
+function createPopupPlayer() {
+  if (popup) return;
+  popup = document.createElement("div");
+  popup.className = "playerPopup";
+  popup.innerHTML = `
+    <button class="closeBtn">✖</button>
+    <div class="playerPopupContent">
+      <input type="range" class="popupProgress" value="0" min="0" max="100" style="width:100%">
+      <div style="display:flex;justify-content:center;gap:5px;margin-top:5px;">
+        <button class="prevBtn">⏮️</button>
+        <button class="playPauseBtn">▶️</button>
+        <button class="nextBtn">⏭️</button>
+        <button class="loopBtn">🔁</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(popup);
+
+  // Dragging
+  let isDragging = false, offsetX, offsetY;
+  popup.addEventListener("mousedown", e => {
+    if (e.target.classList.contains("closeBtn")) return;
+    isDragging = true;
+    offsetX = e.offsetX;
+    offsetY = e.offsetY;
+  });
+  document.addEventListener("mouseup", () => isDragging = false);
+  document.addEventListener("mousemove", e => {
+    if (isDragging) {
+      popup.style.left = e.pageX - offsetX + "px";
+      popup.style.top = e.pageY - offsetY + "px";
+    }
+  });
+
+  // Controls
+  popup.querySelector(".closeBtn").addEventListener("click", () => {
+    pauseAudio();
+    popup.remove();
+    popup = null;
+  });
+  popup.querySelector(".prevBtn").addEventListener("click", () => prevBtn.click());
+  popup.querySelector(".playPauseBtn").addEventListener("click", () => playPauseBtn.click());
+  popup.querySelector(".nextBtn").addEventListener("click", () => nextBtn.click());
+  popup.querySelector(".loopBtn").addEventListener("click", () => loopBtn.click());
+
+  // Popup progress
+  const popupProgress = popup.querySelector(".popupProgress");
+  audio.addEventListener("timeupdate", () => {
+    popupProgress.value = (audio.currentTime / audio.duration) * 100 || 0;
+  });
+  popupProgress.addEventListener("input", () => {
+    audio.currentTime = (popupProgress.value / 100) * audio.duration;
+  });
+}
+
+// Update popup background
+function updatePopupBackground(url) {
+  if (popup) popup.style.backgroundImage = `url(${url})`;
+}
+</script>
+
+</body>
+</html>
