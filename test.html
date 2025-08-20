@@ -28,6 +28,9 @@
         <script src="theme.js">
         </script>
         <style>
+            img {
+                padding:0px;
+            }
             :root {
                 --bg: #0b0e14;
                 --panel: #131722;
@@ -39,9 +42,6 @@
                 --danger: #ff6565;
                 --radius: 14px;
                 --shadow: 0 10px 30px rgba(0,0,0,.35);
-            }
-            * { 
-                box-sizing: border-box 
             }
             .wrap { 
                 max-width: 980px; 
@@ -78,8 +78,6 @@
                 font-size: 12px; 
             }
             .player {
-                background: var(--panel); 
-                border: 1px solid var(--border); 
                 border-radius: var(--radius);
                 padding: 16px; 
                 box-shadow: var(--shadow);
@@ -146,7 +144,6 @@
                 appearance:none; 
                 height:6px; 
                 border-radius:999px; 
-                background:#0f1320; 
                 outline:none; 
                 border:1px solid var(--border);
             }
@@ -187,8 +184,6 @@
             }
             .listwrap {
                 margin-top: 16px; 
-                border:1px dashed var(--border); 
-                border-radius: var(--radius);
                 padding: 10px;
             }
             .headerline {
@@ -212,8 +207,7 @@
                 align-items:center; 
                 gap:12px; 
                 padding:10px; 
-                background:#0f1320; 
-                border:1px solid var(--border);
+                border:1px solid white;
                 border-radius:12px;
             }
             .drag-handle { 
@@ -232,10 +226,6 @@
                 white-space:nowrap; 
                 overflow:hidden; 
                 text-overflow:ellipsis; 
-            }
-            .track.active { 
-                border-color: var(--accent); 
-                background: linear-gradient(0deg, rgba(76,154,255,.06), rgba(76,154,255,.06)), #0f1320; 
             }
             .ghost { 
                 opacity:.4; 
@@ -270,6 +260,9 @@
             }
             .floating-top {
                 display:flex; 
+                background:#0008;
+                padding:3px;
+                border-radius:10px;
                 justify-content:space-between; 
                 align-items:center; 
                 gap:8px;
@@ -286,8 +279,9 @@
             .closex {
                 appearance:none; 
                 border:none; 
-                background: #0008; 
+                background: transparent; 
                 color:#fff; 
+                padding:3px;
                 width:28px; 
                 height:28px; 
                 border-radius:10px; 
@@ -335,10 +329,10 @@
                     <strong>
                         Upload Files
                     </strong>
+                    <label for="fileinput" class="custom-file-upload">
+                        Choose Up To 20 Files
+                    </label>
                     <input id="fileInput" type="file" accept="audio/*" multiple />
-                </div>
-                <div class="hint">
-                    Drag to reorder • Auto-saves to IndexedDB • Max 20 files
                 </div>
             </div>
             <section class="player">
@@ -393,9 +387,6 @@
                     <ul id="playlist" class="playlist" aria-label="Playlist (draggable)"></ul>
                 </div>
                 <div class="footer">
-                    <div>
-                        Tip: Use browser media keys to control playback.
-                    </div>
                     <div id="saveStatus">
                         Not saved
                     </div>
@@ -425,7 +416,7 @@
                         &laquo;
                     </button>
                     <button class="button" id="miniPlay">
-                        Play
+                        ▶
                     </button>
                     <button class="button" id="miniNext">
                         &raquo;
