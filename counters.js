@@ -1,17 +1,27 @@
 let timer;
+let audioStarted = false;
+const audio = new Audio("https://codehs.com/uploads/4c43e4c918e704a08db7b92ff1daadf3");
+
 function startCountdown() {
     clearInterval(timer);
+    audio.pause();
+    audio.currentTime = 0;
+    audioStarted = false;
+
     const format = document.getElementById("format").value;
     const dateStr = document.getElementById("dateInput").value.trim();
     const timeStr = document.getElementById("timeInput").value.trim();
     const parsedDate = parseDateTime(dateStr, timeStr, format);
+
     if (!parsedDate || isNaN(parsedDate.getTime())) {
         alert("Err#2 Invalid Date Or Time.");
         return;
     }
+
     timer = setInterval(() => updateCountdown(parsedDate), 1000);
     updateCountdown(parsedDate);
 }
+
 function parseDateTime(dateStr, timeStr, format) {
     const dateParts = dateStr.split("/");
     if (dateParts.length !== 3) return null;
@@ -34,9 +44,17 @@ function parseDateTime(dateStr, timeStr, format) {
         seconds
     );
 }
+
 function updateCountdown(targetDate) {
     const now = new Date();
     let diff = Math.floor((targetDate - now) / 1000);
+
+    // Start audio at 57.5 seconds left
+    if (diff <= 57.5 && !audioStarted) {
+        audio.play().catch(err => console.error("Autoplay blocked:", err));
+        audioStarted = true;
+    }
+
     if (diff <= 0) {
         clearInterval(timer);
         document.getElementById("days").textContent = "Time's Up!";
@@ -45,18 +63,21 @@ function updateCountdown(targetDate) {
         document.getElementById("seconds").textContent = "";
         return;
     }
+
     const days = Math.floor(diff / (60 * 60 * 24));
     diff %= (60 * 60 * 24);
     const hours = Math.floor(diff / 3600);
     diff %= 3600;
     const minutes = Math.floor(diff / 60);
     const seconds = diff % 60;
+
     const daysEl = document.getElementById("days");
     daysEl.textContent = `Days: ${days}`;
     document.getElementById("hours").textContent = `Hours: ${hours}`;
     document.getElementById("minutes").textContent = `Minutes: ${minutes}`;
     document.getElementById("seconds").textContent = `Seconds: ${seconds}`;
 }
+
 document.getElementById("dateInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") startCountdown();
 });
