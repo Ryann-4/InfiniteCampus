@@ -15,6 +15,9 @@ function startCountdown() {
         return;
     }
     localStorage.setItem("countdownTarget", parsedDate.getTime());
+    localStorage.setItem("countdownDateInput", dateStr);
+    localStorage.setItem("countdownTimeInput", timeStr);
+    localStorage.setItem("countdownFormat", format);
     timer = setInterval(() => updateCountdown(parsedDate), 1000);
     updateCountdown(parsedDate);
 }
@@ -54,6 +57,8 @@ function updateCountdown(targetDate) {
         document.getElementById("minutes").textContent = "";
         document.getElementById("seconds").textContent = "";
         localStorage.removeItem("countdownTarget");
+        localStorage.removeItem("countdownDateInput");
+        localStorage.removeItem("countdownTimeInput");
         return;
     }
     const days = Math.floor(diff / (60 * 60 * 24));
@@ -70,19 +75,26 @@ function updateCountdown(targetDate) {
 }
 window.addEventListener("load", () => {
     const savedTarget = localStorage.getItem("countdownTarget");
+    const savedDate = localStorage.getItem("countdownDateInput");
+    const savedTime = localStorage.getItem("countdownTimeInput");
+    const savedFormat = localStorage.getItem("countdownFormat");
+    if (savedDate) document.getElementById("dateInput").value = savedDate;
+    if (savedTime) document.getElementById("timeInput").value = savedTime;
+    if (savedFormat) document.getElementById("format").value = savedFormat;
     if (savedTarget) {
         const targetDate = new Date(parseInt(savedTarget));
         if (targetDate > new Date()) {
             timer = setInterval(() => updateCountdown(targetDate), 1000);
             updateCountdown(targetDate);
         } else {
-            localStorage.removeItem("countdownTarget");
+            localStorage.clear();
         }
     }
 });
-document.getElementById("dateInput").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") startCountdown();
-});
-document.getElementById("timeInput").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") startCountdown();
+["dateInput", "timeInput"].forEach(id => {
+    document.getElementById(id).addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            startCountdown();
+        }
+    });
 });
