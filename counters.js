@@ -14,6 +14,7 @@ function startCountdown() {
         alert("Err#2 Invalid Date Or Time.");
         return;
     }
+    localStorage.setItem("countdownTarget", parsedDate.getTime());
     timer = setInterval(() => updateCountdown(parsedDate), 1000);
     updateCountdown(parsedDate);
 }
@@ -52,6 +53,7 @@ function updateCountdown(targetDate) {
         document.getElementById("hours").textContent = "";
         document.getElementById("minutes").textContent = "";
         document.getElementById("seconds").textContent = "";
+        localStorage.removeItem("countdownTarget");
         return;
     }
     const days = Math.floor(diff / (60 * 60 * 24));
@@ -66,6 +68,18 @@ function updateCountdown(targetDate) {
     document.getElementById("minutes").textContent = `Minutes: ${minutes}`;
     document.getElementById("seconds").textContent = `Seconds: ${seconds}`;
 }
+window.addEventListener("load", () => {
+    const savedTarget = localStorage.getItem("countdownTarget");
+    if (savedTarget) {
+        const targetDate = new Date(parseInt(savedTarget));
+        if (targetDate > new Date()) {
+            timer = setInterval(() => updateCountdown(targetDate), 1000);
+            updateCountdown(targetDate);
+        } else {
+            localStorage.removeItem("countdownTarget");
+        }
+    }
+});
 document.getElementById("dateInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") startCountdown();
 });
