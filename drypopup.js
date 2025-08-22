@@ -79,6 +79,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <br>
                 <br>
+                <a class="button" href="InfiniteDonaters.html">
+                    Help Support By Donating
+                </a>
+                <br>
+                <br>
+                <br>
                 <a class="discord" href="https://discord.gg/4d9hJSVXca">
                     Join The Discord
                 </a>
