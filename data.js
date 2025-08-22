@@ -93,15 +93,18 @@ async function generateDataUrl() {
         }
         if (check.status === "cors-blocked") {
                 document.getElementById('output').value = result;
-                statusEl.textContent = "Website Does Not Allow CORS So Link May Not Work"
+                statusEl.textContent = "Website Does Not Allow CORS So Link May Not Work";
+                statusEl.style.color = "yellow"
         } else {
             document.getElementById('output').value = result;
             statusEl.textContent = "Success";
+            statusEl.style.color = "green"
         }
     }
     else if (check.status === "not-exist") {
         statusEl.textContent = "ERR#15 Website Does Not Exist";
         document.getElementById('output').value = '';
+        statusEl.style.color = "red"
     }
 }
 document.getElementById('presetSelect').addEventListener('change', () => {
