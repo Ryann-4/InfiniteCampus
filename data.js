@@ -85,6 +85,7 @@ async function generateDataUrl() {
     const check = await checkURLStatus(urlInput);
     if (check.status === "cors-ok" || check.status === "cors-ok-but-error" || check.status === "cors-blocked") {
         statusEl.textContent = "Generating...";
+        statusEl.style.color = "white";
         let result = '';
         if (type === 'image') {
             result = generateBase64(urlInput);
