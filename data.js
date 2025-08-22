@@ -9,6 +9,7 @@ function normalizeUrl(url) {
 async function checkURLStatus(url) {
     const statusEl = document.getElementById('status');
     statusEl.textContent = "Verifying...";
+    statusEl.style.color = "white";
     url = normalizeUrl(url);
     try {
         const response = await fetch(url, { method: 'HEAD' });
@@ -128,6 +129,6 @@ document.getElementById('copyBtn').addEventListener('click', () => {
         return;
     }
     navigator.clipboard.writeText(output)
-    .then(() => alert("Copied to clipboard!"))
-    .catch(() => alert("ERR#14 Failed to copy."));
+    .then(() => alert("Copied To Clipboard!"))
+    .catch(() => alert("ERR#14 Failed To Copy."));
 });

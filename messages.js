@@ -88,7 +88,7 @@ async function renderMessage(msg, list){
         const replyContent = msg.referenced_message.content || 'Attachment';
         replyHTML = `<div class="reply-box" 
                         style="font-size:90%; color:grey; margin:2px 0;">
-                        | Replying to <strong>${replyDisplayName}</strong>: ${replyContent}
+                        | Replying To <strong>${replyDisplayName}</strong>: ${replyContent}
                      </div>`;
     }
     let contentHTML = `

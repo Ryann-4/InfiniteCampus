@@ -83,27 +83,8 @@ html {
     white-space: nowrap;
     text-overflow: none;
 }
-#playlist {
-    list-style: none;
-    padding: 0;
-    margin-top: 10px;
-}
 #playlist li.active {
-    background-color: transparent;
     font-weight: bold;
-}
-#playlist li.playlist-item {
-    display: block;
-    justify-content: space-between;
-    align-items: center;
-    text-align:left;
-    max-width:600px;
-
-}
-#playlist li .duration {
-    margin-left: auto;
-    color: lime;
-    font-size: 0.9em;
 }
 #weather {
     font-size:85%;
@@ -546,12 +527,6 @@ audio {
     display: block;
     border-radius: 10px;
 }
-.playlist-item.drag-over {
-    background-color: #cccccc88;
-}
-.playlist-item.dragging {
-    opacity: 0.5;
-}
 .controls {
     display: flex;
     align-items: center;
@@ -621,11 +596,6 @@ emoji-picker {
     66% { background-color: blue; }
     100% { background-color: red; }
 }
-@keyframes rgbShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
 .mediabtns {
     background-color:black !important;
     border:1px solid white !important;
@@ -645,4 +615,194 @@ emoji-picker {
     cursor:pointer;
     padding:3px;
     border-radius:5px;
+}
+.wrap { 
+    max-width: 980px; 
+    margin: 32px auto; 
+    padding: 0 16px; 
+}
+.now {
+    display:flex; 
+    gap:16px; 
+    align-items:center; 
+    margin-bottom: 14px;
+}
+.art {
+    width: 110px; 
+    height:110px; 
+    flex: 0 0 110px; 
+    border-radius: 12px; 
+    overflow:hidden; 
+    background:#0f1320; 
+    border:1px solid white;
+}
+.art img { 
+    width:100%; 
+    height:100%; 
+    object-fit:cover; 
+    display:block; 
+}
+.nowtext { 
+    flex:1 1 auto; 
+    min-width:0; 
+}
+.nowtext h2 { 
+    margin:0; 
+    font-size:16px; 
+    color: white; 
+    font-weight:600; 
+    letter-spacing:.3px; 
+}
+.nowtext h3 { 
+    margin:6px 0 0; 
+    font-size:22px; 
+    white-space:nowrap; 
+    overflow:hidden; 
+    text-overflow:ellipsis; 
+}
+.listwrap {
+    margin-top: 16px; 
+    padding: 10px;
+}
+.headerline {
+    display:flex; 
+    justify-content:space-between; 
+    align-items:center; 
+    color:white; 
+    font-size:13px; 
+    padding:0 6px 8px;
+}
+.playlist {
+    list-style:none; 
+    margin:0; 
+    padding:0; 
+    display:flex; 
+    flex-direction:column; 
+    gap:8px;
+}
+.track {
+    display:flex; 
+    align-items:center; 
+    gap:12px; 
+    padding:10px; 
+    border:1px solid white;
+    border-radius:12px;
+}
+.drag-handle { 
+    cursor:grab;
+    user-select:none; 
+    opacity:.9; 
+}
+.index { 
+    width:28px; 
+    text-align:right; 
+    color:white; 
+    font-variant-numeric: tabular-nums; 
+}
+.track-title { 
+    flex:1 1 auto; 
+    white-space:nowrap; 
+    overflow:hidden; 
+    text-overflow:ellipsis; 
+}
+.ghost { 
+    opacity:.4; 
+}
+.floating {
+    position: fixed; 
+    right: 24px; 
+    bottom: 24px; 
+    width: 320px; 
+    border-radius: 16px; 
+    overflow: hidden;
+    border:1px solid rgba(255,255,255,.15); 
+    backdrop-filter: blur(6px);
+    background: #1116;
+}
+.floating-bg {
+    position:absolute; 
+    inset:0; 
+    background-size:cover; 
+    background-position:center; 
+    filter: blur(2px);
+    transform: scale(1.05);
+}
+.floating-content {
+    position: relative; 
+    padding: 12px; 
+    color: #fff;
+}
+.floating-top {
+    display:flex; 
+    background:#0008;
+    padding:3px;
+    border-radius:10px;
+    justify-content:space-between; 
+    align-items:center; 
+    gap:8px;
+    cursor: move; 
+    user-select:none;
+}
+.floating-title { 
+    font-size:14px; 
+    font-weight:600; 
+    white-space:nowrap; 
+    overflow:hidden; 
+    text-overflow:ellipsis; 
+}
+.closex {
+    appearance:none; 
+    border:none; 
+    background: transparent; 
+    color:#fff; 
+    padding:3px;
+    width:28px; 
+    height:28px; 
+    border-radius:10px; 
+    cursor:pointer;
+}
+.floating-progress { 
+    margin-top:10px; 
+    display:flex; 
+    align-items:center; 
+    gap:8px; 
+}
+.floating-controls { 
+    margin-top:10px; 
+    display:flex; 
+    gap:8px; 
+}
+.floating input[type="range"] { 
+    background:#ffffff33; 
+    border-color:#ffffff55; 
+}
+#toolbar {
+    margin: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+#canvas {
+    background-color: white;
+    cursor: crosshair;
+    touch-action: none;
+    width:100vw;
+    height:70vh;
+}
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 1px solid white;
+}
+.timestamp {
+    font-size: 0.75em;
+    color: white;
+    margin-top: 4px;
+}
+.message-img {
+    max-width: 100%;
+    border-radius: 5px;
+    margin-top: 8px;
 }
