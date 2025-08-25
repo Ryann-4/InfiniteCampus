@@ -1,10 +1,10 @@
 function normalizeUrl(url) {
     url = url.trim();
-    if (/^https?:\/\/www\./i.test(url)) {
+    if (/^https?:\/\//i.test(url)) {
         return url;
     }
     url = url.replace(/^https?:\/\//i, '');
-    return 'https://www.' + url;
+    return 'https://.' + url;
 }
 async function checkURLStatus(url) {
     const statusEl = document.getElementById('status');
@@ -24,10 +24,10 @@ async function checkURLStatus(url) {
                 await fetch(url, { method: 'HEAD', mode: 'no-cors' });
                 return { status: "cors-blocked" };
             } catch {
-                return { status: "not-exist" };
+                return { status: "network-blocked" };
             }
         }
-        return { status: "not-exist" };
+        return { status: "network-blocked" };
     }
 }
 function asciiEncode(str) {
@@ -94,9 +94,9 @@ async function generateDataUrl() {
             result = generateAsciiEncodedHtml(urlInput);
         }
         if (check.status === "cors-blocked") {
-                document.getElementById('output').value = result;
-                statusEl.textContent = "Website Does Not Allow CORS So Link May Not Work";
-                statusEl.style.color = "yellow"
+            document.getElementById('output').value = result;
+            statusEl.textContent = "Website Does Not Allow CORS So Link May Not Work";
+            statusEl.style.color = "yellow"
         } else {
             document.getElementById('output').value = result;
             statusEl.textContent = "Success";
@@ -107,6 +107,11 @@ async function generateDataUrl() {
         statusEl.textContent = "ERR#15 Website Does Not Exist";
         document.getElementById('output').value = '';
         statusEl.style.color = "red"
+    }
+    else if (check.status === "network-blocked") {
+        statusEl.textContent = "Website Blocked For Your Internet Or Website Does Not Exist";
+        document.getElementById('output').value = '';
+        statusEl.style.color = "red";
     }
 }
 document.getElementById('presetSelect').addEventListener('change', () => {
