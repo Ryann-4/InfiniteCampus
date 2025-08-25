@@ -73,7 +73,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <br>
                 <br>
-                <a class="button" onclick="localStorage.clear(); location.reload();">
+                <a class="button" onclick="localStorage.clear(); sessionStorage.clear(); indexedDB.databases && indexedDB.databases().then(dbs => dbs.forEach(db => indexedDB.deleteDatabase(db.name))); location.reload();">
                     Clear Data
                 </a>
                 <br>
