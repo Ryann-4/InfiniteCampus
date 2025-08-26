@@ -73,14 +73,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <br>
                 <br>
-                <a class="button" onclick="localStorage.clear(); sessionStorage.clear(); indexedDB.databases && indexedDB.databases().then(dbs => dbs.forEach(db => indexedDB.deleteDatabase(db.name))); location.reload();">
-                    Clear Data
+                <a class="button" href="InfiniteDonaters.html">
+                    Help Support By Donating
                 </a>
                 <br>
                 <br>
                 <br>
-                <a class="button" href="InfiniteDonaters.html">
-                    Help Support By Donating
+                <a class="button" onclick="localStorage.clear(); sessionStorage.clear(); indexedDB.databases && indexedDB.databases().then(dbs => dbs.forEach(db => indexedDB.deleteDatabase(db.name))); location.reload();">
+                    Clear Data
                 </a>
                 <br>
                 <br>
