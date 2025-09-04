@@ -34,7 +34,7 @@ function normalizeUrl(url) {
         return url;
     }
     url = url.replace(/^https?:\/\//i, '');
-    return 'https://www.' + url;
+    return 'https://.' + url;
 }
 async function checkURLStatus(url) {
     url = normalizeUrl(url);
