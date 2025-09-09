@@ -395,12 +395,12 @@ location {
     transition: transform 0.3s ease;
     z-index: 1000;
 }
-.settings-button img {
+.settings-button svg {
     width: 40px;
     height: 40px;
     transition: transform 0.4s ease;
 }
-.settings-button:hover img {
+.settings-button:hover svg {
     transform: rotate(180deg);
 }
 .settings-button.actives {

@@ -139,8 +139,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 e.style.color = textColor || '';
                 e.style.borderColor = textColor || '';
             });
-            bar.querySelectorAll('img').forEach(img => {
-                img.style.filter = isDark ? 'invert(1)' : '';
+            bar.querySelectorAll('svg').forEach(svg => {
+                svg.style.filter = isDark ? 'invert(1)' : '';
             });
             if (!isDark && bar === header) {
                 bar.querySelectorAll('button').forEach(btn => {
@@ -154,8 +154,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     el.style.color = '';
                 });
             }
-            document.querySelectorAll('.settings').forEach(img => {
-                img.style.filter = isDark ? 'invert(0)' : 'invert(1)';
+            document.querySelectorAll('.settings').forEach(svg => {
+                svg.style.filter = isDark ? 'invert(0)' : 'invert(1)';
             });
             document.querySelectorAll('.settings-button').forEach(div => {
                 div.style.border = isDark ? '1px solid white' : '1px solid black';
