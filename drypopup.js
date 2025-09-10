@@ -49,7 +49,6 @@ window.addEventListener('DOMContentLoaded', () => {
                     Reset
                 </button>
                 <br>
-                <br>
                 <input style="width:auto !important;" class="button" type="text" id="panicKeyInput" placeholder="Set Panic Key" readonly value="${panicKey ? 'Key: ' + panicKey : ''}"/>
                 <input style="width:auto !important;" class="button" type="text" id="panicUrlInput" placeholder="Set Panic URL" value="${panicUrl}"/>
                 <button class="button" id="savePanicBtn">
