@@ -2,6 +2,8 @@ window.addEventListener('DOMContentLoaded', () => {
     let savedTitle = '';
     let savedFavicon = '';
     let betterWeatherState = false;
+    let panicKey = localStorage.getItem('panicKey') || null;
+    let panicUrl = localStorage.getItem('panicUrl') || '';
     try {
         savedTitle = localStorage.getItem('pageTitle') || '';
         savedFavicon = localStorage.getItem('customFavicon') || '';
@@ -25,16 +27,15 @@ window.addEventListener('DOMContentLoaded', () => {
                 </p>
                 <label class="switch">
                     <input type="checkbox" id="betterWeatherToggle" ${betterWeatherState ? 'checked' : ''}>
-                    <span class="slider">
-                    </span>
+                    <span class="slider"></span>
                 </label>
                 <br>
-                <input style="width:auto !important;" class="button" type="text" id="titleInput" placeholder="Enter Page Title" value="${savedTitle}"/>
+                <input style="width:20%" class="button" type="text" id="titleInput" placeholder="Enter Page Title" value="${savedTitle}"/>
                 <button class="button" id="saveTitleBtn">
-                    Save Title
+                    Save
                 </button>
                 <button class="button" id="resetTitleBtn">
-                    Reset Title
+                    Reset
                 </button>
                 <br>
                 <label for="faviconInput" class="button">
@@ -42,10 +43,20 @@ window.addEventListener('DOMContentLoaded', () => {
                 </label>
                 <input style="display:none;" type="file" id="faviconInput" accept="image/*" />
                 <button class="button" id="setFaviconBtn">
-                    Set Favicon
+                    Save
                 </button>
                 <button class="button" id="resetFaviconBtn">
-                    Reset Favicon
+                    Reset
+                </button>
+                <br>
+                <br>
+                <input style="width:auto !important;" class="button" type="text" id="panicKeyInput" placeholder="Set Panic Key" readonly value="${panicKey ? 'Key: ' + panicKey : ''}"/>
+                <input style="width:auto !important;" class="button" type="text" id="panicUrlInput" placeholder="Set Panic URL" value="${panicUrl}"/>
+                <button class="button" id="savePanicBtn">
+                    Save
+                </button>
+                <button class="button" id="clearPanicBtn">
+                    Reset
                 </button>
                 <br>
                 <br>
@@ -140,6 +151,48 @@ window.addEventListener('DOMContentLoaded', () => {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = popupHTML;
     document.body.appendChild(wrapper);
+    const panicKeyInput = document.getElementById('panicKeyInput');
+    const panicUrlInput = document.getElementById('panicUrlInput');
+    const savePanicBtn = document.getElementById('savePanicBtn');
+    const clearPanicBtn = document.getElementById('clearPanicBtn');
+    if (panicKeyInput) {
+        panicKeyInput.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            panicKey = e.key;
+            panicKeyInput.value = `Key: ${panicKey}`;
+        });
+    }
+    if (savePanicBtn) {
+        savePanicBtn.addEventListener('click', () => {
+            const url = panicUrlInput.value.trim();
+            if (!panicKey || !url) {
+                alert('Please Set Both A Panic Key And URL');
+                return;
+            }
+            localStorage.setItem('panicKey', panicKey);
+            localStorage.setItem('panicUrl', url);
+            panicUrl = url;
+            alert(`Panic Key "${panicKey}" Saved → ${panicUrl}`);
+        });
+    }
+    if (clearPanicBtn) {
+        clearPanicBtn.addEventListener('click', () => {
+            localStorage.removeItem('panicKey');
+            localStorage.removeItem('panicUrl');
+            panicKey = null;
+            panicUrl = '';
+            panicKeyInput.value = '';
+            panicUrlInput.value = '';
+            alert('Panic Settings Cleared');
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+        if (panicKey && panicUrl && e.key === panicKey) {
+            window.location.href = panicUrl;
+        }
+    });
     const betterWeatherToggle = document.getElementById('betterWeatherToggle');
     betterWeatherToggle.addEventListener('change', function () {
         const isEnabled = this.checked;
