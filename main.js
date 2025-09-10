@@ -203,4 +203,14 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
     applyInvertedColors();
+    const panicKey = safeGetItem("panicKey");
+    const panicUrl = safeGetItem("panicUrl");
+    if (panicKey && panicUrl) {
+        document.addEventListener("keydown", (e) => {
+            if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+            if (e.key === panicKey) {
+                window.location.href = panicUrl;
+            }
+        });
+    }
 });
