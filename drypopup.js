@@ -62,9 +62,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 <a class="button2 test darkbuttons rgb-element" href="InfiniteColors.html">
                     Change Site Theme
                 </a>
-                <br>
-                <br>
-                <br>
                 <a class="button poll disabled">
                     Take A Quick Survey
                 </a>
@@ -74,9 +71,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 <a class="button" href="InfiniteBypassers.html">
                     Open In About:Blank
                 </a>
-                <br>
-                <br>
-                <br>
                 <a class="button" href="InfiniteFeatures.html">
                     Suggest A Feature
                 </a>
@@ -86,13 +80,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 <a class="button" href="InfiniteDonaters.html">
                     Help Support By Donating
                 </a>
-                <br>
-                <br>
-                <br>
                 <a class="button" onclick="localStorage.clear(); sessionStorage.clear(); indexedDB.databases && indexedDB.databases().then(dbs => dbs.forEach(db => indexedDB.deleteDatabase(db.name))); location.reload();">
                     Clear Data
                 </a>
-                <br>
                 <br>
                 <br>
                 <a class="discord" href="https://discord.gg/4d9hJSVXca">
