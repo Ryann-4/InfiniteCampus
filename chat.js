@@ -23,7 +23,7 @@ let CW, CU, CP;
     window.UN = DB32(c);
     window.PN = DB32(d);
 })();
-window.CHTAPI = (t);
+window.CHTAPI = (s);
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 import {
     getDatabase,
@@ -37,12 +37,13 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 const firebaseConfig = {
     apiKey: window.CHTAPI,
-    authDomain: "website-chat-617b3.firebaseapp.com",
-    databaseURL: "https://website-chat-617b3-default-rtdb.firebaseio.com",
-    projectId: "website-chat-617b3",
-    storageBucket: "website-chat-617b3.appspot.com",
-    messagingSenderId: "633874571535",
-    appId: "1:633874571535:web:089380d33aabaa9a4c5e7a"
+    authDomain: "website-updates-485ea.firebaseapp.com",
+    databaseURL: "https://website-updates-485ea-default-rtdb.firebaseio.com",
+    projectId: "website-updates-485ea",
+    storageBucket: "website-updates-485ea.firebasestorage.app",
+    messagingSenderId: "184900273791",
+    appId: "1:184900273791:web:5a28c7ac05587b2f79a14a",
+    measurementId: "G-VXNTBEKM3W"
 };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
