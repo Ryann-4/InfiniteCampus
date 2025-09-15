@@ -1,16 +1,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
 import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
-window.NTAPI = (u);
+window.NTAPI = (s);
 const firebaseConfig = {
     apiKey: window.NTAPI,
-    authDomain: "notes-27f22.firebaseapp.com",
-    databaseURL: "https://notes-27f22-default-rtdb.firebaseio.com",
-    projectId: "notes-27f22",
-    storageBucket: "notes-27f22.appspot.com",
-    messagingSenderId: "424229778181",
-    appId: "1:424229778181:web:fa531219ed165346fa7d6c",
-    measurementId: "G-834FYV6VTR"
+    authDomain: "website-updates-485ea.firebaseapp.com",
+    databaseURL: "https://website-updates-485ea-default-rtdb.firebaseio.com",
+    projectId: "website-updates-485ea",
+    storageBucket: "website-updates-485ea.firebasestorage.app",
+    messagingSenderId: "184900273791",
+    appId: "1:184900273791:web:5a28c7ac05587b2f79a14a",
+    measurementId: "G-VXNTBEKM3W"
 };
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
