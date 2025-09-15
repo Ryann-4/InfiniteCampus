@@ -111,6 +111,8 @@
 
                     const btn = document.createElement("button");
                     btn.textContent = "Download " + fileData.meta.name;
+                    btn.className = "button";
+                    btn.style.textAlign = "center";
                     btn.onclick = () => a.click();
 
                     const uploadedAt = new Date(fileData.meta.createdAt).toLocaleString();
