@@ -42,12 +42,13 @@
     </head>
     <body>
         <!-- Main app container -->
-        <div id="app">
             <center>
                 <br><br><br><br>
-                <h2 class="tptxt">5 Min File Link</h2>
+                <div id="app">
+                    <h2 class="tptxt">5 Min File Link</h2>
+                </div>
+                
             </center>
-        </div>
 
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
@@ -122,7 +123,7 @@
                             <h2 class="tptxt">Your File Is Ready</h2>
                             <p><strong>File:</strong> ${fileData.meta.name}</p>
                             <p><strong>Uploaded:</strong> ${uploadedAt}</p>
-                        </center>
+                            </center>
                     `;
                     document.getElementById("app").appendChild(btn);
                 }).catch(e => {
