@@ -7,12 +7,12 @@
   "theme_color": "#92c83e",
   "icons": [
     {
-      "src": "https://codehs.com/uploads/09e1b16c13ca3f07340d52bfcb4ec3f7",
+      "src": "/icon1.jpg",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://codehs.com/uploads/8264db30bdf0b51e12821f9643d11a22",
+      "src": "/icon2.jpg",
       "sizes": "512x512",
       "type": "image/png"
     }
