@@ -97,14 +97,14 @@ window.sendMessage = function () {
     const nameInput = document.getElementById("nameInput");
     const textInput = document.getElementById("messageInput");
     const rawName = nameInput.value.trim();
-    if (!isAdmin && rawName === "Hacker41 💎") {
-        alert("ERR#6 You Cannot Use The Name 'Hacker41'.");
+    const lowerName = rawName.toLowerCase();
+    if (
+        !isAdmin &&
+        ((lowerName.includes("hacker") && lowerName.includes("41")) ||
+         rawName.includes("💎"))
+    ) {
+        alert("ERR#6 You Cannot Use This Name.");
         return;
-    } else {
-        if (!isAdmin && rawName === "Hacker41") {
-            alert("ERR#6 You Cannot Use The Name 'Hacker41'.");
-            return;
-        }
     }
     const name = displayName || rawName || "Anonymous";
     const text = textInput.value.trim();
