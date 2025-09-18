@@ -171,7 +171,8 @@ function renderMessage(key, data) {
 }
 onChildAdded(messagesRef, (snapshot) => {
     const msgEl = renderMessage(snapshot.key, snapshot.val());
-    document.getElementById("messages").appendChild(msgEl);
+    const messagesContainer = document.getElementById("messages");
+    messagesContainer.insertBefore(msgEl, messagesContainer.firstChild);
 });
 onChildChanged(messagesRef, (snapshot) => {
     const updated = renderMessage(snapshot.key, snapshot.val());
