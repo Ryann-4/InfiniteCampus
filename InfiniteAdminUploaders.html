@@ -1,94 +1,77 @@
 <html>
-    <head>
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
-        </script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-7SV03ZXJ9R');
-        </script>
-        <title>
-            Infinite Campus
-        </title>
-        <link id="dynamic-favicon" rel="icon" type="image/png" href="https://codehs.com/uploads/f111a37947de2cea81db858094c04f2d">
-        <link rel="stylesheet" href="global.css">
-        <meta name="keywords" content="Infinite campus,infinite campus,Infinite Campus,infinite Campus">
-        <meta name="description" content="Infinite Campus Is A International Buisiness And Has Good Devs">
-        <meta property="og:title" content="Infinite Campus">
-        <meta property="og:description" content="Infinite Campus Is An International Buisiness And Has Good Devs">
-        <meta property="og:url" content="https://ryann-4.github.io/InfiniteCampus/">
-        <meta name="theme-color" content="#8cbe37">
-        <meta content="https://codehs.com/uploads/30883de2def50482be6e6fb25ea68477" property="og:image">
-        <script src="main.js">
-        </script>
-        <script src="drypopup.js">
-        </script>
-        <script src="theme.js">
-        </script>
-        <style>
-            table{
-                border-collapse:collapse;
-                width:100%;
-                margin-top:20px;
-            }
-            th,td{
-                border:1px solid #ccc;
-                padding:8px;
-                text-align:left;
-                color:white;
-            }
-            th{
-                background:transparent;
-                color:white;
-            }
-            progress{
-                width:100%;
-            }
-        </style>
-    </head>
-    <body>
-        <center>
-            <br>
-            <br>
-            <br>
-            <br>
-            <h1 class="tptxt">
-                Media Upload Management
-            </h1>
-            <br>
-            <table id="fileTable">
-                <thead>
-                    <tr>
-                        <th>
-                            ID
-                        </th>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Created At
-                        </th>
-                        <th>
-                            Clicks
-                        </th>
-                        <th>
-                            Size
-                        </th>
-                        <th>
-                            Actions
-                        </th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </center>
-        <script type="module" src="adminuploads.js">
-        </script>
-        <script src="frame.js">
-        </script>
-        <script src="popup.js">
-        </script>
-    </body>
+<head>
+  <title>Admin Console</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #eee; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px 12px; border: 1px solid #444; text-align: left; }
+    th { background: #222; }
+    button { padding: 4px 8px; margin-right: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>File Admin Console</h1>
+  <table id="fileTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Size</th>
+        <th>Remaining</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const AUTO_DELETE_MS = 5 * 60 * 1000;
+
+    async function fetchFiles() {
+      const res = await fetch("/admin/files");
+      const files = await res.json();
+      const tbody = document.querySelector("#fileTable tbody");
+      tbody.innerHTML = "";
+      files.forEach(f => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${f.number}</td>
+          <td>${f.name}</td>
+          <td>${formatBytes(f.size)}</td>
+          <td>${f.remainingSec}s</td>
+          <td>
+            <button onclick="downloadFile('${f.name}')">Download</button>
+            <button onclick="deleteFile('${f.name}')">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    async function deleteFile(filename) {
+      if (!confirm(`Delete ${filename}?`)) return;
+      const res = await fetch(`/admin/files/${encodeURIComponent(filename)}`, { method: "DELETE" });
+      if (res.ok) fetchFiles();
+      else alert("Failed to delete file");
+    }
+
+    function downloadFile(filename) {
+      const link = document.createElement("a");
+      link.href = `/files/${encodeURIComponent(filename)}?download=1`;
+      link.download = filename;
+      link.click();
+    }
+
+    function formatBytes(bytes) {
+      const units = ["B", "KB", "MB", "GB"];
+      let i = 0;
+      while (bytes >= 1024 && i < units.length - 1) { bytes /= 1024; i++; }
+      return bytes.toFixed(1) + " " + units[i];
+    }
+
+    // Refresh every second to update remaining times
+    setInterval(fetchFiles, 1000);
+    fetchFiles();
+  </script>
+</body>
 </html>
