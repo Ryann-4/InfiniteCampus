@@ -24,7 +24,7 @@ if (fileParam) {
     const xhr = new XMLHttpRequest();
     xhr.open(
       "GET",
-      `https://sol-nonconnotative-arrogatingly.ngrok-free.dev/files/${encodeURIComponent(fileParam)}?download=1`,
+      `https://sol-nonconnotative-arrogatingly.ngrok-free.dev/${encodeURIComponent(fileParam)}?download=1`,
       true
     );
     xhr.responseType = "blob";
