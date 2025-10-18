@@ -25,7 +25,7 @@ if (fileParam) {
   progressBar.style.width = "0%";
 
   // Use fetch with streaming to track progress safely
-  fetch(`https://sol-nonconnotative-arrogatingly.ngrok-free.dev/files/${encodeURIComponent(fileParam)}?download=1`)
+  fetch(`https://sol-nonconnotative-arrogatingly.ngrok-free.dev/files/${encodeURIComponent(fileParam)}`)
     .then(response => {
       if (!response.ok) throw new Error("Network response was not ok");
 
