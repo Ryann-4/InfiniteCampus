@@ -21,46 +21,56 @@ if (fileParam) {
   const progressBar = document.getElementById("progressBar");
 
   btn.onclick = () => {
-    const xhr = new XMLHttpRequest();
-    xhr.open(
-      "GET",
-      `https://sol-nonconnotative-arrogatingly.ngrok-free.dev/files/${encodeURIComponent(fileParam)}?download=1`,
-      true
-    );
-    xhr.responseType = "blob";
+  progressContainer.style.display = "block";
+  progressBar.style.width = "0%";
 
-    progressContainer.style.display = "block";
-    progressBar.style.width = "0%";
+  // Use fetch with streaming to track progress safely
+  fetch(`https://sol-nonconnotative-arrogatingly.ngrok-free.dev/files/${encodeURIComponent(fileParam)}?download=1`)
+    .then(response => {
+      if (!response.ok) throw new Error("Network response was not ok");
 
-    xhr.onprogress = (e) => {
-      if (e.lengthComputable) {
-        const percent = Math.round((e.loaded / e.total) * 100);
-        progressBar.style.width = percent + "%";
+      const contentLength = response.headers.get("Content-Length");
+      if (!contentLength) return response.blob();
+
+      const total = parseInt(contentLength, 10);
+      let loaded = 0;
+
+      const reader = response.body.getReader();
+      const chunks = [];
+
+      function read() {
+        return reader.read().then(({ done, value }) => {
+          if (done) return;
+          chunks.push(value);
+          loaded += value.length;
+          const percent = Math.round((loaded / total) * 100);
+          progressBar.style.width = percent + "%";
+          return read();
+        });
       }
-    };
 
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        const url = URL.createObjectURL(xhr.response);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileParam;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        progressBar.style.width = "100%";
-      } else {
-        alert("Download failed: " + xhr.statusText);
-      }
-    };
+      return read().then(() => {
+        // Combine chunks into a single Blob
+        const blob = new Blob(chunks);
+        return blob;
+      });
+    })
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileParam;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      progressBar.style.width = "100%";
+    })
+    .catch(err => {
+      alert("Download failed: " + err.message);
+    });
+};
 
-    xhr.onerror = () => {
-      alert("Download failed: Network error");
-    };
-
-    xhr.send();
-  };
 } else {
   // Upload page
   appDiv.innerHTML = `
