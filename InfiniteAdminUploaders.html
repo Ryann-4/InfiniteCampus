@@ -26,9 +26,10 @@
 
   <script>
     const AUTO_DELETE_MS = 5 * 60 * 1000;
+    const NGROK_HEADERS = { "ngrok-skip-browser-warning": "true" };
 
     async function fetchFiles() {
-      const res = await fetch("https://sol-nonconnotative-arrogatingly.ngrok-free.dev/admin/files");
+      const res = await fetch("https://sol-nonconnotative-arrogatingly.ngrok-free.dev/admin/files", { headers: NGROK_HEADERS });
       const files = await res.json();
       const tbody = document.querySelector("#fileTable tbody");
       tbody.innerHTML = "";
@@ -50,7 +51,10 @@
 
     async function deleteFile(filename) {
       if (!confirm(`Delete ${filename}?`)) return;
-      const res = await fetch(`https://sol-nonconnotative-arrogatingly.ngrok-free.dev/admin/files/${encodeURIComponent(filename)}`, { method: "DELETE" });
+      const res = await fetch(`https://sol-nonconnotative-arrogatingly.ngrok-free.dev/admin/files/${encodeURIComponent(filename)}`, {
+        method: "DELETE",
+        headers: NGROK_HEADERS
+      });
       if (res.ok) fetchFiles();
       else alert("Failed to delete file");
     }
