@@ -1,83 +1,90 @@
 const MAX_SIZE = 500 * 1024 * 1024;
-const CHUNK_SIZE = 512 * 1024;
 
 const appDiv = document.getElementById("app");
 
-const params = new URLSearchParams(window.location.search);
-const fileId = params.get("id");
+appDiv.innerHTML = `
+  <center>
+    <h2 class="tptxt">Upload A File → Get A 5+ Minute Download Link</h2>
+    <input type="file" id="fileInput">
+    <label for="fileInput" class="custom-file-upload">Choose File</label>
+    <p id="fileName"></p>
+    <div id="progressContainer" style="display:none; width:80%; background:#333; border-radius:4px; margin:10px auto;">
+      <div id="progressBar" style="width:0%; height:20px; background:#4caf50; border-radius:4px;"></div>
+    </div>
+    <p id="output"></p>
+  </center>
+`;
 
-if (fileId) {
-    // You could implement fetching via your own API if you want downloads
-    appDiv.innerHTML = `<center><h2 class="tptxt">File downloads must be handled via the API.</h2></center>`;
-} else {
-    appDiv.innerHTML = `
-        <center>
-            <h2 class="tptxt">Upload A File → Get A 5+ Minute Download Link</h2>
-            <input type="file" id="fileInput">
-            <label for="fileInput" class="custom-file-upload">Choose File</label>
-            <p id="fileName"></p>
-            <div id="progressContainer"><div id="progressBar"></div></div>
-            <p id="output"></p>
-        </center>
-    `;
+const input = document.getElementById("fileInput");
+const fileNameDisplay = document.getElementById("fileName");
+const progressBar = document.getElementById("progressBar");
+const progressContainer = document.getElementById("progressContainer");
+const output = document.getElementById("output");
 
-    const input = document.getElementById("fileInput");
-    const fileNameDisplay = document.getElementById("fileName");
-    const progressBar = document.getElementById("progressBar");
-    const progressContainer = document.getElementById("progressContainer");
-    const output = document.getElementById("output");
+input.addEventListener("change", () => {
+  const file = input.files[0];
+  if (!file) return;
 
-    input.addEventListener("change", async () => {
-        const file = input.files[0];
-        if (!file) return;
+  fileNameDisplay.textContent = "Selected File: " + file.name;
 
-        fileNameDisplay.textContent = "Selected File: " + file.name;
+  if (file.size > MAX_SIZE) {
+    alert("File Too Large! Maximum Allowed Size Is 500 MB.");
+    input.value = "";
+    return;
+  }
 
-        if (file.size > MAX_SIZE) {
-            alert("File Too Large! Maximum Allowed Size Is 500 MB.");
-            input.value = "";
-            return;
-        }
+  const formData = new FormData();
+  formData.append("file", file);
 
-        const formData = new FormData();
-        formData.append("file", file);
+  progressContainer.style.display = "block";
+  progressBar.style.width = "0%";
 
-        progressContainer.style.display = "block";
-        progressBar.style.width = "0%";
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "/uploadthis", true);
 
-        try {
-            const response = await fetch("https://sol-nonconnotative-arrogatingly.ngrok-free.dev/uploadthis", {
-                method: "POST",
-                headers: {
-                    "ngrok-skip-browser-warning": "true" // example ngrok header
-                },
-                body: formData
-            });
+  xhr.upload.onprogress = (e) => {
+    if (e.lengthComputable) {
+      const percent = Math.round((e.loaded / e.total) * 100);
+      progressBar.style.width = percent + "%";
+    }
+  };
 
-            if (!response.ok) throw new Error(`Upload failed: ${response.statusText}`);
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      try {
+        const res = JSON.parse(xhr.responseText);
+        const link = res.fileUrl;
+        output.innerHTML = `
+          <center>
+            <p>Temporary Download Link (5+ Mins):</p>
+            <input type="text" id="fileLink" value="${link}" readonly style="width:80%">
+            <button class="button" onclick="copyLink()">Copy</button>
+            <br><br>
+            <a href="${link}" target="_blank">
+              <button class="button">Go To Download Page</button>
+            </a>
+          </center>
+        `;
+        progressBar.style.width = "100%";
+      } catch (err) {
+        output.innerHTML = `<p style="color:red;">Error parsing server response</p>`;
+        console.error(err);
+      }
+    } else {
+      output.innerHTML = `<p style="color:red;">Upload Failed: ${xhr.statusText}</p>`;
+    }
+  };
 
-            const result = await response.json(); // assuming API returns JSON with fileId
-            const link = `${window.location.origin}${window.location.pathname}?id=${result.fileId}`;
+  xhr.onerror = () => {
+    output.innerHTML = `<p style="color:red;">Upload Failed (Network Error)</p>`;
+  };
 
-            progressBar.style.width = "100%";
+  xhr.send(formData);
+});
 
-            output.innerHTML = `
-                <center>
-                    <p>Temporary Link (5+ Mins):</p>
-                    <input type="text" id="fileLink" value="${link}" readonly style="width:80%">
-                    <button class="button" onclick="copyLink()">Copy</button>
-                </center>
-            `;
-        } catch (err) {
-            console.error(err);
-            output.innerHTML = `<p style="color:red;">Upload failed: ${err.message}</p>`;
-        }
-    });
-
-    window.copyLink = () => {
-        const link = document.getElementById("fileLink");
-        link.select();
-        document.execCommand("copy");
-        alert("Copied To Clipboard!");
-    };
-}
+window.copyLink = () => {
+  const link = document.getElementById("fileLink");
+  link.select();
+  document.execCommand("copy");
+  alert("Copied To Clipboard!");
+};
