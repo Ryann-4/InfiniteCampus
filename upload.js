@@ -1,11 +1,8 @@
 const MAX_SIZE = 500 * 1024 * 1024;
-
 const appDiv = document.getElementById("app");
 const params = new URLSearchParams(window.location.search);
 const fileParam = params.get("file");
-
 if (fileParam) {
-  // Download page
   appDiv.innerHTML = `
     <center>
       <h2 class="tptxt">Download Your File</h2>
@@ -13,18 +10,15 @@ if (fileParam) {
       <div id="progressContainer" style="display:none; width:80%; background:#333; border-radius:4px; margin:10px auto;">
         <div id="progressBar" style="width:0%; height:20px; background:#4caf50; border-radius:4px;"></div>
       </div>
-      <button class="button" id="downloadBtn">⬇ Download</button>
+      <button class="button" id="downloadBtn">Download</button>
     </center>
   `;
   const btn = document.getElementById("downloadBtn");
   const progressContainer = document.getElementById("progressContainer");
   const progressBar = document.getElementById("progressBar");
-
   btn.onclick = () => {
   progressContainer.style.display = "block";
   progressBar.style.width = "0%";
-
-  // Use fetch with streaming and custom header
   fetch(`https://sol-nonconnotative-arrogatingly.ngrok-free.dev/files/${encodeURIComponent(fileParam)}?download=1`, {
     method: "GET",
     headers: {
@@ -32,17 +26,13 @@ if (fileParam) {
     }
   })
   .then(response => {
-    if (!response.ok) throw new Error("Network response was not ok");
-
+    if (!response.ok) throw new Error("Network Response Was Not Ok");
     const contentLength = response.headers.get("Content-Length");
     if (!contentLength) return response.blob();
-
     const total = parseInt(contentLength, 10);
     let loaded = 0;
-
     const reader = response.body.getReader();
     const chunks = [];
-
     function read() {
       return reader.read().then(({ done, value }) => {
         if (done) return;
@@ -53,9 +43,7 @@ if (fileParam) {
         return read();
       });
     }
-
     return read().then(() => {
-      // Combine chunks into a single Blob
       return new Blob(chunks);
     });
   })
@@ -71,16 +59,13 @@ if (fileParam) {
     progressBar.style.width = "100%";
   })
   .catch(err => {
-    alert("Download failed: " + err.message);
+    alert("Download Failed: " + err.message);
   });
 };
-
-
 } else {
-  // Upload page
   appDiv.innerHTML = `
     <center>
-      <h2 class="tptxt">Upload A File → Get A 5+ Minute Download Link</h2>
+      <h2 class="tptxt">Upload A File → Get A 5 Minute Download Link</h2>
       <input type="file" id="fileInput">
       <label for="fileInput" class="custom-file-upload">Choose File</label>
       <p id="fileName"></p>
@@ -90,45 +75,36 @@ if (fileParam) {
       <p id="output"></p>
     </center>
   `;
-
   const input = document.getElementById("fileInput");
   const fileNameDisplay = document.getElementById("fileName");
   const progressBar = document.getElementById("progressBar");
   const progressContainer = document.getElementById("progressContainer");
   const output = document.getElementById("output");
-
   input.addEventListener("change", () => {
     const file = input.files[0];
     if (!file) return;
-
     fileNameDisplay.textContent = "Selected File: " + file.name;
-
     if (file.size > MAX_SIZE) {
       alert("File Too Large! Maximum Allowed Size Is 500 MB.");
       input.value = "";
       return;
     }
-
     const formData = new FormData();
     formData.append("file", file);
-
     progressContainer.style.display = "block";
     progressBar.style.width = "0%";
-
     const xhr = new XMLHttpRequest();
     xhr.open(
       "POST",
       "https://sol-nonconnotative-arrogatingly.ngrok-free.dev/uploadthis",
       true
     );
-
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
         const percent = Math.round((e.loaded / e.total) * 100);
         progressBar.style.width = percent + "%";
       }
     };
-
     xhr.onload = () => {
       if (xhr.status === 200) {
         try {
@@ -136,10 +112,9 @@ if (fileParam) {
           const urlParts = res.fileUrl.split("/");
           const filename = urlParts[urlParts.length - 1];
           const link = `https://www.infinitecampus.xyz/InfiniteUploaders.html?file=${encodeURIComponent(filename)}`;
-
           output.innerHTML = `
             <center>
-              <p>Temporary Download Link (5+ Mins):</p>
+              <p>Temporary Download Link (5 Mins):</p>
               <input type="text" id="fileLink" value="${link}" readonly style="width:80%">
               <button class="button" onclick="copyLink()">Copy</button>
               <br><br>
@@ -150,21 +125,18 @@ if (fileParam) {
           `;
           progressBar.style.width = "100%";
         } catch (err) {
-          output.innerHTML = `<p style="color:red;">Error parsing server response</p>`;
+          output.innerHTML = `<p style="color:red;">Error Parsing Server Response</p>`;
           console.error(err);
         }
       } else {
         output.innerHTML = `<p style="color:red;">Upload Failed: ${xhr.statusText}</p>`;
       }
     };
-
     xhr.onerror = () => {
       output.innerHTML = `<p style="color:red;">Upload Failed (Network Error)</p>`;
     };
-
     xhr.send(formData);
   });
-
   window.copyLink = () => {
     const link = document.getElementById("fileLink");
     link.select();
