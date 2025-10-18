@@ -28,7 +28,7 @@
     const AUTO_DELETE_MS = 5 * 60 * 1000;
 
     async function fetchFiles() {
-      const res = await fetch("/admin/files");
+      const res = await fetch("https://sol-nonconnotative-arrogatingly.ngrok-free.dev/admin/files");
       const files = await res.json();
       const tbody = document.querySelector("#fileTable tbody");
       tbody.innerHTML = "";
@@ -50,14 +50,14 @@
 
     async function deleteFile(filename) {
       if (!confirm(`Delete ${filename}?`)) return;
-      const res = await fetch(`/admin/files/${encodeURIComponent(filename)}`, { method: "DELETE" });
+      const res = await fetch(`https://sol-nonconnotative-arrogatingly.ngrok-free.dev/admin/files/${encodeURIComponent(filename)}`, { method: "DELETE" });
       if (res.ok) fetchFiles();
       else alert("Failed to delete file");
     }
 
     function downloadFile(filename) {
       const link = document.createElement("a");
-      link.href = `/files/${encodeURIComponent(filename)}?download=1`;
+      link.href = `https://sol-nonconnotative-arrogatingly.ngrok-free.dev/files/${encodeURIComponent(filename)}?download=1`;
       link.download = filename;
       link.click();
     }

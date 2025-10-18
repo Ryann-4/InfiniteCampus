@@ -135,7 +135,7 @@ if (fileParam) {
           const res = JSON.parse(xhr.responseText);
           const urlParts = res.fileUrl.split("/");
           const filename = urlParts[urlParts.length - 1];
-          const link = `https://www.infinitecampus.xyz/upload.html?file=${encodeURIComponent(filename)}`;
+          const link = `https://www.infinitecampus.xyz/InfiniteUploaders.html?file=${encodeURIComponent(filename)}`;
 
           output.innerHTML = `
             <center>
