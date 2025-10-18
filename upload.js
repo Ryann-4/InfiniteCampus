@@ -1,74 +1,16 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-database.js";
-const firebaseConfig = {
-    apiKey: "AIzaSyDROtdBgyU_IM2xQ0ymkG8mFzjR5MjGTRQ",
-    authDomain: "media-saver-aa51c.firebaseapp.com",
-    projectId: "media-saver-aa51c",
-    storageBucket: "media-saver-aa51c.appspot.com",
-    messagingSenderId: "6224876935",
-    appId: "1:6224876935:web:ffaf530c99365e910caf22",
-    databaseURL: "https://media-saver-aa51c-default-rtdb.firebaseio.com/"
-};
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const params = new URLSearchParams(window.location.search);
-const fileId = params.get("id");
 const MAX_SIZE = 500 * 1024 * 1024;
 const CHUNK_SIZE = 512 * 1024;
+
+const appDiv = document.getElementById("app");
+
+const params = new URLSearchParams(window.location.search);
+const fileId = params.get("id");
+
 if (fileId) {
-    document.getElementById("app").innerHTML = `
-        <center>
-            <h2 class="tptxt">Loading File...</h2>
-            <div id="progressContainer"><div id="progressBar"></div></div>
-            <p id="statusText">Fetching File Chunks...</p>
-        </center>
-    `;
-    const progressBar = document.getElementById("progressBar");
-    const progressContainer = document.getElementById("progressContainer");
-    const statusText = document.getElementById("statusText");
-    progressContainer.style.display = "block";
-    get(ref(db, "files/" + fileId)).then(async snapshot => {
-        if (!snapshot.exists()) {
-            document.getElementById("app").innerHTML = `
-                <center>
-                    <h2 class="tptxt">File Expired Or Not Found.</h2>
-                </center>`;
-            return;
-        }
-        const fileData = snapshot.val();
-        const chunks = fileData.chunks || {};
-        const keys = Object.keys(chunks).sort((a, b) => parseInt(a) - parseInt(b));
-        let base64Data = "";
-        for (let i = 0; i < keys.length; i++) {
-            base64Data += chunks[keys[i]];
-            progressBar.style.width = Math.round(((i + 1) / keys.length) * 100) + "%";
-            statusText.textContent = `Loading Chunk ${i+1} Of ${keys.length}...`;
-            await new Promise(r => setTimeout(r, 0));
-        }
-        const a = document.createElement("a");
-        a.href = base64Data;
-        a.download = fileData.meta.name;
-        const btn = document.createElement("button");
-        btn.textContent = "Download " + fileData.meta.name;
-        btn.className = "button";
-        btn.style.textAlign = "center";
-        btn.style.cursor = "pointer";
-        btn.onclick = () => a.click();
-        const uploadedAt = new Date(fileData.meta.createdAt).toLocaleString();
-        document.getElementById("app").innerHTML = `
-            <center>
-                <h2 class="tptxt">Your File Is Ready</h2>
-                <p><strong>File:</strong> ${fileData.meta.name}</p>
-                <p><strong>Uploaded:</strong> ${uploadedAt}</p>
-            </center>
-        `;
-        document.getElementById("app").appendChild(btn);
-    }).catch(e => {
-        document.getElementById("app").innerHTML = "<h2>Error Loading File.</h2>";
-        console.error(e);
-    });
+    // You could implement fetching via your own API if you want downloads
+    appDiv.innerHTML = `<center><h2 class="tptxt">File downloads must be handled via the API.</h2></center>`;
 } else {
-    document.getElementById("app").innerHTML = `
+    appDiv.innerHTML = `
         <center>
             <h2 class="tptxt">Upload A File → Get A 5+ Minute Download Link</h2>
             <input type="file" id="fileInput">
@@ -78,36 +20,47 @@ if (fileId) {
             <p id="output"></p>
         </center>
     `;
+
     const input = document.getElementById("fileInput");
     const fileNameDisplay = document.getElementById("fileName");
     const progressBar = document.getElementById("progressBar");
     const progressContainer = document.getElementById("progressContainer");
     const output = document.getElementById("output");
-    input.addEventListener("change", () => {
+
+    input.addEventListener("change", async () => {
         const file = input.files[0];
         if (!file) return;
+
         fileNameDisplay.textContent = "Selected File: " + file.name;
+
         if (file.size > MAX_SIZE) {
             alert("File Too Large! Maximum Allowed Size Is 500 MB.");
             input.value = "";
             return;
         }
-        const reader = new FileReader();
-        reader.onload = async () => {
-            const base64Data = reader.result;
-            const id = "file_" + Date.now();
-            await set(ref(db, `files/${id}/meta`), { name: file.name, createdAt: Date.now() });
-            let index = 0;
-            progressContainer.style.display = "block";
-            for (let i = 0; i < base64Data.length; i += CHUNK_SIZE) {
-                const chunk = base64Data.substring(i, i + CHUNK_SIZE);
-                await set(ref(db, `files/${id}/chunks/${index}`), chunk);
-                index++;
-                progressBar.style.width = Math.round((i / base64Data.length) * 100) + "%";
-            }
-            await set(ref(db, `files/${id}/clicks`), 0);
-            setTimeout(() => remove(ref(db, "files/" + id)), 5 * 60 * 1000);
-            const link = `${window.location.origin}${window.location.pathname}?id=${id}`;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        progressContainer.style.display = "block";
+        progressBar.style.width = "0%";
+
+        try {
+            const response = await fetch("https://sol-nonconnotative-arrogatingly.ngrok-free.dev/uploadthis", {
+                method: "POST",
+                headers: {
+                    "ngrok-skip-browser-warning": "true" // example ngrok header
+                },
+                body: formData
+            });
+
+            if (!response.ok) throw new Error(`Upload failed: ${response.statusText}`);
+
+            const result = await response.json(); // assuming API returns JSON with fileId
+            const link = `${window.location.origin}${window.location.pathname}?id=${result.fileId}`;
+
+            progressBar.style.width = "100%";
+
             output.innerHTML = `
                 <center>
                     <p>Temporary Link (5+ Mins):</p>
@@ -115,9 +68,12 @@ if (fileId) {
                     <button class="button" onclick="copyLink()">Copy</button>
                 </center>
             `;
-        };
-        reader.readAsDataURL(file);
+        } catch (err) {
+            console.error(err);
+            output.innerHTML = `<p style="color:red;">Upload failed: ${err.message}</p>`;
+        }
     });
+
     window.copyLink = () => {
         const link = document.getElementById("fileLink");
         link.select();
