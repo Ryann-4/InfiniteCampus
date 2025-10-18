@@ -22,7 +22,11 @@ if (fileParam) {
 
   btn.onclick = () => {
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", `/files/${encodeURIComponent(fileParam)}?download=1`, true);
+    xhr.open(
+      "GET",
+      `https://www.infinitecampus.xyz/files/${encodeURIComponent(fileParam)}?download=1`,
+      true
+    );
     xhr.responseType = "blob";
 
     progressContainer.style.display = "block";
@@ -97,7 +101,11 @@ if (fileParam) {
     progressBar.style.width = "0%";
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://sol-nonconnotative-arrogatingly.ngrok-free.dev/uploadthis", true);
+    xhr.open(
+      "POST",
+      "https://sol-nonconnotative-arrogatingly.ngrok-free.dev/uploadthis",
+      true
+    );
 
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
@@ -112,7 +120,7 @@ if (fileParam) {
           const res = JSON.parse(xhr.responseText);
           const urlParts = res.fileUrl.split("/");
           const filename = urlParts[urlParts.length - 1];
-          const link = `${window.location.pathname}?file=${encodeURIComponent(filename)}`;
+          const link = `https://www.infinitecampus.xyz/upload.html?file=${encodeURIComponent(filename)}`;
 
           output.innerHTML = `
             <center>
