@@ -24,52 +24,57 @@ if (fileParam) {
   progressContainer.style.display = "block";
   progressBar.style.width = "0%";
 
-  // Use fetch with streaming to track progress safely
-  fetch(`https://sol-nonconnotative-arrogatingly.ngrok-free.dev/files/${encodeURIComponent(fileParam)}`)
-    .then(response => {
-      if (!response.ok) throw new Error("Network response was not ok");
+  // Use fetch with streaming and custom header
+  fetch(`https://sol-nonconnotative-arrogatingly.ngrok-free.dev/files/${encodeURIComponent(fileParam)}?download=1`, {
+    method: "GET",
+    headers: {
+      "ngrok-skip-browser-warning": "true"
+    }
+  })
+  .then(response => {
+    if (!response.ok) throw new Error("Network response was not ok");
 
-      const contentLength = response.headers.get("Content-Length");
-      if (!contentLength) return response.blob();
+    const contentLength = response.headers.get("Content-Length");
+    if (!contentLength) return response.blob();
 
-      const total = parseInt(contentLength, 10);
-      let loaded = 0;
+    const total = parseInt(contentLength, 10);
+    let loaded = 0;
 
-      const reader = response.body.getReader();
-      const chunks = [];
+    const reader = response.body.getReader();
+    const chunks = [];
 
-      function read() {
-        return reader.read().then(({ done, value }) => {
-          if (done) return;
-          chunks.push(value);
-          loaded += value.length;
-          const percent = Math.round((loaded / total) * 100);
-          progressBar.style.width = percent + "%";
-          return read();
-        });
-      }
-
-      return read().then(() => {
-        // Combine chunks into a single Blob
-        const blob = new Blob(chunks);
-        return blob;
+    function read() {
+      return reader.read().then(({ done, value }) => {
+        if (done) return;
+        chunks.push(value);
+        loaded += value.length;
+        const percent = Math.round((loaded / total) * 100);
+        progressBar.style.width = percent + "%";
+        return read();
       });
-    })
-    .then(blob => {
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileParam;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      progressBar.style.width = "100%";
-    })
-    .catch(err => {
-      alert("Download failed: " + err.message);
+    }
+
+    return read().then(() => {
+      // Combine chunks into a single Blob
+      return new Blob(chunks);
     });
+  })
+  .then(blob => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileParam;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    progressBar.style.width = "100%";
+  })
+  .catch(err => {
+    alert("Download failed: " + err.message);
+  });
 };
+
 
 } else {
   // Upload page
