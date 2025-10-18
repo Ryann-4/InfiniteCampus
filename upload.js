@@ -97,7 +97,7 @@ if (fileParam) {
     progressBar.style.width = "0%";
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/uploadthis", true);
+    xhr.open("POST", "https://sol-nonconnotative-arrogatingly.ngrok-free.dev/uploadthis", true);
 
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
