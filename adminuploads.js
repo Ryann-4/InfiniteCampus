@@ -1,7 +1,7 @@
 const AUTO_DELETE_MS = 5 * 60 * 1000;
 const NGROK_HEADERS = { "ngrok-skip-browser-warning": "true" };
 async function fetchFiles() {
-    const res = await fetch("https://sol-nonconnotative-arrogatingly.ngrok-free.dev/admin/files", { headers: NGROK_HEADERS });
+    const res = await fetch("https://included-touched-joey.ngrok-free.app/admin/files", { headers: NGROK_HEADERS });
     const files = await res.json();
     const tbody = document.querySelector("#fileTable tbody");
     tbody.innerHTML = "";
@@ -22,7 +22,7 @@ async function fetchFiles() {
 }
 async function deleteFile(filename) {
     if (!confirm(`Delete ${filename}?`)) return;
-    const res = await fetch(`https://sol-nonconnotative-arrogatingly.ngrok-free.dev/admin/files/${encodeURIComponent(filename)}`, {
+    const res = await fetch(`https://included-touched-joey.ngrok-free.app/admin/files/${encodeURIComponent(filename)}`, {
         method: "DELETE",
         headers: NGROK_HEADERS
     });
@@ -31,7 +31,7 @@ async function deleteFile(filename) {
 }
 function downloadFile(filename) {
     const link = document.createElement("a");
-    link.href = `https://sol-nonconnotative-arrogatingly.ngrok-free.dev/files/${encodeURIComponent(filename)}`;
+    link.href = `https://included-touched-joey.ngrok-free.app/files/${encodeURIComponent(filename)}`;
     link.download = filename;
     link.click();
 }
